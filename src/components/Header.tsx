@@ -10,6 +10,9 @@ const navLinks = [
   { to: "/about", label: "About" },
   { to: "/offerings", label: "Offerings" },
   { to: "/community", label: "Community" },
+  { to: "/forum", label: "Forum" },
+  { to: "/events", label: "Events" },
+  { to: "/stories", label: "Stories" },
   { to: "/chat", label: "Forti AI" },
 ];
 
@@ -31,13 +34,13 @@ const NavItems = () => {
         </NavLink>
       ))}
        {isAuthenticated ? (
-         <Button onClick={logout} variant="outline" size="sm">Log Out</Button>
+         <Button onClick={logout} variant="outline" size="sm" className="rounded-full">Log Out</Button>
       ) : (
         <div className="flex items-center gap-2">
-           <Button asChild variant="outline" size="sm">
+           <Button asChild variant="outline" size="sm" className="rounded-full">
             <Link to="/login">Log In</Link>
           </Button>
-          <Button asChild size="sm">
+          <Button asChild size="sm" className="rounded-full">
             <Link to="/signup">Get Started</Link>
           </Button>
         </div>
@@ -48,12 +51,12 @@ const NavItems = () => {
 
 const Header = () => {
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center">
+    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-sm">
+      <div className="container flex h-16 items-center">
         <div className="mr-4 flex items-center">
           <Link to="/" className="mr-6 flex items-center space-x-2">
             <Heart className="h-6 w-6 text-brand-blue" />
-            <span className="font-bold">Fortitude Network</span>
+            <span className="font-bold text-lg">Fortitude Network</span>
           </Link>
         </div>
         <div className="hidden md:flex flex-1 items-center justify-end space-x-6">

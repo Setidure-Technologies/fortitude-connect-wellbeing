@@ -12,6 +12,9 @@ import Donate from "./pages/Donate";
 import Chat from "./pages/Chat";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
+import Forum from "./pages/Forum";
+import Events from "./pages/Events";
+import Stories from "./pages/Stories";
 import NotFound from "./pages/NotFound";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -32,6 +35,9 @@ const App = () => (
               <Route path="/about" element={<About />} />
               <Route path="/offerings" element={<Offerings />} />
               <Route path="/community" element={<Community />} />
+              <Route path="/forum" element={<Forum />} />
+              <Route path="/events" element={<Events />} />
+              <Route path="/stories" element={<Stories />} />
               <Route path="/donate" element={<Donate />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />

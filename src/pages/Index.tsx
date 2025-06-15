@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart, Users, MessageSquare } from "lucide-react";
 import { Link } from "react-router-dom";
+import PromptButtons from "@/components/PromptButtons";
+import ImpactStats from "@/components/ImpactStats";
+import AIAssistant from "@/components/AIAssistant";
 
 const offerings = [
   {
@@ -26,85 +29,110 @@ const Index = () => {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="bg-slate-50">
-        <div className="container mx-auto px-4 py-20 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tighter mb-4">
-            Personalized Cancer Support Network
-          </h1>
-          <p className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto mb-8">
-            Empowering – one connection at a time. You are not alone. Find strength, support, and community with Fortitude Network.
-          </p>
-          <div className="flex justify-center gap-4">
-            <Button asChild size="lg">
-              <Link to="/signup">Join the Community</Link>
-            </Button>
-            <Button asChild variant="outline" size="lg">
-              <Link to="/donate">Donate Now</Link>
-            </Button>
+      <section className="bg-gradient-to-br from-white via-brand-skyblue/10 to-brand-green/10 relative overflow-hidden">
+        <div className="container mx-auto px-4 py-20 text-center relative z-10">
+          <div className="animate-fade-in">
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tighter mb-6 bg-gradient-to-r from-brand-blue to-brand-purple bg-clip-text text-transparent">
+              You Are More Than Your Diagnosis
+            </h1>
+            <p className="text-lg md:text-xl text-slate-700 max-w-3xl mx-auto mb-8 leading-relaxed">
+              Empowering your Cancer Journey, one connection at a time. Find strength, support, and community with Fortitude Network — because you are never alone.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
+              <Button asChild size="lg" className="rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <Link to="/signup">Join Our Community</Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="rounded-full">
+                <Link to="/donate">Support Others</Link>
+              </Button>
+            </div>
+            <div className="flex justify-center">
+              <AIAssistant />
+            </div>
           </div>
         </div>
+        
+        {/* Decorative elements */}
+        <div className="absolute top-10 left-10 w-20 h-20 bg-brand-pink/20 rounded-full blur-xl"></div>
+        <div className="absolute bottom-10 right-10 w-32 h-32 bg-brand-yellow/20 rounded-full blur-xl"></div>
       </section>
 
+      {/* Prompt Buttons */}
+      <PromptButtons />
+
       {/* Offerings Section */}
-      <section className="py-20">
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold">Comprehensive Support for Cancer Journeys</h2>
-            <p className="text-slate-600 max-w-2xl mx-auto mt-4">
-              Explore the various ways Fortitude Network assists patients. From mental health support to community engagement, find the resources tailored for your needs.
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Comprehensive Support for Your Journey</h2>
+            <p className="text-slate-600 max-w-2xl mx-auto">
+              Explore the various ways Fortitude Network assists patients, survivors, and caregivers with resources tailored for every step of the journey.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {offerings.map((offering, index) => (
-              <Card key={index} className="text-center">
+              <Card key={index} className="text-center border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 rounded-2xl">
                 <CardHeader>
-                  <div className="mx-auto bg-slate-100 rounded-full p-4 w-fit mb-4">
+                  <div className="mx-auto bg-gradient-to-br from-slate-50 to-slate-100 rounded-full p-6 w-fit mb-4 shadow-inner">
                     {offering.icon}
                   </div>
-                  <CardTitle>{offering.title}</CardTitle>
+                  <CardTitle className="text-xl">{offering.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-slate-600">{offering.description}</p>
+                  <p className="text-slate-600 leading-relaxed">{offering.description}</p>
                 </CardContent>
               </Card>
             ))}
           </div>
         </div>
       </section>
+
+      {/* Impact Stats */}
+      <ImpactStats />
       
       {/* About Section */}
-       <section className="bg-slate-50 py-20">
+       <section className="bg-gradient-to-r from-brand-skyblue/20 to-brand-green/20 py-20">
         <div className="container mx-auto px-4">
            <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">The Heart Behind Fortitude Network</h2>
-              <p className="text-slate-600 mb-4">
-                Fortitude Network is a dedicated non-profit organization based in India, focused on supporting cancer patients and survivors. Our comprehensive online platform offers survivor stories, vital resources for cancer care, and a community hub.
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">The Heart Behind Fortitude Network</h2>
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                Founded by Vanshika Rao, Fortitude Network was born from personal experience and the deep understanding that healing goes beyond medical treatment. We're a dedicated non-profit organization focused on supporting cancer patients and survivors through every step of their journey.
               </p>
-              <p className="text-slate-600 mb-6">
-                We aim to empower individuals impacted by cancer, ensuring they feel connected and informed throughout their journey. With our user-friendly website, we prioritize accessibility and data privacy to foster trust among our community.
+              <p className="text-slate-700 mb-6 leading-relaxed">
+                Our comprehensive platform offers survivor stories, mental health resources, and a vibrant community hub. We prioritize accessibility, data privacy, and creating genuine connections that foster hope and resilience.
               </p>
-              <Button asChild>
-                <Link to="/about">Read More</Link>
+              <Button asChild className="rounded-full">
+                <Link to="/about">Learn More About Our Story</Link>
               </Button>
             </div>
-            <div>
-              <img src="/placeholder.svg" alt="Community support" className="rounded-lg shadow-lg" />
+            <div className="relative">
+              <div className="bg-white rounded-2xl shadow-2xl p-8 transform rotate-2 hover:rotate-0 transition-transform duration-500">
+                <img src="/placeholder.svg" alt="Community support" className="rounded-lg w-full h-64 object-cover" />
+                <div className="mt-4 text-center">
+                  <p className="text-sm text-slate-600 italic">"Together, we turn struggles into strength"</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-20">
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold">Ready to Connect with Us?</h2>
-          <p className="text-slate-600 max-w-2xl mx-auto mt-4 mb-8">
-            Join Fortitude Network today and start your journey toward empowerment and healing with a supportive community behind you.
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Begin Your Journey of Connection?</h2>
+          <p className="text-slate-600 max-w-2xl mx-auto mb-8 leading-relaxed">
+            Join thousands of individuals who have found strength, hope, and healing through our supportive community. Your story matters, and you belong here.
           </p>
-          <Button asChild size="lg">
-            <Link to="/signup">Get Started</Link>
-          </Button>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Button asChild size="lg" className="rounded-full shadow-lg">
+              <Link to="/signup">Start Your Journey</Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="rounded-full">
+              <Link to="/community">Explore Community</Link>
+            </Button>
+          </div>
         </div>
       </section>
     </div>

@@ -35,7 +35,11 @@ export default {
         brand: {
           blue: '#0073e6',
           teal: '#008080',
-          purple: '#9C27B0'
+          purple: '#9C27B0',
+          green: '#C6F6D5',
+          yellow: '#FFF9C4',
+          pink: '#FADADD',
+          skyblue: '#D0E8F2'
         },
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
@@ -93,11 +97,31 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'fade-in': {
+					'0%': {
+						opacity: '0',
+						transform: 'translateY(10px)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'translateY(0)'
+					}
+				},
+				'gentle-bounce': {
+					'0%, 100%': {
+						transform: 'translateY(0)'
+					},
+					'50%': {
+						transform: 'translateY(-2px)'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.3s ease-out',
+				'gentle-bounce': 'gentle-bounce 2s ease-in-out infinite'
 			}
 		}
 	},
