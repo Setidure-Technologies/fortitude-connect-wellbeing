@@ -1,22 +1,150 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { User, Session } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface AuthContextType {
+  user: User | null;
+  session: Session | null;
   isAuthenticated: boolean;
-  login: () => void;
-  logout: () => void;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<{ error?: string }>;
+  signUp: (email: string, password: string, fullName: string) => Promise<{ error?: string }>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
-  const login = () => setIsAuthenticated(true);
-  const logout = () => setIsAuthenticated(false);
+  useEffect(() => {
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.id);
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+
+        if (event === 'SIGNED_IN' && session?.user) {
+          toast({
+            title: "Welcome!",
+            description: "You have been signed in successfully.",
+          });
+        }
+      }
+    );
+
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [toast]);
+
+  const login = async (email: string, password: string) => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        console.error('Login error:', error);
+        return { error: error.message };
+      }
+
+      return {};
+    } catch (error) {
+      console.error('Login error:', error);
+      return { error: 'An unexpected error occurred' };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signUp = async (email: string, password: string, fullName: string) => {
+    try {
+      setLoading(true);
+      const redirectUrl = `${window.location.origin}/`;
+      
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            full_name: fullName,
+          }
+        }
+      });
+
+      if (error) {
+        console.error('Signup error:', error);
+        return { error: error.message };
+      }
+
+      if (data.user && !data.user.email_confirmed_at) {
+        toast({
+          title: "Check your email",
+          description: "We've sent you a confirmation link to complete your registration.",
+        });
+      }
+
+      return {};
+    } catch (error) {
+      console.error('Signup error:', error);
+      return { error: 'An unexpected error occurred' };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const logout = async () => {
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Logout error:', error);
+        toast({
+          title: "Error",
+          description: "Failed to sign out. Please try again.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Signed out",
+          description: "You have been signed out successfully.",
+        });
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const value = {
+    user,
+    session,
+    isAuthenticated: !!user,
+    loading,
+    login,
+    signUp,
+    logout,
+  };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

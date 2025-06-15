@@ -2,8 +2,17 @@
 import { Link, NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, Heart } from "lucide-react";
+import { Menu, Heart, User, LogOut, Settings } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const navLinks = [
   { to: "/", label: "Home" },
@@ -13,11 +22,11 @@ const navLinks = [
   { to: "/forum", label: "Forum" },
   { to: "/events", label: "Events" },
   { to: "/stories", label: "Stories" },
-  { to: "/chat", label: "Forti AI" },
 ];
 
 const NavItems = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
+  
   return (
     <>
       {navLinks.map((link) => (
@@ -33,15 +42,65 @@ const NavItems = () => {
           {link.label}
         </NavLink>
       ))}
-       {isAuthenticated ? (
-         <Button onClick={logout} variant="outline" size="sm" className="rounded-full">Log Out</Button>
+      
+      {/* Show Chat link only to authenticated users */}
+      {isAuthenticated && (
+        <NavLink
+          to="/chat"
+          className={({ isActive }) =>
+            `text-sm font-medium transition-colors hover:text-brand-blue ${
+              isActive ? "text-brand-blue" : "text-slate-700"
+            }`
+          }
+        >
+          Forti AI
+        </NavLink>
+      )}
+      
+      {isAuthenticated ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src="" alt={user?.user_metadata?.full_name || user?.email || ""} />
+                <AvatarFallback>
+                  {user?.user_metadata?.full_name ? 
+                    user.user_metadata.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 
+                    <User className="h-4 w-4" />
+                  }
+                </AvatarFallback>
+              </Avatar>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56" align="end">
+            <DropdownMenuLabel className="font-normal">
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium leading-none">
+                  {user?.user_metadata?.full_name || "User"}
+                </p>
+                <p className="text-xs leading-none text-muted-foreground">
+                  {user?.email}
+                </p>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link to="/profile">
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Profile Settings</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={logout}>
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Log out</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       ) : (
         <div className="flex items-center gap-2">
-           <Button asChild variant="outline" size="sm" className="rounded-full">
-            <Link to="/login">Log In</Link>
-          </Button>
-          <Button asChild size="sm" className="rounded-full">
-            <Link to="/signup">Get Started</Link>
+          <Button asChild variant="outline" size="sm" className="rounded-full">
+            <Link to="/auth">Get Started</Link>
           </Button>
         </div>
       )}

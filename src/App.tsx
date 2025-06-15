@@ -12,6 +12,8 @@ import Donate from "./pages/Donate";
 import Chat from "./pages/Chat";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
+import Auth from "./pages/Auth";
+import Profile from "./pages/Profile";
 import Forum from "./pages/Forum";
 import Events from "./pages/Events";
 import Stories from "./pages/Stories";
@@ -30,6 +32,7 @@ const App = () => (
       <AuthProvider>
         <BrowserRouter>
           <Routes>
+            <Route path="/auth" element={<Auth />} />
             <Route element={<Layout />}>
               <Route path="/" element={<Index />} />
               <Route path="/about" element={<About />} />
@@ -44,6 +47,7 @@ const App = () => (
 
               <Route element={<ProtectedRoute />}>
                 <Route path="/chat" element={<Chat />} />
+                <Route path="/profile" element={<Profile />} />
               </Route>
               
               <Route path="*" element={<NotFound />} />

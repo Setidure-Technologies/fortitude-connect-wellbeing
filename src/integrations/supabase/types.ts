@@ -9,7 +9,573 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      comments: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          is_anonymous: boolean | null
+          parent_id: string | null
+          post_id: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          is_anonymous?: boolean | null
+          parent_id?: string | null
+          post_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          is_anonymous?: boolean | null
+          parent_id?: string | null
+          post_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "forum_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      connection_requests: {
+        Row: {
+          age_range: string | null
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          location: string | null
+          message: string | null
+          requester_id: string | null
+          target_role: Database["public"]["Enums"]["user_role"] | null
+        }
+        Insert: {
+          age_range?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          message?: string | null
+          requester_id?: string | null
+          target_role?: Database["public"]["Enums"]["user_role"] | null
+        }
+        Update: {
+          age_range?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          message?: string | null
+          requester_id?: string | null
+          target_role?: Database["public"]["Enums"]["user_role"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "connection_requests_requester_id_fkey"
+            columns: ["requester_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      connection_responses: {
+        Row: {
+          created_at: string | null
+          id: string
+          message: string | null
+          request_id: string | null
+          responder_id: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          message?: string | null
+          request_id?: string | null
+          responder_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          message?: string | null
+          request_id?: string | null
+          responder_id?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "connection_responses_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "connection_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "connection_responses_responder_id_fkey"
+            columns: ["responder_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_attendees: {
+        Row: {
+          created_at: string | null
+          event_id: string | null
+          id: string
+          status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_id?: string | null
+          id?: string
+          status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_id?: string | null
+          id?: string
+          status?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_attendees_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_attendees_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          end_date: string | null
+          event_type: string | null
+          host_id: string | null
+          id: string
+          is_online: boolean | null
+          location: string | null
+          max_attendees: number | null
+          meeting_link: string | null
+          start_date: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          event_type?: string | null
+          host_id?: string | null
+          id?: string
+          is_online?: boolean | null
+          location?: string | null
+          max_attendees?: number | null
+          meeting_link?: string | null
+          start_date: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          event_type?: string | null
+          host_id?: string | null
+          id?: string
+          is_online?: boolean | null
+          location?: string | null
+          max_attendees?: number | null
+          meeting_link?: string | null
+          start_date?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_host_id_fkey"
+            columns: ["host_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forum_posts: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          is_anonymous: boolean | null
+          post_type: Database["public"]["Enums"]["post_type"] | null
+          title: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          is_anonymous?: boolean | null
+          post_type?: Database["public"]["Enums"]["post_type"] | null
+          title: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          is_anonymous?: boolean | null
+          post_type?: Database["public"]["Enums"]["post_type"] | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      journey_entries: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          entry_date: string | null
+          entry_type: string
+          id: string
+          mood: Database["public"]["Enums"]["mood_level"] | null
+          symptoms: Json | null
+          title: string | null
+          user_id: string | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string | null
+          entry_date?: string | null
+          entry_type: string
+          id?: string
+          mood?: Database["public"]["Enums"]["mood_level"] | null
+          symptoms?: Json | null
+          title?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string | null
+          entry_date?: string | null
+          entry_type?: string
+          id?: string
+          mood?: Database["public"]["Enums"]["mood_level"] | null
+          symptoms?: Json | null
+          title?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "journey_entries_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_reactions: {
+        Row: {
+          created_at: string | null
+          id: string
+          post_id: string | null
+          reaction_type: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          post_id?: string | null
+          reaction_type?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          post_id?: string | null
+          reaction_type?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_reactions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "forum_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_reactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_tags: {
+        Row: {
+          created_at: string | null
+          id: string
+          post_id: string | null
+          tag: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          post_id?: string | null
+          tag: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          post_id?: string | null
+          tag?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_tags_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "forum_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          age_group: string | null
+          bio: string | null
+          cancer_type: Database["public"]["Enums"]["cancer_type"] | null
+          created_at: string | null
+          diagnosis_date: string | null
+          email: string | null
+          full_name: string | null
+          id: string
+          is_anonymous: boolean | null
+          location: string | null
+          profile_image_url: string | null
+          role: Database["public"]["Enums"]["user_role"] | null
+          updated_at: string | null
+          username: string | null
+        }
+        Insert: {
+          age_group?: string | null
+          bio?: string | null
+          cancer_type?: Database["public"]["Enums"]["cancer_type"] | null
+          created_at?: string | null
+          diagnosis_date?: string | null
+          email?: string | null
+          full_name?: string | null
+          id: string
+          is_anonymous?: boolean | null
+          location?: string | null
+          profile_image_url?: string | null
+          role?: Database["public"]["Enums"]["user_role"] | null
+          updated_at?: string | null
+          username?: string | null
+        }
+        Update: {
+          age_group?: string | null
+          bio?: string | null
+          cancer_type?: Database["public"]["Enums"]["cancer_type"] | null
+          created_at?: string | null
+          diagnosis_date?: string | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          is_anonymous?: boolean | null
+          location?: string | null
+          profile_image_url?: string | null
+          role?: Database["public"]["Enums"]["user_role"] | null
+          updated_at?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
+      stories: {
+        Row: {
+          age_group: string | null
+          cancer_type: Database["public"]["Enums"]["cancer_type"] | null
+          content: string
+          created_at: string | null
+          excerpt: string | null
+          id: string
+          is_anonymous: boolean | null
+          is_featured: boolean | null
+          title: string
+          tone: Database["public"]["Enums"]["story_tone"] | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          age_group?: string | null
+          cancer_type?: Database["public"]["Enums"]["cancer_type"] | null
+          content: string
+          created_at?: string | null
+          excerpt?: string | null
+          id?: string
+          is_anonymous?: boolean | null
+          is_featured?: boolean | null
+          title: string
+          tone?: Database["public"]["Enums"]["story_tone"] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          age_group?: string | null
+          cancer_type?: Database["public"]["Enums"]["cancer_type"] | null
+          content?: string
+          created_at?: string | null
+          excerpt?: string | null
+          id?: string
+          is_anonymous?: boolean | null
+          is_featured?: boolean | null
+          title?: string
+          tone?: Database["public"]["Enums"]["story_tone"] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stories_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      story_reactions: {
+        Row: {
+          created_at: string | null
+          id: string
+          reaction_type: string | null
+          story_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          reaction_type?: string | null
+          story_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          reaction_type?: string | null
+          story_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "story_reactions_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "story_reactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_achievements: {
+        Row: {
+          achievement_name: string
+          achievement_type: string
+          description: string | null
+          earned_at: string | null
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          achievement_name: string
+          achievement_type: string
+          description?: string | null
+          earned_at?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          achievement_name?: string
+          achievement_type?: string
+          description?: string | null
+          earned_at?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +584,18 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      cancer_type:
+        | "breast"
+        | "lung"
+        | "colon"
+        | "blood"
+        | "prostate"
+        | "skin"
+        | "other"
+      mood_level: "very_low" | "low" | "neutral" | "good" | "very_good"
+      post_type: "question" | "experience" | "support" | "celebration"
+      story_tone: "hopeful" | "inspirational" | "raw" | "grief"
+      user_role: "patient" | "survivor" | "caregiver" | "volunteer" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -133,6 +710,20 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      cancer_type: [
+        "breast",
+        "lung",
+        "colon",
+        "blood",
+        "prostate",
+        "skin",
+        "other",
+      ],
+      mood_level: ["very_low", "low", "neutral", "good", "very_good"],
+      post_type: ["question", "experience", "support", "celebration"],
+      story_tone: ["hopeful", "inspirational", "raw", "grief"],
+      user_role: ["patient", "survivor", "caregiver", "volunteer", "admin"],
+    },
   },
 } as const
