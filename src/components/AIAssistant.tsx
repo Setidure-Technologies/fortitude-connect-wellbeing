@@ -1,9 +1,11 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Bot, Heart, Calendar, Users, MessageSquare, BookOpen } from "lucide-react";
+import { Bot, Heart, Calendar, Users, MessageSquare, BookOpen, Lock } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { Link } from "react-router-dom";
 
 const aiPrompts = [
   {
@@ -43,15 +45,34 @@ const aiPrompts = [
   }
 ];
 
+const FREE_MESSAGE_LIMIT = 15;
+
 const AIAssistant = () => {
   const [selectedPrompt, setSelectedPrompt] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [freeMessagesUsed, setFreeMessagesUsed] = useState(0);
+  const { isAuthenticated } = useAuth();
+
+  // Load free messages count from localStorage for unauthenticated users
+  useEffect(() => {
+    if (!isAuthenticated) {
+      const stored = localStorage.getItem('forti_free_messages_used');
+      if (stored) {
+        setFreeMessagesUsed(parseInt(stored, 10));
+      }
+    }
+  }, [isAuthenticated]);
 
   const handlePromptSelect = (promptId: string) => {
     setSelectedPrompt(promptId);
   };
 
+  const canUseAI = () => {
+    return isAuthenticated || freeMessagesUsed < FREE_MESSAGE_LIMIT;
+  };
+
   const selectedPromptData = aiPrompts.find(p => p.id === selectedPrompt);
+  const remainingFreeMessages = FREE_MESSAGE_LIMIT - freeMessagesUsed;
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -59,6 +80,11 @@ const AIAssistant = () => {
         <Button size="lg" className="bg-brand-purple hover:bg-brand-purple/90 text-white rounded-full shadow-lg animate-gentle-bounce">
           <Bot className="h-5 w-5 mr-2" />
           Chat with Forti AI
+          {!isAuthenticated && (
+            <span className="ml-2 text-xs bg-white/20 px-2 py-1 rounded-full">
+              {remainingFreeMessages} free
+            </span>
+          )}
         </Button>
       </DialogTrigger>
       
@@ -70,24 +96,59 @@ const AIAssistant = () => {
           </DialogTitle>
         </DialogHeader>
 
+        {/* Free message limit warning */}
+        {!isAuthenticated && freeMessagesUsed >= FREE_MESSAGE_LIMIT && (
+          <Card className="border-orange-200 bg-orange-50">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-orange-800">
+                <Lock className="h-5 w-5" />
+                Free Messages Used
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <p className="text-orange-700 mb-4">
+                You've used all {FREE_MESSAGE_LIMIT} free messages. Sign up to continue with unlimited access!
+              </p>
+              <div className="flex gap-2">
+                <Button asChild>
+                  <Link to="/auth">Sign Up Free</Link>
+                </Button>
+                <Button variant="outline" asChild>
+                  <Link to="/auth">Log In</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {!selectedPrompt ? (
           <div className="space-y-6">
-            <p className="text-slate-600 text-center">
-              I'm here to provide emotional support and connect you with the right resources. 
-              How can I help you today?
-            </p>
+            <div className="text-center">
+              <p className="text-slate-600">
+                I'm here to provide emotional support and connect you with the right resources. 
+                How can I help you today?
+              </p>
+              {!isAuthenticated && (
+                <p className="text-sm text-slate-500 mt-2">
+                  {remainingFreeMessages} free messages remaining
+                </p>
+              )}
+            </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {aiPrompts.map((prompt) => (
                 <Card 
                   key={prompt.id} 
-                  className="cursor-pointer hover:shadow-md transition-shadow duration-200 border-2 hover:border-brand-purple/30"
-                  onClick={() => handlePromptSelect(prompt.id)}
+                  className={`cursor-pointer hover:shadow-md transition-shadow duration-200 border-2 hover:border-brand-purple/30 ${
+                    !canUseAI() ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                  onClick={() => canUseAI() && handlePromptSelect(prompt.id)}
                 >
                   <CardHeader className="pb-2">
                     <CardTitle className="flex items-center gap-2 text-lg">
                       {prompt.icon}
                       {prompt.title}
+                      {!canUseAI() && <Lock className="h-4 w-4 text-slate-400" />}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -129,9 +190,17 @@ const AIAssistant = () => {
                 Ask Something Else
               </Button>
               <Button asChild>
-                <a href="/chat">Continue in Full Chat</a>
+                <Link to="/chat">Continue in Full Chat</Link>
               </Button>
             </div>
+          </div>
+        )}
+
+        {!isAuthenticated && canUseAI() && (
+          <div className="text-center text-sm text-slate-500 border-t pt-4">
+            <Link to="/auth" className="text-brand-blue hover:underline">
+              Create a free account
+            </Link> for unlimited AI chat and to save your conversation history
           </div>
         )}
       </DialogContent>
