@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Send, Plus, MessageSquare } from 'lucide-react';
+import { Send, Plus, MessageSquare, User } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -20,14 +20,21 @@ interface Conversation {
   created_at: string;
 }
 
+const predefinedMessages = [
+  "I just got diagnosed and I'm feeling overwhelmed",
+  "I need support preparing for surgery",
+  "How do I manage treatment side effects?",
+  "I want to connect with other survivors",
+  "Can you help me understand my treatment options?"
+];
+
 const Chat = () => {
   const { isAuthenticated, user } = useAuth();
-  const [messages, setMessages] = useState<Message[]>([
-    { sender: 'bot', text: "Hi there! I'm Forti, your AI support companion. How are you feeling today?", timestamp: new Date() }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
 
@@ -36,6 +43,35 @@ const Chat = () => {
   };
 
   useEffect(scrollToBottom, [messages]);
+
+  // Fetch user profile for personalized greeting
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', user.id)
+          .single();
+        
+        const name = profile?.full_name || user.email?.split('@')[0] || 'Friend';
+        setUserName(name);
+        
+        // Set personalized welcome message
+        if (messages.length === 0) {
+          setMessages([{
+            sender: 'bot',
+            text: `Hi ${name}! Welcome to Fortitude Network. We're here to support you through your journey. How can I help you today?`,
+            timestamp: new Date()
+          }]);
+        }
+      }
+    };
+
+    if (user && messages.length === 0) {
+      fetchUserProfile();
+    }
+  }, [user, messages.length]);
 
   // Fetch conversations
   const { data: conversations } = useQuery({
@@ -53,6 +89,31 @@ const Chat = () => {
     },
     enabled: !!user,
   });
+
+  // Load conversation messages
+  const loadConversationMessages = async (conversationId: string) => {
+    if (!user) return;
+    
+    const { data, error } = await supabase
+      .from('chat_messages')
+      .select('*')
+      .eq('conversation_id', conversationId)
+      .order('created_at', { ascending: true });
+    
+    if (error) {
+      console.error('Error loading messages:', error);
+      return;
+    }
+    
+    const loadedMessages = data.map(msg => ({
+      text: msg.message,
+      sender: msg.sender as 'user' | 'bot',
+      timestamp: new Date(msg.created_at)
+    }));
+    
+    setMessages(loadedMessages);
+    setCurrentConversationId(conversationId);
+  };
 
   // Create new conversation
   const createConversationMutation = useMutation({
@@ -72,7 +133,12 @@ const Chat = () => {
     },
     onSuccess: (data) => {
       setCurrentConversationId(data.id);
-      setMessages([{ sender: 'bot', text: "Hi there! I'm Forti, your AI support companion. How are you feeling today?", timestamp: new Date() }]);
+      const welcomeMessage = {
+        sender: 'bot' as const,
+        text: `Hi ${userName}! Welcome to Fortitude Network. We're here to support you through your journey. How can I help you today?`,
+        timestamp: new Date()
+      };
+      setMessages([welcomeMessage]);
       queryClient.invalidateQueries({ queryKey: ['conversations'] });
     },
   });
@@ -95,35 +161,45 @@ const Chat = () => {
     },
   });
 
-  const handleSend = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (input.trim() === '' || isLoading) return;
+  const handleSend = async (messageText?: string) => {
+    const textToSend = messageText || input;
+    if (textToSend.trim() === '' || isLoading) return;
 
     // Create conversation if none exists
     if (!currentConversationId && user) {
       await createConversationMutation.mutateAsync();
     }
 
-    const userMessage: Message = { text: input, sender: 'user', timestamp: new Date() };
+    const userMessage: Message = { text: textToSend, sender: 'user', timestamp: new Date() };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
 
     // Save user message
     if (currentConversationId) {
-      saveMessageMutation.mutate({ message: input, sender: 'user' });
+      saveMessageMutation.mutate({ message: textToSend, sender: 'user' });
     }
 
     try {
-      // Send request to n8n webhook with the actual message
+      // Get the session token for authorization
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session?.access_token) {
+        throw new Error('No valid session found');
+      }
+
+      // Send request to n8n webhook with proper authorization
       const response = await fetch('https://n8n.erudites.in/webhook-test/forti', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+          'X-User-ID': user?.id || '',
         },
         body: JSON.stringify({
-          message: input,
-          user_id: user?.id
+          message: textToSend,
+          user_id: user?.id,
+          session_token: session.access_token
         }),
       });
 
@@ -141,7 +217,7 @@ const Chat = () => {
           saveMessageMutation.mutate({ message: botResponse.text, sender: 'bot' });
         }
       } else {
-        throw new Error('Failed to get response');
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
     } catch (error) {
       console.error('Error sending message:', error);
@@ -160,11 +236,15 @@ const Chat = () => {
     createConversationMutation.mutate();
   };
 
+  const handlePredefinedMessage = (message: string) => {
+    handleSend(message);
+  };
+
   return (
     <div className="flex h-[calc(100vh-112px)] container py-4 gap-4">
       {/* Chat History Sidebar */}
       <div className="w-64 bg-white rounded-lg shadow-sm p-4 flex flex-col">
-        <Button onClick={startNewChat} className="mb-4 w-full">
+        <Button onClick={startNewChat} className="mb-4 w-full" disabled={createConversationMutation.isPending}>
           <Plus className="h-4 w-4 mr-2" />
           New Chat
         </Button>
@@ -175,7 +255,7 @@ const Chat = () => {
             {conversations?.map((conversation) => (
               <button
                 key={conversation.id}
-                onClick={() => setCurrentConversationId(conversation.id)}
+                onClick={() => loadConversationMessages(conversation.id)}
                 className={`w-full text-left p-2 rounded text-sm hover:bg-slate-50 transition-colors ${
                   currentConversationId === conversation.id ? 'bg-brand-blue text-white' : 'text-slate-700'
                 }`}
@@ -202,6 +282,27 @@ const Chat = () => {
           </p>
         </div>
 
+        {/* Predefined Messages */}
+        {messages.length <= 1 && (
+          <div className="mb-4">
+            <p className="text-sm text-slate-600 mb-2">Quick start questions:</p>
+            <div className="flex flex-wrap gap-2">
+              {predefinedMessages.map((message, index) => (
+                <Button
+                  key={index}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePredefinedMessage(message)}
+                  className="text-xs"
+                  disabled={isLoading}
+                >
+                  {message}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="flex-grow bg-slate-50 rounded-lg p-4 overflow-y-auto flex flex-col space-y-4">
           {messages.map((msg, index) => (
             <div
@@ -209,6 +310,7 @@ const Chat = () => {
               className={`flex items-end gap-2 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               {msg.sender === 'bot' && <div className="w-8 h-8 rounded-full bg-brand-teal flex-shrink-0" />}
+              {msg.sender === 'user' && <User className="w-8 h-8 rounded-full bg-brand-blue text-white p-1 flex-shrink-0" />}
               <div
                 className={`max-w-xs md:max-w-md lg:max-w-lg rounded-2xl p-3 text-white ${
                   msg.sender === 'user' ? 'bg-brand-blue rounded-br-none' : 'bg-brand-teal rounded-bl-none'
@@ -233,7 +335,7 @@ const Chat = () => {
           <div ref={messagesEndRef} />
         </div>
 
-        <form onSubmit={handleSend} className="mt-4 flex gap-2">
+        <form onSubmit={(e) => { e.preventDefault(); handleSend(); }} className="mt-4 flex gap-2">
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -244,7 +346,7 @@ const Chat = () => {
           <Button 
             type="submit" 
             size="icon" 
-            disabled={isLoading}
+            disabled={isLoading || input.trim() === ''}
           >
             <Send className="h-4 w-4" />
           </Button>
