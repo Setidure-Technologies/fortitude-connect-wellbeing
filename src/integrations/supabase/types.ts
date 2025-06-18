@@ -9,6 +9,65 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      chat_conversations: {
+        Row: {
+          created_at: string
+          id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      chat_messages: {
+        Row: {
+          conversation_id: string | null
+          created_at: string
+          id: string
+          message: string
+          sender: string
+          user_id: string
+        }
+        Insert: {
+          conversation_id?: string | null
+          created_at?: string
+          id?: string
+          message: string
+          sender: string
+          user_id: string
+        }
+        Update: {
+          conversation_id?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          sender?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "chat_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comments: {
         Row: {
           content: string
@@ -63,6 +122,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      community_stats: {
+        Row: {
+          id: string
+          total_donations: number | null
+          total_events: number | null
+          total_members: number | null
+          total_stories: number | null
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          total_donations?: number | null
+          total_events?: number | null
+          total_members?: number | null
+          total_stories?: number | null
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          total_donations?: number | null
+          total_events?: number | null
+          total_members?: number | null
+          total_stories?: number | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       connection_requests: {
         Row: {
@@ -149,6 +235,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      donations: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          donor_email: string | null
+          donor_name: string | null
+          id: string
+          is_anonymous: boolean | null
+          message: string | null
+          payment_method: string
+          status: string
+          transaction_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          donor_email?: string | null
+          donor_name?: string | null
+          id?: string
+          is_anonymous?: boolean | null
+          message?: string | null
+          payment_method?: string
+          status?: string
+          transaction_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          donor_email?: string | null
+          donor_name?: string | null
+          id?: string
+          is_anonymous?: boolean | null
+          message?: string | null
+          payment_method?: string
+          status?: string
+          transaction_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       event_attendees: {
         Row: {

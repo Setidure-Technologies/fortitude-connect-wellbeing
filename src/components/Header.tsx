@@ -14,14 +14,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const navLinks = [
+const publicNavLinks = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About" },
   { to: "/offerings", label: "Offerings" },
+];
+
+const privateNavLinks = [
   { to: "/community", label: "Community" },
   { to: "/forum", label: "Forum" },
   { to: "/events", label: "Events" },
   { to: "/stories", label: "Stories" },
+  { to: "/chat", label: "Forti AI" },
+];
+
+const documentationLinks = [
+  { to: "/docs/platform", label: "Platform Guide" },
+  { to: "/docs/donate", label: "How to Donate" },
+  { to: "/docs/rules", label: "Community Rules" },
 ];
 
 const NavItems = () => {
@@ -29,7 +39,7 @@ const NavItems = () => {
   
   return (
     <>
-      {navLinks.map((link) => (
+      {publicNavLinks.map((link) => (
         <NavLink
           key={link.to}
           to={link.to}
@@ -43,19 +53,34 @@ const NavItems = () => {
         </NavLink>
       ))}
       
-      {/* Show Chat link only to authenticated users */}
-      {isAuthenticated && (
+      {/* Show private links only to authenticated users */}
+      {isAuthenticated && privateNavLinks.map((link) => (
         <NavLink
-          to="/chat"
+          key={link.to}
+          to={link.to}
           className={({ isActive }) =>
             `text-sm font-medium transition-colors hover:text-brand-blue ${
               isActive ? "text-brand-blue" : "text-slate-700"
             }`
           }
         >
-          Forti AI
+          {link.label}
         </NavLink>
-      )}
+      ))}
+
+      {/* Documentation dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger className="text-sm font-medium transition-colors hover:text-brand-blue text-slate-700">
+          Documentation
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          {documentationLinks.map((link) => (
+            <DropdownMenuItem key={link.to} asChild>
+              <Link to={link.to}>{link.label}</Link>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
       
       {isAuthenticated ? (
         <DropdownMenu>
