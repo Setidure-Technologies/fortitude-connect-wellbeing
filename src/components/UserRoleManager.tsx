@@ -31,15 +31,25 @@ const UserRoleManager = () => {
     enabled: user?.user_metadata?.role === 'admin',
   });
 
-  // Update user role mutation
+  // Update user role mutation using the RPC function
   const updateRoleMutation = useMutation({
     mutationFn: async ({ userId, newRole }: { userId: string; newRole: string }) => {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ role: newRole })
-        .eq('id', userId);
+      const { data, error } = await supabase.rpc('assign_user_role', {
+        target_user_id: userId,
+        new_role: newRole
+      });
       
       if (error) throw error;
+      
+      // Log the admin action
+      await supabase.from('admin_actions').insert({
+        admin_id: user?.id,
+        action_type: 'role_assignment',
+        target_user_id: userId,
+        details: { new_role: newRole }
+      });
+      
+      return data;
     },
     onSuccess: () => {
       toast({
@@ -50,10 +60,10 @@ const UserRoleManager = () => {
       setSelectedUserId('');
       setSelectedRole('');
     },
-    onError: () => {
+    onError: (error: any) => {
       toast({
         title: "Error",
-        description: "Failed to update user role.",
+        description: error.message || "Failed to update user role.",
         variant: "destructive",
       });
     },
@@ -129,6 +139,9 @@ const UserRoleManager = () => {
                 <SelectItem value="admin">Admin</SelectItem>
                 <SelectItem value="ngo">NGO/Organization</SelectItem>
                 <SelectItem value="patient">Patient/User</SelectItem>
+                <SelectItem value="survivor">Survivor</SelectItem>
+                <SelectItem value="caregiver">Caregiver</SelectItem>
+                <SelectItem value="volunteer">Volunteer</SelectItem>
               </SelectContent>
             </Select>
 

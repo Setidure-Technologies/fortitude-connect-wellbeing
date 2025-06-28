@@ -20,6 +20,10 @@ import NotFound from "./pages/NotFound";
 import AdminDashboard from "./pages/AdminDashboard";
 import NGODashboard from "./pages/NGODashboard";
 import UserProfile from "./pages/UserProfile";
+import AdminSetup from "./pages/AdminSetup";
+import PlatformGuide from "./pages/PlatformGuide";
+import DonationGuide from "./pages/DonationGuide";
+import CommunityRules from "./pages/CommunityRules";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
@@ -35,6 +39,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/auth" element={<Auth />} />
+            <Route path="/admin-setup" element={<AdminSetup />} />
             <Route element={<Layout />}>
               <Route path="/" element={<Index />} />
               <Route path="/about" element={<About />} />
@@ -46,6 +51,9 @@ const App = () => (
               <Route path="/donate" element={<Donate />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
+              <Route path="/docs/platform" element={<PlatformGuide />} />
+              <Route path="/docs/donate" element={<DonationGuide />} />
+              <Route path="/docs/rules" element={<CommunityRules />} />
 
               <Route element={<ProtectedRoute />}>
                 <Route path="/chat" element={<Chat />} />
