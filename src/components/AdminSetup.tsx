@@ -14,12 +14,26 @@ const AdminSetup = () => {
 
   const promoteToAdminMutation = useMutation({
     mutationFn: async (userEmail: string) => {
-      const { data, error } = await supabase.rpc('promote_user_to_admin', {
-        user_email: userEmail
-      });
+      // First, try to find the user by email
+      const { data: userData, error: userError } = await supabase
+        .from('profiles')
+        .select('id, email, role')
+        .eq('email', userEmail)
+        .single();
       
-      if (error) throw error;
-      return data;
+      if (userError || !userData) {
+        throw new Error('User not found. Make sure the user has an account.');
+      }
+      
+      // Update the user's role to admin
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ role: 'admin' })
+        .eq('email', userEmail);
+      
+      if (updateError) throw updateError;
+      
+      return userData;
     },
     onSuccess: () => {
       toast({
@@ -85,6 +99,12 @@ const AdminSetup = () => {
             <li>3. After promotion, they'll have full admin access</li>
             <li>4. Refresh the page to see changes</li>
           </ol>
+        </div>
+        
+        <div className="mt-4 p-3 bg-yellow-50 rounded-lg">
+          <p className="text-sm text-yellow-800">
+            <strong>Note:</strong> This is a temporary admin setup. For production, you should set up proper database functions.
+          </p>
         </div>
       </CardContent>
     </Card>

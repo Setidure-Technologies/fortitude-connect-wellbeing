@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -28,7 +27,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       async (event, session) => {
         console.log('Auth state changed:', event, session?.user?.id);
         setSession(session);
-        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          // Fetch user profile to get role information
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+          
+          // Update user metadata with profile role
+          const updatedUser = {
+            ...session.user,
+            user_metadata: {
+              ...session.user.user_metadata,
+              role: profile?.role || 'patient'
+            }
+          };
+          setUser(updatedUser);
+        } else {
+          setUser(null);
+        }
+        
         setLoading(false);
 
         if (event === 'SIGNED_IN' && session?.user) {
@@ -41,9 +61,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
 
     // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
-      setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        // Fetch user profile to get role information
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+        
+        // Update user metadata with profile role
+        const updatedUser = {
+          ...session.user,
+          user_metadata: {
+            ...session.user.user_metadata,
+            role: profile?.role || 'patient'
+          }
+        };
+        setUser(updatedUser);
+      } else {
+        setUser(null);
+      }
+      
       setLoading(false);
     });
 

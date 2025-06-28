@@ -31,25 +31,15 @@ const UserRoleManager = () => {
     enabled: user?.user_metadata?.role === 'admin',
   });
 
-  // Update user role mutation using the RPC function
+  // Update user role mutation - simplified version
   const updateRoleMutation = useMutation({
     mutationFn: async ({ userId, newRole }: { userId: string; newRole: string }) => {
-      const { data, error } = await supabase.rpc('assign_user_role', {
-        target_user_id: userId,
-        new_role: newRole
-      });
+      const { error } = await supabase
+        .from('profiles')
+        .update({ role: newRole })
+        .eq('id', userId);
       
       if (error) throw error;
-      
-      // Log the admin action
-      await supabase.from('admin_actions').insert({
-        admin_id: user?.id,
-        action_type: 'role_assignment',
-        target_user_id: userId,
-        details: { new_role: newRole }
-      });
-      
-      return data;
     },
     onSuccess: () => {
       toast({
