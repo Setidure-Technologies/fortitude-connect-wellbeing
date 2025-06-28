@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -188,18 +187,32 @@ const Chat = () => {
         throw new Error('No valid session found');
       }
 
-      // Send request to n8n webhook with proper authorization
+      // Get user profile for headers
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user?.id)
+        .single();
+
+      // Send request to n8n webhook with user profile data in headers
       const response = await fetch('https://n8n.erudites.in/webhook-test/forti', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session.access_token}`,
           'X-User-ID': user?.id || '',
+          'X-User-Name': profile?.full_name || '',
+          'X-User-Role': profile?.role || 'patient',
+          'X-User-Cancer-Type': profile?.cancer_type || '',
+          'X-User-Age-Group': profile?.age_group || '',
+          'X-User-Location': profile?.location || '',
+          'X-User-Diagnosis-Date': profile?.diagnosis_date || '',
         },
         body: JSON.stringify({
           message: textToSend,
           user_id: user?.id,
-          session_token: session.access_token
+          session_token: session.access_token,
+          user_profile: profile
         }),
       });
 

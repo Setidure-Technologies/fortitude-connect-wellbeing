@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -18,6 +17,9 @@ import Forum from "./pages/Forum";
 import Events from "./pages/Events";
 import Stories from "./pages/Stories";
 import NotFound from "./pages/NotFound";
+import AdminDashboard from "./pages/AdminDashboard";
+import NGODashboard from "./pages/NGODashboard";
+import UserProfile from "./pages/UserProfile";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
@@ -48,6 +50,9 @@ const App = () => (
               <Route element={<ProtectedRoute />}>
                 <Route path="/chat" element={<Chat />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/ngo-dashboard" element={<NGODashboard />} />
+                <Route path="/user/:userId" element={<UserProfile />} />
               </Route>
               
               <Route path="*" element={<NotFound />} />

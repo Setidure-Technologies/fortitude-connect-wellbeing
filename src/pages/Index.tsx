@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart, Users, MessageSquare } from "lucide-react";
@@ -6,6 +5,7 @@ import { Link } from "react-router-dom";
 import PromptButtons from "@/components/PromptButtons";
 import ImpactStats from "@/components/ImpactStats";
 import AIAssistant from "@/components/AIAssistant";
+import CollaboratorsSection from "@/components/CollaboratorsSection";
 
 const offerings = [
   {
@@ -40,7 +40,7 @@ const Index = () => {
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
               <Button asChild size="lg" className="rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300">
-                <Link to="/signup">Join Our Community</Link>
+                <Link to="/auth">Join Our Community</Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="rounded-full">
                 <Link to="/donate">Support Others</Link>
@@ -89,6 +89,9 @@ const Index = () => {
 
       {/* Impact Stats */}
       <ImpactStats />
+
+      {/* Collaborators Section */}
+      <CollaboratorsSection />
       
       {/* About Section */}
        <section className="bg-gradient-to-r from-brand-skyblue/20 to-brand-green/20 py-20">
@@ -127,7 +130,7 @@ const Index = () => {
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button asChild size="lg" className="rounded-full shadow-lg">
-              <Link to="/signup">Start Your Journey</Link>
+              <Link to="/auth">Start Your Journey</Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="rounded-full">
               <Link to="/community">Explore Community</Link>
