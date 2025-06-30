@@ -29,7 +29,12 @@ const Index = () => {
                 <Button size="lg" className="bg-white text-brand-blue hover:bg-gray-100" asChild>
                   <Link to="/auth">Join Our Community</Link>
                 </Button>
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-brand-blue" asChild>
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="border-2 border-white bg-white/10 text-white hover:bg-white hover:text-brand-blue backdrop-blur-sm font-medium" 
+                  asChild
+                >
                   <Link to="/about">Learn More</Link>
                 </Button>
               </>
@@ -38,7 +43,12 @@ const Index = () => {
                 <Button size="lg" className="bg-white text-brand-blue hover:bg-gray-100" asChild>
                   <Link to="/chat">Chat with Forti</Link>
                 </Button>
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-brand-blue" asChild>
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="border-2 border-white bg-white/10 text-white hover:bg-white hover:text-brand-blue backdrop-blur-sm font-medium" 
+                  asChild
+                >
                   <Link to="/community">Explore Community</Link>
                 </Button>
               </>

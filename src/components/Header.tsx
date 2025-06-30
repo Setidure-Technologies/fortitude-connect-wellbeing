@@ -1,10 +1,16 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Heart, Menu, X, Shield, Building2 } from 'lucide-react';
+import { Heart, Menu, X, Shield, Building2, ChevronDown, FileText } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useState } from 'react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const Header = () => {
   const { isAuthenticated, user, logout } = useAuth();
@@ -39,6 +45,32 @@ const Header = () => {
             >
               About
             </Link>
+
+            {/* Documentation Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center space-x-1 text-gray-700 hover:text-brand-blue transition-colors">
+                <FileText className="h-4 w-4" />
+                <span>Documentation</span>
+                <ChevronDown className="h-4 w-4" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-white border shadow-lg">
+                <DropdownMenuItem asChild>
+                  <Link to="/docs/platform" className="w-full">
+                    Platform Guide
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/docs/donate" className="w-full">
+                    Donation Guide
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/docs/rules" className="w-full">
+                    Community Rules
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             
             {isAuthenticated && (
               <>
@@ -157,6 +189,34 @@ const Header = () => {
               >
                 About
               </Link>
+
+              {/* Mobile Documentation Links */}
+              <div className="px-4 py-2">
+                <p className="text-gray-500 text-sm font-medium mb-2">Documentation</p>
+                <div className="ml-4 space-y-1">
+                  <Link 
+                    to="/docs/platform" 
+                    className="block px-2 py-1 text-gray-700 hover:text-brand-blue hover:bg-gray-50 rounded text-sm"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Platform Guide
+                  </Link>
+                  <Link 
+                    to="/docs/donate" 
+                    className="block px-2 py-1 text-gray-700 hover:text-brand-blue hover:bg-gray-50 rounded text-sm"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Donation Guide
+                  </Link>
+                  <Link 
+                    to="/docs/rules" 
+                    className="block px-2 py-1 text-gray-700 hover:text-brand-blue hover:bg-gray-50 rounded text-sm"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Community Rules
+                  </Link>
+                </div>
+              </div>
               
               {isAuthenticated && (
                 <>
