@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,12 +9,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { Shield, Users, Heart } from 'lucide-react';
 
+type UserRole = 'admin' | 'ngo' | 'patient' | 'survivor' | 'caregiver' | 'volunteer';
+
 const UserRoleManager = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [selectedUserId, setSelectedUserId] = useState<string>('');
-  const [selectedRole, setSelectedRole] = useState<string>('');
+  const [selectedRole, setSelectedRole] = useState<UserRole | ''>('');
 
   // Fetch all users (admin only)
   const { data: users } = useQuery({
@@ -34,7 +35,7 @@ const UserRoleManager = () => {
 
   // Update user role mutation
   const updateRoleMutation = useMutation({
-    mutationFn: async ({ userId, newRole }: { userId: string; newRole: string }) => {
+    mutationFn: async ({ userId, newRole }: { userId: string; newRole: UserRole }) => {
       const { error } = await supabase
         .from('profiles')
         .update({ role: newRole })
@@ -62,7 +63,7 @@ const UserRoleManager = () => {
 
   const handleRoleUpdate = () => {
     if (selectedUserId && selectedRole) {
-      updateRoleMutation.mutate({ userId: selectedUserId, newRole: selectedRole });
+      updateRoleMutation.mutate({ userId: selectedUserId, newRole: selectedRole as UserRole });
     }
   };
 
@@ -122,7 +123,7 @@ const UserRoleManager = () => {
               </SelectContent>
             </Select>
 
-            <Select value={selectedRole} onValueChange={setSelectedRole}>
+            <Select value={selectedRole} onValueChange={(value) => setSelectedRole(value as UserRole)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select role" />
               </SelectTrigger>
