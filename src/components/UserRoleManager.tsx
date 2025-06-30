@@ -66,7 +66,7 @@ const UserRoleManager = () => {
     }
   };
 
-  const getRoleIcon = (role: string) => {
+  const getRoleIcon = (role: string | null) => {
     switch (role) {
       case 'admin':
         return <Shield className="h-4 w-4" />;
@@ -77,7 +77,7 @@ const UserRoleManager = () => {
     }
   };
 
-  const getRoleColor = (role: string) => {
+  const getRoleColor = (role: string | null) => {
     switch (role) {
       case 'admin':
         return 'bg-red-100 text-red-800';
@@ -158,9 +158,9 @@ const UserRoleManager = () => {
                   <p className="font-medium">{user.full_name || 'No name'}</p>
                   <p className="text-sm text-slate-600">{user.email}</p>
                 </div>
-                <Badge className={getRoleColor(user.role || 'patient')}>
+                <Badge className={getRoleColor(user.role)}>
                   <span className="flex items-center gap-1">
-                    {getRoleIcon(user.role || 'patient')}
+                    {getRoleIcon(user.role)}
                     {user.role || 'patient'}
                   </span>
                 </Badge>
