@@ -1,7 +1,7 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Send, Plus, MessageSquare, User } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -180,39 +180,31 @@ const Chat = () => {
     }
 
     try {
-      // Get the session token for authorization
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session?.access_token) {
-        throw new Error('No valid session found');
-      }
-
-      // Get user profile for headers
+      // Get user profile for the request
       const { data: profile } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user?.id)
         .single();
 
-      // Send request to n8n webhook with user profile data in headers
+      // Send request to n8n webhook with proper JSON body format
       const response = await fetch('https://n8n.erudites.in/webhook-test/forti', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-          'X-User-ID': user?.id || '',
-          'X-User-Name': profile?.full_name || '',
-          'X-User-Role': profile?.role || 'patient',
-          'X-User-Cancer-Type': profile?.cancer_type || '',
-          'X-User-Age-Group': profile?.age_group || '',
-          'X-User-Location': profile?.location || '',
-          'X-User-Diagnosis-Date': profile?.diagnosis_date || '',
         },
         body: JSON.stringify({
+          profile: {
+            userId: user?.id || '',
+            name: profile?.full_name || '',
+            email: profile?.email || user?.email || '',
+            role: profile?.role || 'patient',
+            cancerType: profile?.cancer_type || '',
+            ageGroup: profile?.age_group || '',
+            location: profile?.location || '',
+            diagnosisDate: profile?.diagnosis_date || '',
+          },
           message: textToSend,
-          user_id: user?.id,
-          session_token: session.access_token,
-          user_profile: profile
         }),
       });
 

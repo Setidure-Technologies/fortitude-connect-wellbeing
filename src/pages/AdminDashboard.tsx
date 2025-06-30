@@ -1,10 +1,11 @@
+
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Shield, Users, Calendar, Settings } from 'lucide-react';
+import { Shield, Users, Calendar, BarChart3 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import UserRoleManager from '@/components/UserRoleManager';
-import EventPublisher from '@/components/EventPublisher';
+import AdminSetup from '@/components/AdminSetup';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -38,15 +39,15 @@ const AdminDashboard = () => {
           </TabsTrigger>
           <TabsTrigger value="events" className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
-            Event Publishing
+            Event Management
           </TabsTrigger>
           <TabsTrigger value="analytics" className="flex items-center gap-2">
-            <Settings className="h-4 w-4" />
+            <BarChart3 className="h-4 w-4" />
             Analytics
           </TabsTrigger>
-          <TabsTrigger value="settings" className="flex items-center gap-2">
+          <TabsTrigger value="setup" className="flex items-center gap-2">
             <Shield className="h-4 w-4" />
-            Settings
+            Admin Setup
           </TabsTrigger>
         </TabsList>
 
@@ -55,27 +56,43 @@ const AdminDashboard = () => {
         </TabsContent>
 
         <TabsContent value="events">
-          <EventPublisher />
+          <Card>
+            <CardHeader>
+              <CardTitle>Event Management</CardTitle>
+              <CardDescription>
+                Manage platform events and registrations
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-slate-600">Event management interface coming in next phase...</p>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="analytics">
           <Card>
             <CardHeader>
               <CardTitle>Platform Analytics</CardTitle>
+              <CardDescription>
+                View platform usage statistics and metrics
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-slate-600">Analytics dashboard coming soon...</p>
+              <p className="text-slate-600">Analytics dashboard coming in next phase...</p>
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="settings">
+        <TabsContent value="setup">
           <Card>
             <CardHeader>
-              <CardTitle>Platform Settings</CardTitle>
+              <CardTitle>Admin Setup</CardTitle>
+              <CardDescription>
+                Add new admin users and configure platform settings
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-slate-600">Platform settings coming soon...</p>
+              <AdminSetup />
             </CardContent>
           </Card>
         </TabsContent>
