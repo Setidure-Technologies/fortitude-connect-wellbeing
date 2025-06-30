@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -31,7 +32,7 @@ const UserRoleManager = () => {
     enabled: user?.user_metadata?.role === 'admin',
   });
 
-  // Update user role mutation - simplified version
+  // Update user role mutation
   const updateRoleMutation = useMutation({
     mutationFn: async ({ userId, newRole }: { userId: string; newRole: string }) => {
       const { error } = await supabase

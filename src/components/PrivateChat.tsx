@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -45,12 +46,12 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
   const { data: messages } = useQuery({
     queryKey: ['private-messages', user?.id, recipientId],
     queryFn: async () => {
-      // This would need a proper private messages table
-      // For now, using a conceptual structure
+      if (!user?.id) return [];
+      
       const { data, error } = await supabase
         .from('private_messages')
         .select('*')
-        .or(`and(sender_id.eq.${user?.id},receiver_id.eq.${recipientId}),and(sender_id.eq.${recipientId},receiver_id.eq.${user?.id})`)
+        .or(`and(sender_id.eq.${user.id},receiver_id.eq.${recipientId}),and(sender_id.eq.${recipientId},receiver_id.eq.${user.id})`)
         .order('created_at', { ascending: true });
       
       if (error) {
@@ -66,10 +67,12 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
   // Send message mutation
   const sendMessageMutation = useMutation({
     mutationFn: async (content: string) => {
+      if (!user?.id) throw new Error('User not authenticated');
+      
       const { data, error } = await supabase
         .from('private_messages')
         .insert({
-          sender_id: user?.id,
+          sender_id: user.id,
           receiver_id: recipientId,
           content,
           read: false,

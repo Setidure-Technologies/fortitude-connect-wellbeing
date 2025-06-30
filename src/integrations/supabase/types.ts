@@ -529,6 +529,48 @@ export type Database = {
           },
         ]
       }
+      private_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          read: boolean
+          receiver_id: string
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          read?: boolean
+          receiver_id: string
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          read?: boolean
+          receiver_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "private_messages_receiver_id_fkey"
+            columns: ["receiver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           age_group: string | null
@@ -707,6 +749,48 @@ export type Database = {
           },
         ]
       }
+      user_connections: {
+        Row: {
+          created_at: string
+          id: string
+          receiver_id: string
+          requester_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          receiver_id: string
+          requester_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          receiver_id?: string
+          requester_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_connections_receiver_id_fkey"
+            columns: ["receiver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_connections_requester_id_fkey"
+            columns: ["requester_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -726,7 +810,13 @@ export type Database = {
       mood_level: "very_low" | "low" | "neutral" | "good" | "very_good"
       post_type: "question" | "experience" | "support" | "celebration"
       story_tone: "hopeful" | "inspirational" | "raw" | "grief"
-      user_role: "patient" | "survivor" | "caregiver" | "volunteer" | "admin"
+      user_role:
+        | "patient"
+        | "survivor"
+        | "caregiver"
+        | "volunteer"
+        | "admin"
+        | "ngo"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -854,7 +944,14 @@ export const Constants = {
       mood_level: ["very_low", "low", "neutral", "good", "very_good"],
       post_type: ["question", "experience", "support", "celebration"],
       story_tone: ["hopeful", "inspirational", "raw", "grief"],
-      user_role: ["patient", "survivor", "caregiver", "volunteer", "admin"],
+      user_role: [
+        "patient",
+        "survivor",
+        "caregiver",
+        "volunteer",
+        "admin",
+        "ngo",
+      ],
     },
   },
 } as const

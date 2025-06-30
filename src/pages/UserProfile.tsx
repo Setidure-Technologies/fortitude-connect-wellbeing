@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -33,15 +34,17 @@ const UserProfile = () => {
     enabled: !!userId,
   });
 
-  // Send connection request
+  // Send connection request using the new user_connections table
   const sendConnectionMutation = useMutation({
-    mutationFn: async (message: string) => {
+    mutationFn: async () => {
+      if (!currentUser?.id || !userId) throw new Error('Missing user data');
+      
       const { data, error } = await supabase
-        .from('connection_requests')
+        .from('user_connections')
         .insert({
-          requester_id: currentUser?.id,
-          target_role: profile?.role || 'patient',
-          message,
+          requester_id: currentUser.id,
+          receiver_id: userId,
+          status: 'pending',
         })
         .select()
         .single();
@@ -55,18 +58,17 @@ const UserProfile = () => {
         description: "Your connection request has been sent successfully.",
       });
     },
-    onError: () => {
+    onError: (error: any) => {
       toast({
         title: "Error",
-        description: "Failed to send connection request.",
+        description: error.message || "Failed to send connection request.",
         variant: "destructive",
       });
     },
   });
 
   const handleConnect = () => {
-    const message = `Hi ${profile?.full_name}, I'd like to connect with you on Fortitude Network.`;
-    sendConnectionMutation.mutate(message);
+    sendConnectionMutation.mutate();
   };
 
   const getRoleColor = (role: string) => {
