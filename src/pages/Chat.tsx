@@ -160,8 +160,9 @@ const Chat = () => {
     },
   });
 
-  const handleSend = async (messageText?: string) => {
-    const textToSend = messageText || input;
+  const handleSend = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const textToSend = input;
     if (textToSend.trim() === '' || isLoading) return;
 
     // Create conversation if none exists
@@ -257,7 +258,12 @@ const Chat = () => {
   };
 
   const handlePredefinedMessage = (message: string) => {
-    handleSend(message);
+    setInput(message);
+    // Trigger form submission programmatically
+    const form = document.querySelector('form');
+    if (form) {
+      form.requestSubmit();
+    }
   };
 
   return (
@@ -355,7 +361,7 @@ const Chat = () => {
           <div ref={messagesEndRef} />
         </div>
 
-        <form onSubmit={async (e) => { e.preventDefault(); await handleSend(); }} className="mt-4 flex gap-2">
+        <form onSubmit={handleSend} className="mt-4 flex gap-2">
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
