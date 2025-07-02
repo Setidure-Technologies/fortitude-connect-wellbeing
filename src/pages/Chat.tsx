@@ -187,7 +187,7 @@ const Chat = () => {
         .eq('id', user?.id)
         .single();
 
-      // Send request to n8n webhook with proper JSON body format
+      // Send request to n8n webhook
       const response = await fetch('https://n8n.erudites.in/webhook-test/forti', {
         method: 'POST',
         headers: {
@@ -209,9 +209,24 @@ const Chat = () => {
       });
 
       if (response.ok) {
-        const data = await response.text();
+        // Try to parse as JSON first, fallback to text
+        let responseData;
+        const contentType = response.headers.get('content-type');
+        
+        if (contentType && contentType.includes('application/json')) {
+          responseData = await response.json();
+          // If the response is an object, try to extract the message
+          if (typeof responseData === 'object' && responseData.message) {
+            responseData = responseData.message;
+          } else if (typeof responseData === 'object') {
+            responseData = JSON.stringify(responseData);
+          }
+        } else {
+          responseData = await response.text();
+        }
+        
         const botResponse: Message = { 
-          text: data || "Thank you for sharing. I'm here to listen and support you through this journey.", 
+          text: responseData || "Thank you for sharing. I'm here to listen and support you through this journey.", 
           sender: 'bot', 
           timestamp: new Date() 
         };
@@ -340,7 +355,7 @@ const Chat = () => {
           <div ref={messagesEndRef} />
         </div>
 
-        <form onSubmit={(e) => { e.preventDefault(); handleSend(); }} className="mt-4 flex gap-2">
+        <form onSubmit={async (e) => { e.preventDefault(); await handleSend(); }} className="mt-4 flex gap-2">
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
