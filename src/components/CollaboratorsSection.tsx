@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Handshake } from 'lucide-react';
@@ -21,7 +22,7 @@ const CollaboratorsSection = () => {
             <CardHeader>
               <div className="mx-auto mb-4 h-24 w-48 bg-white rounded-lg shadow-sm flex items-center justify-center border">
                 <img 
-                  src="/placeholder.svg" 
+                  src="/fore_logo.png" 
                   alt="FORE School of Management Logo" 
                   className="h-16 w-auto object-contain"
                 />
@@ -40,7 +41,7 @@ const CollaboratorsSection = () => {
             <CardHeader>
               <div className="mx-auto mb-4 h-24 w-48 bg-white rounded-lg shadow-sm flex items-center justify-center border">
                 <img 
-                  src="/placeholder.svg" 
+                  src="/setidure_logo.svg" 
                   alt="Setidure Technologies Logo" 
                   className="h-16 w-auto object-contain"
                 />

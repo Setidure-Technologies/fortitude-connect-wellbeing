@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Heart, Menu, X, Shield, Building2, ChevronDown, FileText } from 'lucide-react';
+import { Menu, X, Shield, Building2, ChevronDown, FileText } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useState } from 'react';
@@ -31,7 +31,11 @@ const Header = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 text-brand-blue font-bold text-xl">
-            <Heart className="h-6 w-6" />
+            <img 
+              src="/Fortitude_logo.png" 
+              alt="Fortitude Network Logo" 
+              className="h-8 w-8 object-contain"
+            />
             <span>Fortitude Network</span>
           </Link>
 
@@ -71,6 +75,32 @@ const Header = () => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            {/* Community Features - Now visible to all users */}
+            <Link 
+              to="/community" 
+              className={`text-gray-700 hover:text-brand-blue transition-colors ${
+                isActivePath('/community') ? 'text-brand-blue font-medium' : ''
+              }`}
+            >
+              Community
+            </Link>
+            <Link 
+              to="/events" 
+              className={`text-gray-700 hover:text-brand-blue transition-colors ${
+                isActivePath('/events') ? 'text-brand-blue font-medium' : ''
+              }`}
+            >
+              Events
+            </Link>
+            <Link 
+              to="/stories" 
+              className={`text-gray-700 hover:text-brand-blue transition-colors ${
+                isActivePath('/stories') ? 'text-brand-blue font-medium' : ''
+              }`}
+            >
+              Stories
+            </Link>
             
             {isAuthenticated && (
               <>
@@ -81,30 +111,6 @@ const Header = () => {
                   }`}
                 >
                   Chat
-                </Link>
-                <Link 
-                  to="/community" 
-                  className={`text-gray-700 hover:text-brand-blue transition-colors ${
-                    isActivePath('/community') ? 'text-brand-blue font-medium' : ''
-                  }`}
-                >
-                  Community
-                </Link>
-                <Link 
-                  to="/events" 
-                  className={`text-gray-700 hover:text-brand-blue transition-colors ${
-                    isActivePath('/events') ? 'text-brand-blue font-medium' : ''
-                  }`}
-                >
-                  Events
-                </Link>
-                <Link 
-                  to="/stories" 
-                  className={`text-gray-700 hover:text-brand-blue transition-colors ${
-                    isActivePath('/stories') ? 'text-brand-blue font-medium' : ''
-                  }`}
-                >
-                  Stories
                 </Link>
 
                 {/* Admin Dashboard Link */}
@@ -159,10 +165,10 @@ const Header = () => {
             ) : (
               <div className="flex items-center space-x-2">
                 <Link to="/auth">
-                  <Button variant="outline">Sign In</Button>
+                  <Button variant="outline">Login</Button>
                 </Link>
                 <Link to="/auth">
-                  <Button>Join Community</Button>
+                  <Button>Sign Up</Button>
                 </Link>
               </div>
             )}
@@ -217,6 +223,29 @@ const Header = () => {
                   </Link>
                 </div>
               </div>
+
+              {/* Mobile Community Features */}
+              <Link 
+                to="/community" 
+                className="px-4 py-2 text-gray-700 hover:text-brand-blue hover:bg-gray-50 rounded"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Community
+              </Link>
+              <Link 
+                to="/events" 
+                className="px-4 py-2 text-gray-700 hover:text-brand-blue hover:bg-gray-50 rounded"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Events
+              </Link>
+              <Link 
+                to="/stories" 
+                className="px-4 py-2 text-gray-700 hover:text-brand-blue hover:bg-gray-50 rounded"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Stories
+              </Link>
               
               {isAuthenticated && (
                 <>
@@ -226,27 +255,6 @@ const Header = () => {
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Chat
-                  </Link>
-                  <Link 
-                    to="/community" 
-                    className="px-4 py-2 text-gray-700 hover:text-brand-blue hover:bg-gray-50 rounded"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Community
-                  </Link>
-                  <Link 
-                    to="/events" 
-                    className="px-4 py-2 text-gray-700 hover:text-brand-blue hover:bg-gray-50 rounded"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Events
-                  </Link>
-                  <Link 
-                    to="/stories" 
-                    className="px-4 py-2 text-gray-700 hover:text-brand-blue hover:bg-gray-50 rounded"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Stories
                   </Link>
 
                   {/* Admin Dashboard Link */}
@@ -300,10 +308,10 @@ const Header = () => {
                 ) : (
                   <div className="space-y-2">
                     <Link to="/auth" className="block">
-                      <Button variant="outline" className="w-full">Sign In</Button>
+                      <Button variant="outline" className="w-full">Login</Button>
                     </Link>
                     <Link to="/auth" className="block">
-                      <Button className="w-full">Join Community</Button>
+                      <Button className="w-full">Sign Up</Button>
                     </Link>
                   </div>
                 )}

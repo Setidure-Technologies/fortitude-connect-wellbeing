@@ -78,7 +78,11 @@ const DonationGuide = () => {
                   </div>
                 </div>
                 <div>
-                  <img src="/placeholder.svg" alt="Donation process" className="w-full h-48 object-cover rounded-lg bg-slate-100" />
+                  <img 
+                    src="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=800&q=80" 
+                    alt="Donation process - secure online giving" 
+                    className="w-full h-48 object-cover rounded-lg" 
+                  />
                 </div>
               </div>
 
