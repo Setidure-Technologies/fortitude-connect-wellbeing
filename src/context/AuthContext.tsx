@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { cleanupAuthState, getSpecificErrorMessage } from '@/lib/auth-cleanup';
 
 interface AuthContextType {
   user: User | null;
@@ -19,39 +20,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loginAttempts, setLoginAttempts] = useState(0);
   const { toast } = useToast();
 
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         console.log('Auth state changed:', event, session?.user?.id);
         setSession(session);
-        
-        if (session?.user) {
-          // Fetch user profile to get role information
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-          
-          // Update user metadata with profile role
-          const updatedUser = {
-            ...session.user,
-            user_metadata: {
-              ...session.user.user_metadata,
-              role: profile?.role || 'patient'
-            }
-          };
-          setUser(updatedUser);
-        } else {
-          setUser(null);
-        }
-        
+        setUser(session?.user || null);
         setLoading(false);
 
+        // Reset login attempts on successful login
         if (event === 'SIGNED_IN' && session?.user) {
+          setLoginAttempts(0);
+          
+          // Defer profile fetching to prevent deadlocks
+          setTimeout(() => {
+            fetchUserProfile(session.user.id);
+          }, 0);
+          
           toast({
             title: "Welcome!",
             description: "You have been signed in successfully.",
@@ -61,28 +50,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
 
     // Check for existing session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      setUser(session?.user || null);
       
       if (session?.user) {
-        // Fetch user profile to get role information
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-        
-        // Update user metadata with profile role
-        const updatedUser = {
-          ...session.user,
-          user_metadata: {
-            ...session.user.user_metadata,
-            role: profile?.role || 'patient'
-          }
-        };
-        setUser(updatedUser);
-      } else {
-        setUser(null);
+        // Defer profile fetching to prevent deadlocks
+        setTimeout(() => {
+          fetchUserProfile(session.user.id);
+        }, 0);
       }
       
       setLoading(false);
@@ -91,9 +67,52 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => subscription.unsubscribe();
   }, [toast]);
 
+  // Separate function to fetch user profile - prevents auth deadlocks
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      
+      setUser(current => current ? {
+        ...current,
+        user_metadata: {
+          ...current.user_metadata,
+          role: profile?.role || 'patient'
+        }
+      } : null);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    }
+  };
+
   const login = async (email: string, password: string) => {
+    // Prevent concurrent login attempts
+    if (loading) {
+      return { error: 'Login already in progress. Please wait.' };
+    }
+
+    // Rate limiting check
+    if (loginAttempts >= 3) {
+      return { error: 'Too many failed attempts. Please wait 5 minutes before trying again.' };
+    }
+
     try {
       setLoading(true);
+      
+      // Clean up any existing auth state before new login
+      cleanupAuthState();
+      
+      // Attempt global sign out first
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (signOutError) {
+        // Continue even if sign out fails
+        console.log('Sign out failed, continuing with login');
+      }
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -101,13 +120,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (error) {
         console.error('Login error:', error);
-        return { error: error.message };
+        setLoginAttempts(prev => prev + 1);
+        
+        // Reset attempts after 5 minutes
+        setTimeout(() => {
+          setLoginAttempts(0);
+        }, 5 * 60 * 1000);
+        
+        return { error: getSpecificErrorMessage(error) };
       }
 
+      setLoginAttempts(0);
       return {};
     } catch (error) {
       console.error('Login error:', error);
-      return { error: 'An unexpected error occurred' };
+      setLoginAttempts(prev => prev + 1);
+      return { error: getSpecificErrorMessage(error) };
     } finally {
       setLoading(false);
     }
@@ -116,6 +144,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signUp = async (email: string, password: string, fullName: string) => {
     try {
       setLoading(true);
+      
+      // Clean up any existing auth state before signup
+      cleanupAuthState();
+      
       const redirectUrl = `${window.location.origin}/`;
       
       const { data, error } = await supabase.auth.signUp({
@@ -131,7 +163,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (error) {
         console.error('Signup error:', error);
-        return { error: error.message };
+        return { error: getSpecificErrorMessage(error) };
       }
 
       if (data.user && !data.user.email_confirmed_at) {
@@ -144,7 +176,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return {};
     } catch (error) {
       console.error('Signup error:', error);
-      return { error: 'An unexpected error occurred' };
+      return { error: getSpecificErrorMessage(error) };
     } finally {
       setLoading(false);
     }
@@ -153,7 +185,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = async () => {
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signOut();
+      
+      // Clean up auth state first
+      cleanupAuthState();
+      
+      // Attempt global sign out
+      const { error } = await supabase.auth.signOut({ scope: 'global' });
       if (error) {
         console.error('Logout error:', error);
         toast({
@@ -166,6 +203,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           title: "Signed out",
           description: "You have been signed out successfully.",
         });
+        
+        // Force page reload for clean state
+        setTimeout(() => {
+          window.location.href = '/auth';
+        }, 500);
       }
     } catch (error) {
       console.error('Logout error:', error);
