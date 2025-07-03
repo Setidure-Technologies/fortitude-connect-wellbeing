@@ -21,17 +21,23 @@ const Donate = () => {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  // Fetch community stats
+  // Fetch community stats and real donation totals
   const { data: stats } = useQuery({
     queryKey: ['community-stats'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('community_stats')
-        .select('*')
-        .single();
+      const [statsResponse, donationResponse] = await Promise.all([
+        supabase.from('community_stats').select('*').single(),
+        supabase.from('donations').select('amount').eq('status', 'completed')
+      ]);
       
-      if (error) throw error;
-      return data;
+      if (statsResponse.error) throw statsResponse.error;
+      
+      const totalDonations = donationResponse.data?.reduce((sum, donation) => sum + donation.amount, 0) || 0;
+      
+      return {
+        ...statsResponse.data,
+        total_donations: totalDonations
+      };
     },
   });
 

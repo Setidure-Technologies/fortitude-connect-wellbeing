@@ -18,9 +18,12 @@ const Index = () => {
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center space-x-3 mb-6">
             <img 
-              src="/Fortitude_logo.png" 
+              src="/FORTI_LOGO.png" 
               alt="Fortitude Network Logo" 
               className="h-12 w-12 object-contain"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
             />
             <h1 className="text-4xl md:text-6xl font-bold">Fortitude Network</h1>
           </div>

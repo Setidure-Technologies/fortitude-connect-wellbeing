@@ -32,9 +32,12 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 text-brand-blue font-bold text-xl">
             <img 
-              src="/Fortitude_logo.png" 
+              src="/FORTI_LOGO.png" 
               alt="Fortitude Network Logo" 
               className="h-8 w-8 object-contain"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
             />
             <span>Fortitude Network</span>
           </Link>

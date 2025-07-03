@@ -12,7 +12,7 @@ import { Heart, Mail, Lock, User } from 'lucide-react';
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [retryCount, setRetryCount] = useState(0);
+  
   const { login, signUp, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -48,25 +48,11 @@ const Auth = () => {
     const { error } = await login(loginForm.email, loginForm.password);
     
     if (error) {
-      setRetryCount(prev => prev + 1);
-      
       toast({
         title: "Login Failed",
         description: error,
         variant: "destructive",
-        action: error.includes('network') || error.includes('fetch') ? (
-          <button 
-            onClick={() => handleLogin(e)} 
-            className="text-sm underline"
-            disabled={isLoading}
-          >
-            Retry
-          </button>
-        ) : undefined,
       });
-    } else {
-      setRetryCount(0);
-      // Navigation is handled by the useEffect hook
     }
 
     setIsLoading(false);
@@ -173,7 +159,7 @@ const Auth = () => {
                   </div>
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? 'Signing in...' : retryCount > 0 ? `Sign In (Attempt ${retryCount + 1})` : 'Sign In'}
+                  {isLoading ? 'Signing in...' : 'Sign In'}
                 </Button>
               </form>
             </TabsContent>

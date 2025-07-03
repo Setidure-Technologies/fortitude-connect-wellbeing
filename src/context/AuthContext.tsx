@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const [loginAttempts, setLoginAttempts] = useState(0);
+  
   const { toast } = useToast();
 
   useEffect(() => {
@@ -32,10 +32,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(session?.user || null);
         setLoading(false);
 
-        // Reset login attempts on successful login
         if (event === 'SIGNED_IN' && session?.user) {
-          setLoginAttempts(0);
-          
           // Defer profile fetching to prevent deadlocks
           setTimeout(() => {
             fetchUserProfile(session.user.id);
@@ -89,14 +86,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const login = async (email: string, password: string) => {
-    // Prevent concurrent login attempts
     if (loading) {
       return { error: 'Login already in progress. Please wait.' };
-    }
-
-    // Rate limiting check
-    if (loginAttempts >= 3) {
-      return { error: 'Too many failed attempts. Please wait 5 minutes before trying again.' };
     }
 
     try {
@@ -109,7 +100,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         await supabase.auth.signOut({ scope: 'global' });
       } catch (signOutError) {
-        // Continue even if sign out fails
         console.log('Sign out failed, continuing with login');
       }
 
@@ -120,21 +110,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (error) {
         console.error('Login error:', error);
-        setLoginAttempts(prev => prev + 1);
-        
-        // Reset attempts after 5 minutes
-        setTimeout(() => {
-          setLoginAttempts(0);
-        }, 5 * 60 * 1000);
-        
         return { error: getSpecificErrorMessage(error) };
       }
 
-      setLoginAttempts(0);
       return {};
     } catch (error) {
       console.error('Login error:', error);
-      setLoginAttempts(prev => prev + 1);
       return { error: getSpecificErrorMessage(error) };
     } finally {
       setLoading(false);
