@@ -6,6 +6,9 @@ import { Send, Plus, MessageSquare, User } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { VoiceRecorder } from '@/components/chat/VoiceRecorder';
+import { FileUploader } from '@/components/chat/FileUploader';
+import { FileInfo } from '@/hooks/useFileUpload';
 
 interface Message {
   text: string;
@@ -34,6 +37,7 @@ const Chat = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const [userName, setUserName] = useState<string>('');
+  const [attachedFiles, setAttachedFiles] = useState<FileInfo[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
 
@@ -201,6 +205,19 @@ const Chat = () => {
       formData.append('location', profile?.location || '');
       formData.append('diagnosisDate', profile?.diagnosis_date || '');
       formData.append('message', textToSend);
+      
+      // Add attached files data
+      if (attachedFiles.length > 0) {
+        formData.append('hasFiles', 'true');
+        formData.append('filesCount', attachedFiles.length.toString());
+        attachedFiles.forEach((file, index) => {
+          formData.append(`file_${index}_name`, file.name);
+          formData.append(`file_${index}_type`, file.type);
+          formData.append(`file_${index}_size`, file.size.toString());
+          formData.append(`file_${index}_url`, file.url);
+          formData.append(`file_${index}_base64`, file.base64);
+        });
+      }
 
       const response = await fetch('https://n8n.erudites.in/webhook/forti', {
         method: 'POST',
@@ -214,19 +231,36 @@ const Chat = () => {
         const contentType = response.headers.get('content-type');
         
         if (contentType && contentType.includes('application/json')) {
-          responseData = await response.json();
-          // If the response is an object, try to extract the message
-          if (typeof responseData === 'object' && responseData.message) {
-            responseData = responseData.message;
-          } else if (typeof responseData === 'object') {
-            responseData = JSON.stringify(responseData);
+          const jsonResponse = await response.json();
+          
+          // Handle the nested response structure from n8n
+          if (Array.isArray(jsonResponse) && jsonResponse[0]?.response?.body?.[0]?.output) {
+            responseData = jsonResponse[0].response.body[0].output;
+          } else if (jsonResponse.response?.body?.[0]?.output) {
+            responseData = jsonResponse.response.body[0].output;
+          } else if (jsonResponse.message) {
+            responseData = jsonResponse.message;
+          } else if (typeof jsonResponse === 'string') {
+            responseData = jsonResponse;
+          } else {
+            responseData = JSON.stringify(jsonResponse);
           }
         } else {
           responseData = await response.text();
         }
         
+        // Clean up the response text - handle line breaks properly
+        let cleanedText = responseData || "Thank you for sharing. I'm here to listen and support you through this journey.";
+        
+        // Convert \n\n to proper line breaks and clean up any JSON artifacts
+        cleanedText = cleanedText
+          .replace(/\\n\\n/g, '\n\n')
+          .replace(/\\n/g, '\n')
+          .replace(/\s*{\s*}\s*/g, '')
+          .trim();
+        
         const botResponse: Message = { 
-          text: responseData || "Thank you for sharing. I'm here to listen and support you through this journey.", 
+          text: cleanedText, 
           sender: 'bot', 
           timestamp: new Date() 
         };
@@ -236,6 +270,9 @@ const Chat = () => {
         if (currentConversationId) {
           saveMessageMutation.mutate({ message: botResponse.text, sender: 'bot' });
         }
+        
+        // Clear attached files after successful send
+        setAttachedFiles([]);
       } else {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
@@ -263,6 +300,14 @@ const Chat = () => {
     if (form) {
       form.requestSubmit();
     }
+  };
+
+  const handleVoiceTranscription = (text: string) => {
+    setInput(text);
+  };
+
+  const handleFilesUploaded = (files: FileInfo[]) => {
+    setAttachedFiles(prev => [...prev, ...files]);
   };
 
   return (
@@ -341,7 +386,9 @@ const Chat = () => {
                   msg.sender === 'user' ? 'bg-brand-blue rounded-br-none' : 'bg-brand-teal rounded-bl-none'
                 }`}
               >
-                {msg.text}
+                <div className="whitespace-pre-wrap">
+                  {msg.text}
+                </div>
               </div>
             </div>
           ))}
@@ -360,22 +407,76 @@ const Chat = () => {
           <div ref={messagesEndRef} />
         </div>
 
-        <form onSubmit={handleSend} className="mt-4 flex gap-2">
-          <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Type your message..."
-            className="flex-grow"
-            disabled={isLoading}
-          />
-          <Button 
-            type="submit" 
-            size="icon" 
-            disabled={isLoading || input.trim() === ''}
-          >
-            <Send className="h-4 w-4" />
-          </Button>
-        </form>
+        <div className="mt-4 space-y-2">
+          {/* File attachments preview */}
+          {attachedFiles.length > 0 && (
+            <div className="flex flex-wrap gap-2 p-2 bg-muted rounded-lg">
+              {attachedFiles.map((file) => (
+                <div
+                  key={file.id}
+                  className="flex items-center gap-2 px-2 py-1 bg-background border rounded text-xs"
+                >
+                  {file.type.startsWith('image/') ? (
+                    <img
+                      src={file.url}
+                      alt={file.name}
+                      className="w-6 h-6 object-cover rounded"
+                    />
+                  ) : (
+                    <div className="w-6 h-6 bg-primary/10 rounded flex items-center justify-center">
+                      📄
+                    </div>
+                  )}
+                  <span className="truncate max-w-24" title={file.name}>
+                    {file.name}
+                  </span>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => setAttachedFiles(prev => prev.filter(f => f.id !== file.id))}
+                    className="h-4 w-4 p-0 hover:bg-destructive hover:text-destructive-foreground"
+                  >
+                    ×
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <form onSubmit={handleSend} className="flex gap-2">
+            <div className="relative flex-1">
+              <Input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Type your message..."
+                className="flex-grow pr-12"
+                disabled={isLoading}
+              />
+            </div>
+            
+            <div className="flex gap-1">
+              <div className="relative">
+                <FileUploader
+                  onFilesUploaded={handleFilesUploaded}
+                  disabled={isLoading}
+                />
+              </div>
+              
+              <VoiceRecorder
+                onTranscription={handleVoiceTranscription}
+                disabled={isLoading}
+              />
+              
+              <Button 
+                type="submit" 
+                size="icon" 
+                disabled={isLoading || (input.trim() === '' && attachedFiles.length === 0)}
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
