@@ -188,25 +188,24 @@ const Chat = () => {
         .eq('id', user?.id)
         .single();
 
-      // Send request to n8n webhook
+      // Send request to n8n webhook using FormData to avoid CORS preflight
+      const formData = new FormData();
+      
+      // Add profile data as individual form fields
+      formData.append('userId', user?.id || '');
+      formData.append('name', profile?.full_name || '');
+      formData.append('email', profile?.email || user?.email || '');
+      formData.append('role', profile?.role || 'patient');
+      formData.append('cancerType', profile?.cancer_type || '');
+      formData.append('ageGroup', profile?.age_group || '');
+      formData.append('location', profile?.location || '');
+      formData.append('diagnosisDate', profile?.diagnosis_date || '');
+      formData.append('message', textToSend);
+
       const response = await fetch('https://n8n.erudites.in/webhook-test/forti', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          profile: {
-            userId: user?.id || '',
-            name: profile?.full_name || '',
-            email: profile?.email || user?.email || '',
-            role: profile?.role || 'patient',
-            cancerType: profile?.cancer_type || '',
-            ageGroup: profile?.age_group || '',
-            location: profile?.location || '',
-            diagnosisDate: profile?.diagnosis_date || '',
-          },
-          message: textToSend,
-        }),
+        mode: 'cors',
+        body: formData,
       });
 
       if (response.ok) {
