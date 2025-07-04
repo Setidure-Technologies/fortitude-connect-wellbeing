@@ -3,17 +3,29 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 const ImpactStats = () => {
-  // Fetch community stats from database
+  // Fetch real-time community stats from actual tables
   const { data: stats, isLoading } = useQuery({
-    queryKey: ['community-stats'],
+    queryKey: ['dynamic-community-stats'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('community_stats')
-        .select('*')
-        .single();
-      
-      if (error) throw error;
-      return data;
+      // Fetch all stats in parallel for better performance
+      const [membersResult, storiesResult, eventsResult, donationsResult] = await Promise.all([
+        supabase.from('profiles').select('id', { count: 'exact', head: true }),
+        supabase.from('stories').select('id', { count: 'exact', head: true }),
+        supabase.from('events').select('id', { count: 'exact', head: true }),
+        supabase.from('donations').select('amount').eq('status', 'completed')
+      ]);
+
+      // Calculate total donations
+      const totalDonations = donationsResult.data?.reduce((sum, donation) => {
+        return sum + (Number(donation.amount) || 0);
+      }, 0) || 0;
+
+      return {
+        total_members: membersResult.count || 0,
+        total_stories: storiesResult.count || 0,
+        total_events: eventsResult.count || 0,
+        total_donations: totalDonations
+      };
     },
   });
 
