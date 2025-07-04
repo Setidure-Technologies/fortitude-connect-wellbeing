@@ -202,7 +202,7 @@ const Chat = () => {
       formData.append('diagnosisDate', profile?.diagnosis_date || '');
       formData.append('message', textToSend);
 
-      const response = await fetch('https://n8n.erudites.in/webhook-test/forti', {
+      const response = await fetch('https://n8n.erudites.in/webhook/forti', {
         method: 'POST',
         mode: 'cors',
         body: formData,
