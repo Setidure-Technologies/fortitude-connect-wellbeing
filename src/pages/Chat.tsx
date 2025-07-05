@@ -233,11 +233,20 @@ const Chat = () => {
         if (contentType && contentType.includes('application/json')) {
           const jsonResponse = await response.json();
           
-          // Handle the nested response structure from n8n
-          if (Array.isArray(jsonResponse) && jsonResponse[0]?.response?.body?.[0]?.output) {
-            responseData = jsonResponse[0].response.body[0].output;
+          // Handle different response structures from n8n
+          if (Array.isArray(jsonResponse) && jsonResponse.length > 0) {
+            // Handle array response like [{"output": "..."}]
+            if (jsonResponse[0]?.output) {
+              responseData = jsonResponse[0].output;
+            } else if (jsonResponse[0]?.response?.body?.[0]?.output) {
+              responseData = jsonResponse[0].response.body[0].output;
+            } else {
+              responseData = JSON.stringify(jsonResponse[0]);
+            }
           } else if (jsonResponse.response?.body?.[0]?.output) {
             responseData = jsonResponse.response.body[0].output;
+          } else if (jsonResponse.output) {
+            responseData = jsonResponse.output;
           } else if (jsonResponse.message) {
             responseData = jsonResponse.message;
           } else if (typeof jsonResponse === 'string') {
