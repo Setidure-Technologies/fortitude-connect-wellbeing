@@ -25,6 +25,7 @@ import AdminSetup from "./pages/AdminSetup";
 import PlatformGuide from "./pages/PlatformGuide";
 import DonationGuide from "./pages/DonationGuide";
 import CommunityRules from "./pages/CommunityRules";
+import SupportGroups from "./pages/SupportGroups";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
@@ -49,6 +50,7 @@ const App = () => (
               {/* Community features - now accessible to all users */}
               <Route path="/community" element={<Community />} />
               <Route path="/forum" element={<Forum />} />
+              <Route path="/support-groups" element={<SupportGroups />} />
               <Route path="/events" element={<Events />} />
               <Route path="/stories" element={<Stories />} />
               

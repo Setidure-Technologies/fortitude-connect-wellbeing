@@ -32,7 +32,7 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 text-brand-blue font-bold text-xl">
             <img 
-              src="/FORTI_LOGO.png" 
+              src="/Fortitude_logo_new.png" 
               alt="Fortitude Network Logo" 
               className="h-8 w-8 object-contain"
               onError={(e) => {
@@ -45,6 +45,15 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
             <Link 
+              to="/" 
+              className={`text-gray-700 hover:text-brand-blue transition-colors ${
+                isActivePath('/') ? 'text-brand-blue font-medium' : ''
+              }`}
+            >
+              Home
+            </Link>
+
+            <Link 
               to="/about" 
               className={`text-gray-700 hover:text-brand-blue transition-colors ${
                 isActivePath('/about') ? 'text-brand-blue font-medium' : ''
@@ -52,6 +61,36 @@ const Header = () => {
             >
               About
             </Link>
+
+            {/* Community Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center space-x-1 text-gray-700 hover:text-brand-blue transition-colors">
+                <span>Community</span>
+                <ChevronDown className="h-4 w-4" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-white border shadow-lg">
+                <DropdownMenuItem asChild>
+                  <Link to="/forum" className="w-full">
+                    Discussion Forum
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/support-groups" className="w-full">
+                    Support Groups
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/events" className="w-full">
+                    Events
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/stories" className="w-full">
+                    Stories
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             {/* Documentation Dropdown */}
             <DropdownMenu>
@@ -78,32 +117,6 @@ const Header = () => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-
-            {/* Community Features - Now visible to all users */}
-            <Link 
-              to="/community" 
-              className={`text-gray-700 hover:text-brand-blue transition-colors ${
-                isActivePath('/community') ? 'text-brand-blue font-medium' : ''
-              }`}
-            >
-              Community
-            </Link>
-            <Link 
-              to="/events" 
-              className={`text-gray-700 hover:text-brand-blue transition-colors ${
-                isActivePath('/events') ? 'text-brand-blue font-medium' : ''
-              }`}
-            >
-              Events
-            </Link>
-            <Link 
-              to="/stories" 
-              className={`text-gray-700 hover:text-brand-blue transition-colors ${
-                isActivePath('/stories') ? 'text-brand-blue font-medium' : ''
-              }`}
-            >
-              Stories
-            </Link>
             
             {isAuthenticated && (
               <>
@@ -112,8 +125,9 @@ const Header = () => {
                   className={`text-gray-700 hover:text-brand-blue transition-colors ${
                     isActivePath('/chat') ? 'text-brand-blue font-medium' : ''
                   }`}
+                  title="Chat with Forti - Your 24/7 AI companion trained specifically for cancer support. Get personalized guidance, emotional support, and answers to your questions in complete confidentiality."
                 >
-                  Chat
+                  Chat with Forti
                 </Link>
 
                 {/* Admin Dashboard Link */}
@@ -192,12 +206,55 @@ const Header = () => {
           <div className="md:hidden py-4 border-t">
             <nav className="flex flex-col space-y-2">
               <Link 
+                to="/" 
+                className="px-4 py-2 text-gray-700 hover:text-brand-blue hover:bg-gray-50 rounded"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Home
+              </Link>
+
+              <Link 
                 to="/about" 
                 className="px-4 py-2 text-gray-700 hover:text-brand-blue hover:bg-gray-50 rounded"
                 onClick={() => setIsMenuOpen(false)}
               >
                 About
               </Link>
+
+              {/* Mobile Community Links */}
+              <div className="px-4 py-2">
+                <p className="text-gray-500 text-sm font-medium mb-2">Community</p>
+                <div className="ml-4 space-y-1">
+                  <Link 
+                    to="/forum" 
+                    className="block px-2 py-1 text-gray-700 hover:text-brand-blue hover:bg-gray-50 rounded text-sm"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Discussion Forum
+                  </Link>
+                  <Link 
+                    to="/support-groups" 
+                    className="block px-2 py-1 text-gray-700 hover:text-brand-blue hover:bg-gray-50 rounded text-sm"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Support Groups
+                  </Link>
+                  <Link 
+                    to="/events" 
+                    className="block px-2 py-1 text-gray-700 hover:text-brand-blue hover:bg-gray-50 rounded text-sm"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Events
+                  </Link>
+                  <Link 
+                    to="/stories" 
+                    className="block px-2 py-1 text-gray-700 hover:text-brand-blue hover:bg-gray-50 rounded text-sm"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Stories
+                  </Link>
+                </div>
+              </div>
 
               {/* Mobile Documentation Links */}
               <div className="px-4 py-2">
@@ -226,29 +283,6 @@ const Header = () => {
                   </Link>
                 </div>
               </div>
-
-              {/* Mobile Community Features */}
-              <Link 
-                to="/community" 
-                className="px-4 py-2 text-gray-700 hover:text-brand-blue hover:bg-gray-50 rounded"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Community
-              </Link>
-              <Link 
-                to="/events" 
-                className="px-4 py-2 text-gray-700 hover:text-brand-blue hover:bg-gray-50 rounded"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Events
-              </Link>
-              <Link 
-                to="/stories" 
-                className="px-4 py-2 text-gray-700 hover:text-brand-blue hover:bg-gray-50 rounded"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Stories
-              </Link>
               
               {isAuthenticated && (
                 <>
@@ -257,7 +291,7 @@ const Header = () => {
                     className="px-4 py-2 text-gray-700 hover:text-brand-blue hover:bg-gray-50 rounded"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Chat
+                    Chat with Forti
                   </Link>
 
                   {/* Admin Dashboard Link */}
