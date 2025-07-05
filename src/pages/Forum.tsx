@@ -114,6 +114,37 @@ const Forum = () => {
     },
   });
 
+  // Delete post mutation (admin only)
+  const deletePostMutation = useMutation({
+    mutationFn: async (postId: string) => {
+      if (!isAuthenticated || !user) throw new Error('Authentication required');
+      
+      const userRole = user.user_metadata?.role;
+      if (userRole !== 'admin') throw new Error('Admin access required');
+
+      const { error } = await supabase
+        .from('forum_posts')
+        .delete()
+        .eq('id', postId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Post Deleted",
+        description: "The post has been removed.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['forum-posts'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Delete Failed",
+        description: error.message || "Failed to delete post.",
+        variant: "destructive",
+      });
+    },
+  });
+
   // Toggle reaction mutation
   const toggleReactionMutation = useMutation({
     mutationFn: async (postId: string) => {
@@ -192,6 +223,20 @@ const Forum = () => {
     }
     toggleReactionMutation.mutate(postId);
   };
+
+  const handleDeletePost = (postId: string) => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Sign In Required",
+        description: "Please sign in first.",
+        variant: "destructive",
+      });
+      return;
+    }
+    deletePostMutation.mutate(postId);
+  };
+
+  const isAdmin = user?.user_metadata?.role === 'admin';
 
   // Filter posts based on search and role
   const filteredPosts = (posts || []).filter(post => {
@@ -353,6 +398,17 @@ const Forum = () => {
                       </div>
                     </div>
                   </div>
+                  {isAdmin && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeletePost(post.id)}
+                      disabled={deletePostMutation.isPending}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      Delete
+                    </Button>
+                  )}
                 </div>
               </CardHeader>
               <CardContent>

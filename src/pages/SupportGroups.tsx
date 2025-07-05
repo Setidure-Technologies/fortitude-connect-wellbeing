@@ -140,6 +140,45 @@ const SupportGroups = () => {
     }
   };
 
+  const deleteGroup = async (groupId: string) => {
+    if (!user) return;
+    
+    const userRole = user.user_metadata?.role;
+    if (userRole !== 'admin') {
+      toast({
+        title: "Access Denied",
+        description: "Only admins can delete support groups.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('support_groups')
+        .delete()
+        .eq('id', groupId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Support group deleted successfully!",
+      });
+
+      fetchGroups();
+    } catch (error) {
+      console.error('Error deleting group:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete support group.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const isAdmin = user?.user_metadata?.role === 'admin';
+
   const filteredGroups = groups.filter(group =>
     group.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     group.description?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -275,15 +314,27 @@ const SupportGroups = () => {
                       <Users className="h-4 w-4" />
                       <span>{group.member_count || 0} members</span>
                     </div>
-                    <Button
-                      size="sm"
-                      onClick={() => joinGroup(group.id)}
-                      disabled={!user}
-                      className="flex items-center gap-1"
-                    >
-                      <MessageCircle className="h-4 w-4" />
-                      Join
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        onClick={() => joinGroup(group.id)}
+                        disabled={!user}
+                        className="flex items-center gap-1"
+                      >
+                        <MessageCircle className="h-4 w-4" />
+                        Join
+                      </Button>
+                      {isAdmin && (
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => deleteGroup(group.id)}
+                          className="flex items-center gap-1"
+                        >
+                          Delete
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>

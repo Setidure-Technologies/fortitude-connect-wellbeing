@@ -451,6 +451,12 @@ const Chat = () => {
                 placeholder="Type your message..."
                 className="flex-grow pr-12"
                 disabled={isLoading}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSend(e);
+                  }
+                }}
               />
             </div>
             
