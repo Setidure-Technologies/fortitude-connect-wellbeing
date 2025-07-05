@@ -1,5 +1,9 @@
 
 import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,53 +13,194 @@ import { Heart, MessageSquare, User, Calendar, Filter, Plus } from "lucide-react
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-const forumPosts = [
-  {
-    id: 1,
-    title: "How do you deal with chemo brain?",
-    content: "I'm halfway through my treatment and struggling with memory and concentration. Any tips?",
-    author: "Sarah M.",
-    role: "Patient",
-    tags: ["chemo", "side-effects", "memory"],
-    reactions: { hearts: 12, comments: 8 },
-    timeAgo: "2 hours ago",
-    anonymous: false
-  },
-  {
-    id: 2,
-    title: "Celebrating 2 years cancer-free!",
-    content: "Just wanted to share some hope with everyone here. The journey was tough but here I am, stronger than ever.",
-    author: "Anonymous",
-    role: "Survivor", 
-    tags: ["celebration", "hope", "survivor"],
-    reactions: { hearts: 45, comments: 23 },
-    timeAgo: "5 hours ago",
-    anonymous: true
-  },
-  {
-    id: 3,
-    title: "Supporting my teenage daughter",
-    content: "My 16-year-old was just diagnosed. How do I help her cope with the emotional side while staying strong myself?",
-    author: "Michelle K.",
-    role: "Caregiver",
-    tags: ["teenager", "parent", "emotional-support"],
-    reactions: { hearts: 18, comments: 15 },
-    timeAgo: "1 day ago",
-    anonymous: false
-  }
-];
+import { Checkbox } from "@/components/ui/checkbox";
 
 const Forum = () => {
+  const { user, isAuthenticated } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [filterRole, setFilterRole] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
+  const [postData, setPostData] = useState({
+    title: '',
+    content: '',
+    tags: '',
+    postType: 'question' as const,
+    isAnonymous: false
+  });
 
-  const filteredPosts = forumPosts.filter(post => {
-    const matchesRole = filterRole === "all" || post.role.toLowerCase() === filterRole;
+  // Fetch forum posts with related data
+  const { data: posts, isLoading } = useQuery({
+    queryKey: ['forum-posts'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('forum_posts')
+        .select(`
+          *,
+          profiles:user_id (
+            full_name,
+            username,
+            role
+          ),
+          post_reactions(count),
+          comments(count),
+          post_tags(tag)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Create post mutation
+  const createPostMutation = useMutation({
+    mutationFn: async (postPayload: typeof postData) => {
+      if (!isAuthenticated || !user) throw new Error('Authentication required');
+      
+      const { data: post, error: postError } = await supabase
+        .from('forum_posts')
+        .insert({
+          title: postPayload.title.trim(),
+          content: postPayload.content.trim(),
+          user_id: user.id,
+          post_type: postPayload.postType,
+          is_anonymous: postPayload.isAnonymous
+        })
+        .select()
+        .single();
+
+      if (postError) throw postError;
+
+      // Add tags if provided
+      if (postPayload.tags.trim()) {
+        const tags = postPayload.tags.split(',').map(tag => tag.trim()).filter(Boolean);
+        const tagInserts = tags.map(tag => ({
+          post_id: post.id,
+          tag: tag.toLowerCase()
+        }));
+
+        const { error: tagsError } = await supabase
+          .from('post_tags')
+          .insert(tagInserts);
+
+        if (tagsError) throw tagsError;
+      }
+
+      return post;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Post Created",
+        description: "Your post has been shared with the community!",
+      });
+      queryClient.invalidateQueries({ queryKey: ['forum-posts'] });
+      setIsCreatePostOpen(false);
+      setPostData({
+        title: '',
+        content: '',
+        tags: '',
+        postType: 'question',
+        isAnonymous: false
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to Create Post",
+        description: error.message || "Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Toggle reaction mutation
+  const toggleReactionMutation = useMutation({
+    mutationFn: async (postId: string) => {
+      if (!isAuthenticated || !user) throw new Error('Authentication required');
+
+      // Check if user already reacted
+      const { data: existingReaction } = await supabase
+        .from('post_reactions')
+        .select('id')
+        .eq('post_id', postId)
+        .eq('user_id', user.id)
+        .eq('reaction_type', 'heart')
+        .single();
+
+      if (existingReaction) {
+        // Remove reaction
+        const { error } = await supabase
+          .from('post_reactions')
+          .delete()
+          .eq('id', existingReaction.id);
+        if (error) throw error;
+      } else {
+        // Add reaction
+        const { error } = await supabase
+          .from('post_reactions')
+          .insert({
+            post_id: postId,
+            user_id: user.id,
+            reaction_type: 'heart'
+          });
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['forum-posts'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Action Failed",
+        description: error.message || "Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleCreatePost = () => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Sign In Required",
+        description: "Please sign in to create a post.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!postData.title.trim() || !postData.content.trim()) {
+      toast({
+        title: "Missing Information",
+        description: "Please provide both a title and content for your post.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    createPostMutation.mutate(postData);
+  };
+
+  const handleReaction = (postId: string) => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Sign In Required",
+        description: "Please sign in to react to posts.",
+        variant: "destructive",
+      });
+      return;
+    }
+    toggleReactionMutation.mutate(postId);
+  };
+
+  // Filter posts based on search and role
+  const filteredPosts = (posts || []).filter(post => {
+    const matchesRole = filterRole === "all" || 
+      (post.profiles?.role && post.profiles.role.toLowerCase() === filterRole);
     const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          post.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+                         (post.post_tags || []).some((tagObj: any) => 
+                           tagObj.tag.toLowerCase().includes(searchTerm.toLowerCase()));
     return matchesRole && matchesSearch;
   });
 
@@ -106,36 +251,67 @@ const Forum = () => {
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="post-title">Title</Label>
-                  <Input id="post-title" placeholder="What's on your mind?" />
+                  <Input 
+                    id="post-title" 
+                    placeholder="What's on your mind?"
+                    value={postData.title}
+                    onChange={(e) => setPostData(prev => ({ ...prev, title: e.target.value }))}
+                  />
                 </div>
                 <div>
                   <Label htmlFor="post-content">Your Message</Label>
-                  <Textarea id="post-content" placeholder="Share your thoughts, questions, or experiences..." rows={4} />
+                  <Textarea 
+                    id="post-content" 
+                    placeholder="Share your thoughts, questions, or experiences..." 
+                    rows={4}
+                    value={postData.content}
+                    onChange={(e) => setPostData(prev => ({ ...prev, content: e.target.value }))}
+                  />
                 </div>
                 <div>
                   <Label htmlFor="post-tags">Tags (comma-separated)</Label>
-                  <Input id="post-tags" placeholder="chemo, support, questions..." />
+                  <Input 
+                    id="post-tags" 
+                    placeholder="chemo, support, questions..."
+                    value={postData.tags}
+                    onChange={(e) => setPostData(prev => ({ ...prev, tags: e.target.value }))}
+                  />
                 </div>
                 <div className="flex items-center gap-4">
-                  <Select>
+                  <Select 
+                    value={postData.postType} 
+                    onValueChange={(value: any) => setPostData(prev => ({ ...prev, postType: value }))}
+                  >
                     <SelectTrigger className="w-40">
-                      <SelectValue placeholder="Your role" />
+                      <SelectValue placeholder="Post type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="patient">Patient</SelectItem>
-                      <SelectItem value="survivor">Survivor</SelectItem>
-                      <SelectItem value="caregiver">Caregiver</SelectItem>
-                      <SelectItem value="volunteer">Volunteer</SelectItem>
+                      <SelectItem value="question">Question</SelectItem>
+                      <SelectItem value="experience">Experience</SelectItem>
+                      <SelectItem value="support">Support</SelectItem>
+                      <SelectItem value="celebration">Celebration</SelectItem>
                     </SelectContent>
                   </Select>
-                  <label className="flex items-center gap-2 text-sm">
-                    <input type="checkbox" />
-                    Post anonymously
-                  </label>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="anonymous" 
+                      checked={postData.isAnonymous}
+                      onCheckedChange={(checked) => 
+                        setPostData(prev => ({ ...prev, isAnonymous: !!checked }))
+                      }
+                    />
+                    <Label htmlFor="anonymous" className="text-sm">
+                      Post anonymously
+                    </Label>
+                  </div>
                 </div>
                 <div className="flex gap-3">
-                  <Button onClick={() => setIsCreatePostOpen(false)} className="flex-1">
-                    Share Post
+                  <Button 
+                    onClick={handleCreatePost}
+                    disabled={createPostMutation.isPending}
+                    className="flex-1"
+                  >
+                    {createPostMutation.isPending ? 'Sharing...' : 'Share Post'}
                   </Button>
                   <Button variant="outline" onClick={() => setIsCreatePostOpen(false)}>
                     Cancel
@@ -148,55 +324,71 @@ const Forum = () => {
       </div>
 
       {/* Forum Posts */}
-      <div className="space-y-6">
-        {filteredPosts.map((post) => (
-          <Card key={post.id} className="hover:shadow-md transition-shadow duration-200">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <CardTitle className="text-xl mb-2 hover:text-brand-blue cursor-pointer">
-                    {post.title}
-                  </CardTitle>
-                  <div className="flex items-center gap-4 text-sm text-slate-600 mb-3">
-                    <div className="flex items-center gap-1">
-                      <User className="h-4 w-4" />
-                      {post.author} • {post.role}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
-                      {post.timeAgo}
+      {isLoading ? (
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-blue mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading posts...</p>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {filteredPosts.map((post) => (
+            <Card key={post.id} className="hover:shadow-md transition-shadow duration-200">
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <CardTitle className="text-xl mb-2 hover:text-brand-blue cursor-pointer">
+                      {post.title}
+                    </CardTitle>
+                    <div className="flex items-center gap-4 text-sm text-slate-600 mb-3">
+                      <div className="flex items-center gap-1">
+                        <User className="h-4 w-4" />
+                        {post.is_anonymous 
+                          ? 'Anonymous' 
+                          : (post.profiles?.full_name || post.profiles?.username || 'Unknown')
+                        } • {post.profiles?.role || 'Member'}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-4 w-4" />
+                        {new Date(post.created_at).toLocaleDateString()}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-slate-700 mb-4 leading-relaxed">{post.content}</p>
-              
-              <div className="flex flex-wrap gap-2 mb-4">
-                {post.tags.map((tag) => (
-                  <Badge key={tag} variant="secondary" className="text-xs">
-                    #{tag}
-                  </Badge>
-                ))}
-              </div>
-              
-              <div className="flex items-center gap-6">
-                <button className="flex items-center gap-2 text-slate-600 hover:text-red-500 transition-colors">
-                  <Heart className="h-4 w-4" />
-                  <span className="text-sm">{post.reactions.hearts}</span>
-                </button>
-                <button className="flex items-center gap-2 text-slate-600 hover:text-brand-blue transition-colors">
-                  <MessageSquare className="h-4 w-4" />
-                  <span className="text-sm">{post.reactions.comments} replies</span>
-                </button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-slate-700 mb-4 leading-relaxed">{post.content}</p>
+                
+                {post.post_tags && post.post_tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {post.post_tags.map((tagObj: any, index: number) => (
+                      <Badge key={index} variant="secondary" className="text-xs">
+                        #{tagObj.tag}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+                
+                <div className="flex items-center gap-6">
+                  <button 
+                    onClick={() => handleReaction(post.id)}
+                    disabled={toggleReactionMutation.isPending}
+                    className="flex items-center gap-2 text-slate-600 hover:text-red-500 transition-colors disabled:opacity-50"
+                  >
+                    <Heart className="h-4 w-4" />
+                    <span className="text-sm">{post.post_reactions?.length || 0}</span>
+                  </button>
+                  <div className="flex items-center gap-2 text-slate-600">
+                    <MessageSquare className="h-4 w-4" />
+                    <span className="text-sm">{post.comments?.length || 0} replies</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
-      {filteredPosts.length === 0 && (
+      {!isLoading && filteredPosts.length === 0 && (
         <div className="text-center py-12">
           <p className="text-slate-600 text-lg">No posts found matching your criteria.</p>
           <Button className="mt-4" onClick={() => setIsCreatePostOpen(true)}>
