@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -12,6 +13,8 @@ import EventPublisher from '@/components/EventPublisher';
 
 const Events = () => {
   const { user, isAuthenticated } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('view');
 
   const { data: events, isLoading } = useQuery({
@@ -37,13 +40,23 @@ const Events = () => {
   const canCreateEvents = isAuthenticated && user?.user_metadata?.role && 
     ['admin', 'ngo'].includes(user.user_metadata.role);
 
-  const registerForEvent = async (eventId: string) => {
-    if (!isAuthenticated) {
-      alert('Please sign in to register for events');
-      return;
-    }
+  // Event registration mutation
+  const registerForEventMutation = useMutation({
+    mutationFn: async (eventId: string) => {
+      if (!isAuthenticated) throw new Error('Authentication required');
+      
+      // Check if already registered
+      const { data: existingRegistration } = await supabase
+        .from('event_attendees')
+        .select('id')
+        .eq('event_id', eventId)
+        .eq('user_id', user?.id)
+        .single();
 
-    try {
+      if (existingRegistration) {
+        throw new Error('Already registered for this event');
+      }
+
       const { error } = await supabase
         .from('event_attendees')
         .insert({
@@ -53,11 +66,35 @@ const Events = () => {
         });
 
       if (error) throw error;
-      alert('Successfully registered for event!');
-    } catch (error) {
-      console.error('Error registering for event:', error);
-      alert('Failed to register for event');
+    },
+    onSuccess: () => {
+      toast({
+        title: "Registration Successful",
+        description: "You have been registered for the event!",
+      });
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Registration Failed",
+        description: error.message === 'Already registered for this event' 
+          ? "You're already registered for this event." 
+          : "Failed to register for event. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const registerForEvent = (eventId: string) => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Sign In Required",
+        description: "Please sign in to register for events.",
+        variant: "destructive",
+      });
+      return;
     }
+    registerForEventMutation.mutate(eventId);
   };
 
   return (
@@ -142,9 +179,14 @@ const Events = () => {
                       <div className="flex gap-3 pt-4">
                         <Button 
                           onClick={() => registerForEvent(event.id)}
-                          disabled={!isAuthenticated}
+                          disabled={!isAuthenticated || registerForEventMutation.isPending}
                         >
-                          {isAuthenticated ? 'Register' : 'Sign In to Register'}
+                          {registerForEventMutation.isPending 
+                            ? 'Registering...' 
+                            : isAuthenticated 
+                              ? 'Register' 
+                              : 'Sign In to Register'
+                          }
                         </Button>
                         
                         {event.meeting_link && (
