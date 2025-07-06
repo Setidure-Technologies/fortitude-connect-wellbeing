@@ -1,0 +1,33 @@
+Public Pages (accessible to all users):
+
+    Home: https://fortitudenetwork.in/
+    About: https://fortitudenetwork.in/about
+    Offerings: https://fortitudenetwork.in/offerings
+    Community: https://fortitudenetwork.in/community
+    Forum: https://fortitudenetwork.in/forum
+    Support Groups: https://fortitudenetwork.in/support-groups
+    Events: https://fortitudenetwork.in/events
+    Stories: https://fortitudenetwork.in/stories
+    Donate: https://fortitudenetwork.in/donate
+    Login: https://fortitudenetwork.in/login
+    Sign Up: https://fortitudenetwork.in/signup
+    Authentication: https://fortitudenetwork.in/auth
+    Admin Setup: https://fortitudenetwork.in/admin-setup
+
+Documentation Pages:
+
+    Platform Guide: https://fortitudenetwork.in/docs/platform
+    Donation Guide: https://fortitudenetwork.in/docs/donate
+    Community Rules: https://fortitudenetwork.in/docs/rules
+
+Protected Pages (require authentication):
+
+    Chat with AI: https://fortitudenetwork.in/chat
+    User Profile: https://fortitudenetwork.in/profile
+    Admin Dashboard: https://fortitudenetwork.in/admin
+    NGO Dashboard: https://fortitudenetwork.in/ngo-dashboard
+    User Profile View: https://fortitudenetwork.in/user/[userId] (dynamic route)
+
+Error Page:
+
+    404 Not Found: https://fortitudenetwork.in/* (any non-matching route)
