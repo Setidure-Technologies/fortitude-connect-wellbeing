@@ -119,8 +119,16 @@ const Forum = () => {
     mutationFn: async (postId: string) => {
       if (!isAuthenticated || !user) throw new Error('Authentication required');
       
-      const userRole = user.user_metadata?.role;
-      if (userRole !== 'admin') throw new Error('Admin access required');
+      // Check role from database consistently
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+      
+      if (profile?.role !== 'admin') {
+        throw new Error('Admin access required');
+      }
 
       const { error } = await supabase
         .from('forum_posts')
@@ -236,7 +244,22 @@ const Forum = () => {
     deletePostMutation.mutate(postId);
   };
 
-  const isAdmin = user?.user_metadata?.role === 'admin';
+  // Query to get current user role from database
+  const { data: currentUserProfile } = useQuery({
+    queryKey: ['current-user-role', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  const isAdmin = currentUserProfile?.role === 'admin';
 
   // Filter posts based on search and role
   const filteredPosts = (posts || []).filter(post => {

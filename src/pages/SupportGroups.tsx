@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -38,7 +39,22 @@ const SupportGroups = () => {
     is_private: false
   });
 
-  const userRole = user?.user_metadata?.role;
+  // Query to get current user role from database
+  const { data: currentUserProfile } = useQuery({
+    queryKey: ['current-user-role', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  const userRole = currentUserProfile?.role;
   const canCreateGroups = userRole === 'admin' || userRole === 'ngo';
 
   useEffect(() => {
@@ -143,8 +159,14 @@ const SupportGroups = () => {
   const deleteGroup = async (groupId: string) => {
     if (!user) return;
     
-    const userRole = user.user_metadata?.role;
-    if (userRole !== 'admin') {
+    // Check role from database consistently
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+      
+    if (profile?.role !== 'admin') {
       toast({
         title: "Access Denied",
         description: "Only admins can delete support groups.",
@@ -177,7 +199,7 @@ const SupportGroups = () => {
     }
   };
 
-  const isAdmin = user?.user_metadata?.role === 'admin';
+  const isAdmin = currentUserProfile?.role === 'admin';
 
   const filteredGroups = groups.filter(group =>
     group.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

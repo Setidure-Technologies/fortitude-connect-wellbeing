@@ -30,6 +30,27 @@ const predefinedMessages = [
   "Can you help me understand my treatment options?"
 ];
 
+// Helper function to extract response text from various n8n response formats
+const extractResponseText = (jsonResponse: any): string => {
+  // Handle array responses
+  if (Array.isArray(jsonResponse) && jsonResponse.length > 0) {
+    const first = jsonResponse[0];
+    if (first?.output) return first.output;
+    if (first?.response?.body?.[0]?.output) return first.response.body[0].output;
+    if (first?.message) return first.message;
+    if (typeof first === 'string') return first;
+  }
+  
+  // Handle object responses
+  if (jsonResponse?.response?.body?.[0]?.output) return jsonResponse.response.body[0].output;
+  if (jsonResponse?.output) return jsonResponse.output;
+  if (jsonResponse?.message) return jsonResponse.message;
+  if (typeof jsonResponse === 'string') return jsonResponse;
+  
+  // Fallback to stringified JSON
+  return JSON.stringify(jsonResponse);
+};
+
 const Chat = () => {
   const { isAuthenticated, user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -226,35 +247,21 @@ const Chat = () => {
       });
 
       if (response.ok) {
-        // Try to parse as JSON first, fallback to text
+        // Simplified response parsing
         let responseData;
         const contentType = response.headers.get('content-type');
         
-        if (contentType && contentType.includes('application/json')) {
-          const jsonResponse = await response.json();
-          
-          // Handle different response structures from n8n
-          if (Array.isArray(jsonResponse) && jsonResponse.length > 0) {
-            // Handle array response like [{"output": "..."}]
-            if (jsonResponse[0]?.output) {
-              responseData = jsonResponse[0].output;
-            } else if (jsonResponse[0]?.response?.body?.[0]?.output) {
-              responseData = jsonResponse[0].response.body[0].output;
-            } else {
-              responseData = JSON.stringify(jsonResponse[0]);
-            }
-          } else if (jsonResponse.response?.body?.[0]?.output) {
-            responseData = jsonResponse.response.body[0].output;
-          } else if (jsonResponse.output) {
-            responseData = jsonResponse.output;
-          } else if (jsonResponse.message) {
-            responseData = jsonResponse.message;
-          } else if (typeof jsonResponse === 'string') {
-            responseData = jsonResponse;
+        try {
+          if (contentType && contentType.includes('application/json')) {
+            const jsonResponse = await response.json();
+            
+            // Extract text from various possible response structures
+            responseData = extractResponseText(jsonResponse);
           } else {
-            responseData = JSON.stringify(jsonResponse);
+            responseData = await response.text();
           }
-        } else {
+        } catch (parseError) {
+          console.error('Error parsing response:', parseError);
           responseData = await response.text();
         }
         

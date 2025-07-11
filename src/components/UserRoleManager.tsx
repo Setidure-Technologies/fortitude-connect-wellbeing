@@ -18,6 +18,21 @@ const UserRoleManager = () => {
   const [selectedUserId, setSelectedUserId] = useState<string>('');
   const [selectedRole, setSelectedRole] = useState<UserRole | ''>('');
 
+  // Check current user role from database
+  const { data: currentUserProfile } = useQuery({
+    queryKey: ['current-user-role', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+      return data;
+    },
+    enabled: !!user,
+  });
+
   // Fetch all users (admin only)
   const { data: users } = useQuery({
     queryKey: ['all-users'],
@@ -30,7 +45,7 @@ const UserRoleManager = () => {
       if (error) throw error;
       return data;
     },
-    enabled: user?.user_metadata?.role === 'admin',
+    enabled: currentUserProfile?.role === 'admin',
   });
 
   // Update user role mutation
@@ -89,7 +104,7 @@ const UserRoleManager = () => {
     }
   };
 
-  if (user?.user_metadata?.role !== 'admin') {
+  if (currentUserProfile?.role !== 'admin') {
     return (
       <Card>
         <CardContent className="p-6 text-center">

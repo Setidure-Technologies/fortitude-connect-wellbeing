@@ -53,11 +53,12 @@ serve(async (req) => {
     // Process audio in chunks
     const binaryAudio = processBase64Chunks(audio);
     
-    // Prepare form data
+    // Prepare form data with better audio handling
     const formData = new FormData();
     const blob = new Blob([binaryAudio], { type: 'audio/webm' });
-    formData.append('file', blob, 'audio.webm');
+    formData.append('file', blob, 'recording.webm');
     formData.append('model', 'whisper-1');
+    formData.append('language', 'en'); // Add language hint for better accuracy
 
     // Send to OpenAI
     const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {

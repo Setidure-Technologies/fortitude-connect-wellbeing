@@ -38,9 +38,19 @@ export const useAudioRecorder = () => {
       streamRef.current = stream;
       chunksRef.current = [];
 
-      const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'audio/webm;codecs=opus',
-      });
+      // Try different MIME types based on browser support
+      let mimeType = 'audio/webm;codecs=opus';
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        mimeType = 'audio/webm';
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
+          mimeType = 'audio/mp4';
+          if (!MediaRecorder.isTypeSupported(mimeType)) {
+            mimeType = 'audio/wav';
+          }
+        }
+      }
+
+      const mediaRecorder = new MediaRecorder(stream, { mimeType });
 
       mediaRecorderRef.current = mediaRecorder;
 
@@ -86,10 +96,17 @@ export const useAudioRecorder = () => {
         try {
           const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' });
           
-          // Convert to base64
+          // Convert to base64 with better error handling
           const arrayBuffer = await audioBlob.arrayBuffer();
-          const uint8Array = new Uint8Array(arrayBuffer);
-          const base64Audio = btoa(String.fromCharCode(...uint8Array));
+          const bytes = new Uint8Array(arrayBuffer);
+          
+          // Convert to base64 in chunks to handle large files
+          let base64Audio = '';
+          const chunkSize = 8192;
+          for (let i = 0; i < bytes.length; i += chunkSize) {
+            const chunk = bytes.slice(i, i + chunkSize);
+            base64Audio += btoa(String.fromCharCode.apply(null, Array.from(chunk)));
+          }
 
           // Send to Supabase Edge Function for transcription
           const { data, error } = await supabase.functions.invoke('voice-to-text', {

@@ -67,19 +67,39 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Separate function to fetch user profile - prevents auth deadlocks
   const fetchUserProfile = async (userId: string) => {
     try {
-      const { data: profile } = await supabase
+      const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single();
       
-      setUser(current => current ? {
-        ...current,
-        user_metadata: {
-          ...current.user_metadata,
-          role: profile?.role || 'patient'
+      if (error) {
+        console.error('Error fetching profile:', error);
+        return;
+      }
+
+      if (profile) {
+        // Update both user metadata and potentially sync to auth.users
+        setUser(current => current ? {
+          ...current,
+          user_metadata: {
+            ...current.user_metadata,
+            role: profile.role || 'patient',
+            full_name: profile.full_name || current.user_metadata.full_name
+          }
+        } : null);
+
+        // Sync role to user metadata in auth if different
+        const currentRole = user?.user_metadata?.role;
+        if (currentRole !== profile.role) {
+          await supabase.auth.updateUser({
+            data: { 
+              role: profile.role,
+              full_name: profile.full_name 
+            }
+          });
         }
-      } : null);
+      }
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
