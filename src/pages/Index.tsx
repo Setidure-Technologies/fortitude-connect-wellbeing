@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import ImpactStats from '@/components/ImpactStats';
 import CollaboratorsSection from '@/components/CollaboratorsSection';
+import CommunityGallery from '@/components/CommunityGallery';
 
 const Index = () => {
   const { isAuthenticated } = useAuth();
@@ -175,6 +176,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Community Gallery */}
+      <CommunityGallery />
 
       {/* Impact Stats */}
       <ImpactStats />
