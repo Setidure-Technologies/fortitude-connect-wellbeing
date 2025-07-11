@@ -6,9 +6,24 @@ import { useAuth } from '@/context/AuthContext';
 import EventPublisher from '@/components/EventPublisher';
 
 const NGODashboard = () => {
-  const { user } = useAuth();
+  const { user, userRole, loading } = useAuth();
 
-  if (user?.user_metadata?.role !== 'ngo' && user?.user_metadata?.role !== 'admin') {
+  // Show loading state while checking permissions
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+        </div>
+      </div>
+    );
+  }
+
+  // Check role from multiple sources with fallback
+  const isNGOOrAdmin = userRole === 'ngo' || userRole === 'admin' || 
+                       user?.user_metadata?.role === 'ngo' || user?.user_metadata?.role === 'admin';
+
+  if (!isNGOOrAdmin) {
     return (
       <div className="container mx-auto px-4 py-8">
         <Card>

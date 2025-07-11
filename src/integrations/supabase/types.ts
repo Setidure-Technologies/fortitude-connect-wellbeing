@@ -948,6 +948,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_role_consistency: {
+        Args: { target_user_id: string }
+        Returns: {
+          profile_role: string
+          auth_role: string
+          is_consistent: boolean
+        }[]
+      }
+      force_role_sync: {
+        Args: { target_user_id: string }
+        Returns: undefined
+      }
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: string

@@ -6,11 +6,26 @@ import { Shield, Users, Calendar, BarChart3 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import UserRoleManager from '@/components/UserRoleManager';
 import AdminSetup from '@/components/AdminSetup';
+import RoleDebugPanel from '@/components/RoleDebugPanel';
 
 const AdminDashboard = () => {
-  const { user } = useAuth();
+  const { user, userRole, loading, refreshUserData } = useAuth();
 
-  if (user?.user_metadata?.role !== 'admin') {
+  // Show loading state while checking permissions
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+        </div>
+      </div>
+    );
+  }
+
+  // Check role from multiple sources with fallback
+  const isAdmin = userRole === 'admin' || user?.user_metadata?.role === 'admin';
+
+  if (!isAdmin) {
     return (
       <div className="container mx-auto px-4 py-8">
         <Card>
@@ -93,6 +108,7 @@ const AdminDashboard = () => {
             </CardHeader>
             <CardContent>
               <AdminSetup />
+              <RoleDebugPanel />
             </CardContent>
           </Card>
         </TabsContent>

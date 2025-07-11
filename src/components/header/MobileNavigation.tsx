@@ -9,8 +9,9 @@ interface MobileNavigationProps {
 }
 
 const MobileNavigation = ({ isMenuOpen, setIsMenuOpen }: MobileNavigationProps) => {
-  const { isAuthenticated, user, logout } = useAuth();
-  const userRole = user?.user_metadata?.role;
+  const { isAuthenticated, user, userRole: contextRole, logout } = useAuth();
+  // Enhanced role checking with fallback
+  const userRole = contextRole || user?.user_metadata?.role;
 
   if (!isMenuOpen) return null;
 

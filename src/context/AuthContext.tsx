@@ -9,6 +9,8 @@ interface AuthContextType {
   session: Session | null;
   isAuthenticated: boolean;
   loading: boolean;
+  userRole: string | null;
+  refreshUserData: () => Promise<void>;
   login: (email: string, password: string) => Promise<{ error?: string }>;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error?: string }>;
   logout: () => Promise<void>;
@@ -20,6 +22,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState<string | null>(null);
   
   const { toast } = useToast();
 
@@ -64,8 +67,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => subscription.unsubscribe();
   }, [toast]);
 
-  // Separate function to fetch user profile - prevents auth deadlocks
-  const fetchUserProfile = async (userId: string) => {
+  // Enhanced function to fetch and sync user profile
+  const fetchUserProfile = async (userId: string, retryCount = 0) => {
     try {
       const { data: profile, error } = await supabase
         .from('profiles')
@@ -75,11 +78,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       if (error) {
         console.error('Error fetching profile:', error);
+        if (retryCount < 2) {
+          setTimeout(() => fetchUserProfile(userId, retryCount + 1), 1000);
+        }
         return;
       }
 
       if (profile) {
-        // Update both user metadata and potentially sync to auth.users
+        console.log('Profile fetched:', profile);
+        setUserRole(profile.role || 'patient');
+        
+        // Update user metadata
         setUser(current => current ? {
           ...current,
           user_metadata: {
@@ -89,19 +98,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           }
         } : null);
 
-        // Sync role to user metadata in auth if different
-        const currentRole = user?.user_metadata?.role;
-        if (currentRole !== profile.role) {
-          await supabase.auth.updateUser({
-            data: { 
-              role: profile.role,
-              full_name: profile.full_name 
-            }
-          });
+        // Force sync role to auth.users metadata using our new function
+        try {
+          await supabase.rpc('force_role_sync', { target_user_id: userId });
+        } catch (syncError) {
+          console.error('Error syncing role:', syncError);
         }
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
+      if (retryCount < 2) {
+        setTimeout(() => fetchUserProfile(userId, retryCount + 1), 1000);
+      }
+    }
+  };
+
+  // Function to refresh user data and role
+  const refreshUserData = async () => {
+    if (!user?.id) return;
+    
+    try {
+      setLoading(true);
+      await fetchUserProfile(user.id);
+      
+      // Also refresh the session to get latest metadata
+      await supabase.auth.refreshSession();
+    } catch (error) {
+      console.error('Error refreshing user data:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -222,6 +247,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     session,
     isAuthenticated: !!user,
     loading,
+    userRole,
+    refreshUserData,
     login,
     signUp,
     logout,

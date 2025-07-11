@@ -15,14 +15,15 @@ import {
 } from '@/components/ui/tooltip';
 
 const DesktopNavigation = () => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, userRole: contextRole } = useAuth();
   const location = useLocation();
 
   const isActivePath = (path: string) => {
     return location.pathname === path;
   };
 
-  const userRole = user?.user_metadata?.role;
+  // Enhanced role checking with fallback
+  const userRole = contextRole || user?.user_metadata?.role;
 
   return (
     <nav className="hidden md:flex items-center space-x-6">
