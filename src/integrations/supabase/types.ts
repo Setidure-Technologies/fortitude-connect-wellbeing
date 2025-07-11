@@ -14,6 +14,89 @@ export type Database = {
   }
   public: {
     Tables: {
+      articles: {
+        Row: {
+          author_id: string | null
+          category: string | null
+          content: string | null
+          created_at: string
+          excerpt: string | null
+          external_url: string | null
+          id: string
+          image_url: string | null
+          is_published: boolean | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id?: string | null
+          category?: string | null
+          content?: string | null
+          created_at?: string
+          excerpt?: string | null
+          external_url?: string | null
+          id?: string
+          image_url?: string | null
+          is_published?: boolean | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string | null
+          category?: string | null
+          content?: string | null
+          created_at?: string
+          excerpt?: string | null
+          external_url?: string | null
+          id?: string
+          image_url?: string | null
+          is_published?: boolean | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "articles_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      awareness_stats: {
+        Row: {
+          display_order: number | null
+          id: string
+          is_active: boolean | null
+          source: string | null
+          stat_description: string | null
+          stat_key: string
+          stat_value: string
+          updated_at: string
+        }
+        Insert: {
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          source?: string | null
+          stat_description?: string | null
+          stat_key: string
+          stat_value: string
+          updated_at?: string
+        }
+        Update: {
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          source?: string | null
+          stat_description?: string | null
+          stat_key?: string
+          stat_value?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       chat_attachments: {
         Row: {
           created_at: string
@@ -285,6 +368,108 @@ export type Database = {
           },
         ]
       }
+      daily_questions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          featured_date: string | null
+          id: string
+          is_active: boolean | null
+          options: Json | null
+          question: string
+          question_type: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          featured_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          options?: Json | null
+          question: string
+          question_type?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          featured_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          options?: Json | null
+          question?: string
+          question_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_questions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      direct_messages: {
+        Row: {
+          attachment_url: string | null
+          created_at: string
+          edited_at: string | null
+          id: string
+          is_read: boolean | null
+          message: string
+          message_type: string | null
+          parent_message_id: string | null
+          receiver_id: string
+          sender_id: string
+        }
+        Insert: {
+          attachment_url?: string | null
+          created_at?: string
+          edited_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message: string
+          message_type?: string | null
+          parent_message_id?: string | null
+          receiver_id: string
+          sender_id: string
+        }
+        Update: {
+          attachment_url?: string | null
+          created_at?: string
+          edited_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          message_type?: string | null
+          parent_message_id?: string | null
+          receiver_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "direct_messages_parent_message_id_fkey"
+            columns: ["parent_message_id"]
+            isOneToOne: false
+            referencedRelation: "direct_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "direct_messages_receiver_id_fkey"
+            columns: ["receiver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "direct_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       donations: {
         Row: {
           amount: number
@@ -510,6 +695,101 @@ export type Database = {
           },
         ]
       }
+      ngos: {
+        Row: {
+          address: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          description: string | null
+          focus_area: string | null
+          id: string
+          is_active: boolean | null
+          location: string | null
+          name: string
+          region: string | null
+          services_offered: string[] | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          description?: string | null
+          focus_area?: string | null
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          name: string
+          region?: string | null
+          services_offered?: string[] | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          description?: string | null
+          focus_area?: string | null
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          name?: string
+          region?: string | null
+          services_offered?: string[] | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          action_url: string | null
+          created_at: string
+          data: Json | null
+          id: string
+          is_read: boolean | null
+          message: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          action_url?: string | null
+          created_at?: string
+          data?: Json | null
+          id?: string
+          is_read?: boolean | null
+          message?: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          action_url?: string | null
+          created_at?: string
+          data?: Json | null
+          id?: string
+          is_read?: boolean | null
+          message?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       post_reactions: {
         Row: {
           created_at: string | null
@@ -668,6 +948,84 @@ export type Database = {
           role?: Database["public"]["Enums"]["user_role"] | null
           updated_at?: string | null
           username?: string | null
+        }
+        Relationships: []
+      }
+      question_responses: {
+        Row: {
+          created_at: string
+          id: string
+          is_anonymous: boolean | null
+          question_id: string
+          response_text: string | null
+          selected_option: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_anonymous?: boolean | null
+          question_id: string
+          response_text?: string | null
+          selected_option?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_anonymous?: boolean | null
+          question_id?: string
+          response_text?: string | null
+          selected_option?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_responses_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "daily_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "question_responses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resource_links: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          tags: string[] | null
+          title: string
+          url: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          tags?: string[] | null
+          title: string
+          url: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          tags?: string[] | null
+          title?: string
+          url?: string
         }
         Relationships: []
       }
@@ -901,6 +1259,41 @@ export type Database = {
           },
         ]
       }
+      user_activity: {
+        Row: {
+          activity_type: string | null
+          id: string
+          ip_address: unknown | null
+          last_active: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          activity_type?: string | null
+          id?: string
+          ip_address?: unknown | null
+          last_active?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          activity_type?: string | null
+          id?: string
+          ip_address?: unknown | null
+          last_active?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_activity_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_connections: {
         Row: {
           created_at: string
@@ -943,11 +1336,66 @@ export type Database = {
           },
         ]
       }
+      user_connections_enhanced: {
+        Row: {
+          accepted_at: string | null
+          connection_type: string | null
+          created_at: string
+          id: string
+          message: string | null
+          receiver_id: string
+          requester_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          connection_type?: string | null
+          created_at?: string
+          id?: string
+          message?: string | null
+          receiver_id: string
+          requester_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          connection_type?: string | null
+          created_at?: string
+          id?: string
+          message?: string | null
+          receiver_id?: string
+          requester_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_connections_enhanced_receiver_id_fkey"
+            columns: ["receiver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_connections_enhanced_requester_id_fkey"
+            columns: ["requester_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      are_users_connected: {
+        Args: { user1_id: string; user2_id: string }
+        Returns: boolean
+      }
       check_role_consistency: {
         Args: { target_user_id: string }
         Returns: {
@@ -970,6 +1418,10 @@ export type Database = {
       }
       sync_user_role: {
         Args: { user_id: string; new_role: string }
+        Returns: undefined
+      }
+      update_user_activity: {
+        Args: Record<PropertyKey, never>
         Returns: undefined
       }
     }
