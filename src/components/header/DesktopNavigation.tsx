@@ -45,6 +45,24 @@ const DesktopNavigation = () => {
         About
       </Link>
 
+      <Link 
+        to="/resources" 
+        className={`text-gray-700 hover:text-brand-blue transition-colors ${
+          isActivePath('/resources') ? 'text-brand-blue font-medium' : ''
+        }`}
+      >
+        Resources
+      </Link>
+
+      <Link 
+        to="/connect" 
+        className={`text-gray-700 hover:text-brand-blue transition-colors ${
+          isActivePath('/connect') ? 'text-brand-blue font-medium' : ''
+        }`}
+      >
+        Connect
+      </Link>
+
       {/* Community Dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger className="flex items-center space-x-1 text-gray-700 hover:text-brand-blue transition-colors">

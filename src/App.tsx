@@ -26,6 +26,8 @@ import PlatformGuide from "./pages/PlatformGuide";
 import DonationGuide from "./pages/DonationGuide";
 import CommunityRules from "./pages/CommunityRules";
 import SupportGroups from "./pages/SupportGroups";
+import Resources from "./pages/Resources";
+import Connect from "./pages/Connect";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
@@ -46,6 +48,8 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/about" element={<About />} />
               <Route path="/offerings" element={<Offerings />} />
+              <Route path="/resources" element={<Resources />} />
+              <Route path="/connect" element={<Connect />} />
               
               {/* Community features - now accessible to all users */}
               <Route path="/community" element={<Community />} />

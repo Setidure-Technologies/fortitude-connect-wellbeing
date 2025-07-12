@@ -8,6 +8,8 @@ import { useAuth } from '@/context/AuthContext';
 import ImpactStats from '@/components/ImpactStats';
 import CollaboratorsSection from '@/components/CollaboratorsSection';
 import CommunityGallery from '@/components/CommunityGallery';
+import CancerAwarenessStats from '@/components/CancerAwarenessStats';
+import DailyQuestion from '@/components/DailyQuestion';
 
 const Index = () => {
   const { isAuthenticated } = useAuth();
@@ -176,6 +178,12 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Daily Question */}
+      <DailyQuestion />
+
+      {/* Cancer Awareness Stats */}
+      <CancerAwarenessStats />
 
       {/* Community Gallery */}
       <CommunityGallery />

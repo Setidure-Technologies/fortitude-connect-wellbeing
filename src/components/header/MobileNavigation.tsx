@@ -34,6 +34,22 @@ const MobileNavigation = ({ isMenuOpen, setIsMenuOpen }: MobileNavigationProps) 
           About
         </Link>
 
+        <Link 
+          to="/resources" 
+          className="px-4 py-2 text-gray-700 hover:text-brand-blue hover:bg-gray-50 rounded"
+          onClick={() => setIsMenuOpen(false)}
+        >
+          Resources
+        </Link>
+
+        <Link 
+          to="/connect" 
+          className="px-4 py-2 text-gray-700 hover:text-brand-blue hover:bg-gray-50 rounded"
+          onClick={() => setIsMenuOpen(false)}
+        >
+          Connect
+        </Link>
+
         {/* Mobile Community Links */}
         <div className="px-4 py-2">
           <p className="text-gray-500 text-sm font-medium mb-2">Community</p>

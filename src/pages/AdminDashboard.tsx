@@ -2,11 +2,13 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Shield, Users, Calendar, BarChart3 } from 'lucide-react';
+import { Shield, Users, Calendar, BarChart3, BookOpen, TrendingUp } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import UserRoleManager from '@/components/UserRoleManager';
 import AdminSetup from '@/components/AdminSetup';
 import RoleDebugPanel from '@/components/RoleDebugPanel';
+import ResourceManager from '@/components/admin/ResourceManager';
+import StatsManager from '@/components/admin/StatsManager';
 
 const AdminDashboard = () => {
   const { user, userRole, loading, refreshUserData } = useAuth();
@@ -47,14 +49,22 @@ const AdminDashboard = () => {
       </div>
 
       <Tabs defaultValue="users" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="users" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
-            User Management
+            Users
+          </TabsTrigger>
+          <TabsTrigger value="resources" className="flex items-center gap-2">
+            <BookOpen className="h-4 w-4" />
+            Resources
+          </TabsTrigger>
+          <TabsTrigger value="stats" className="flex items-center gap-2">
+            <TrendingUp className="h-4 w-4" />
+            Stats
           </TabsTrigger>
           <TabsTrigger value="events" className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
-            Event Management
+            Events
           </TabsTrigger>
           <TabsTrigger value="analytics" className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
@@ -62,12 +72,20 @@ const AdminDashboard = () => {
           </TabsTrigger>
           <TabsTrigger value="setup" className="flex items-center gap-2">
             <Shield className="h-4 w-4" />
-            Admin Setup
+            Setup
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="users">
           <UserRoleManager />
+        </TabsContent>
+
+        <TabsContent value="resources">
+          <ResourceManager />
+        </TabsContent>
+
+        <TabsContent value="stats">
+          <StatsManager />
         </TabsContent>
 
         <TabsContent value="events">
