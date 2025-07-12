@@ -95,10 +95,24 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error in process-file function:', error);
+    
+    // Determine status code based on error type
+    let statusCode = 500;
+    let errorMessage = error.message || 'Unknown error occurred';
+    
+    if (errorMessage.includes('File type') || errorMessage.includes('File size')) {
+      statusCode = 400; // Bad Request for validation errors
+    } else if (errorMessage.includes('No file') || errorMessage.includes('User ID is required')) {
+      statusCode = 400; // Bad Request for missing required fields
+    }
+    
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: errorMessage,
+        details: error.stack || 'No additional details available'
+      }),
       {
-        status: 500,
+        status: statusCode,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     );

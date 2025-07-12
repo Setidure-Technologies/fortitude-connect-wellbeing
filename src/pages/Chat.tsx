@@ -66,7 +66,12 @@ const Chat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  useEffect(scrollToBottom, [messages]);
+  // Only scroll to bottom when new messages are added (not on initial load)
+  useEffect(() => {
+    if (messages.length > 1) {
+      scrollToBottom();
+    }
+  }, [messages]);
 
   // Fetch user profile for personalized greeting
   useEffect(() => {
@@ -200,9 +205,22 @@ const Chat = () => {
     setInput('');
     setIsLoading(true);
 
-    // Save user message
+    // Save user message and update conversation title if it's a new conversation
     if (currentConversationId) {
       saveMessageMutation.mutate({ message: textToSend, sender: 'user' });
+      
+      // Update conversation title based on first user message
+      const conversation = conversations?.find(c => c.id === currentConversationId);
+      if (conversation && conversation.title === 'New Chat') {
+        const title = textToSend.length > 50 ? textToSend.substring(0, 47) + '...' : textToSend;
+        supabase
+          .from('chat_conversations')
+          .update({ title })
+          .eq('id', currentConversationId)
+          .then(() => {
+            queryClient.invalidateQueries({ queryKey: ['conversations'] });
+          });
+      }
     }
 
     try {
@@ -362,7 +380,7 @@ const Chat = () => {
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col">
         <div className="text-center mb-4">
-          <h1 className="text-2xl font-bold">Chat with Forti</h1>
+          <h1 className="text-2xl font-bold">Forti</h1>
           <p className="text-sm text-slate-500">
             Your AI support companion is here to help you through your journey.
           </p>

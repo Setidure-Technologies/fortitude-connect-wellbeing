@@ -83,9 +83,12 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
       )}
 
       {state.error && (
-        <span className="text-xs text-red-500 mt-1 max-w-32 truncate">
-          {state.error}
-        </span>
+        <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg max-w-sm">
+          <p className="text-xs text-red-600 font-medium">Upload Error:</p>
+          <p className="text-xs text-red-500 mt-1 break-words">
+            {state.error}
+          </p>
+        </div>
       )}
 
       {state.uploadedFiles.length > 0 && (
