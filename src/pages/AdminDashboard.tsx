@@ -9,6 +9,10 @@ import AdminSetup from '@/components/AdminSetup';
 import RoleDebugPanel from '@/components/RoleDebugPanel';
 import ResourceManager from '@/components/admin/ResourceManager';
 import StatsManager from '@/components/admin/StatsManager';
+import ArticleManager from '@/components/admin/ArticleManager';
+import SupportGroupManager from '@/components/admin/SupportGroupManager';
+import NGOManager from '@/components/admin/NGOManager';
+import EventPublisher from '@/components/EventPublisher';
 
 const AdminDashboard = () => {
   const { user, userRole, loading, refreshUserData } = useAuth();
@@ -49,29 +53,37 @@ const AdminDashboard = () => {
       </div>
 
       <Tabs defaultValue="users" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="users" className="flex items-center gap-2">
-            <Users className="h-4 w-4" />
+        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
+          <TabsTrigger value="users" className="flex items-center gap-1 text-xs lg:text-sm">
+            <Users className="h-3 w-3 lg:h-4 lg:w-4" />
             Users
           </TabsTrigger>
-          <TabsTrigger value="resources" className="flex items-center gap-2">
-            <BookOpen className="h-4 w-4" />
+          <TabsTrigger value="articles" className="flex items-center gap-1 text-xs lg:text-sm">
+            <BookOpen className="h-3 w-3 lg:h-4 lg:w-4" />
+            Articles
+          </TabsTrigger>
+          <TabsTrigger value="groups" className="flex items-center gap-1 text-xs lg:text-sm">
+            <Users className="h-3 w-3 lg:h-4 lg:w-4" />
+            Groups
+          </TabsTrigger>
+          <TabsTrigger value="ngos" className="flex items-center gap-1 text-xs lg:text-sm">
+            <Shield className="h-3 w-3 lg:h-4 lg:w-4" />
+            NGOs
+          </TabsTrigger>
+          <TabsTrigger value="resources" className="flex items-center gap-1 text-xs lg:text-sm">
+            <BookOpen className="h-3 w-3 lg:h-4 lg:w-4" />
             Resources
           </TabsTrigger>
-          <TabsTrigger value="stats" className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4" />
-            Stats
-          </TabsTrigger>
-          <TabsTrigger value="events" className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
+          <TabsTrigger value="events" className="flex items-center gap-1 text-xs lg:text-sm">
+            <Calendar className="h-3 w-3 lg:h-4 lg:w-4" />
             Events
           </TabsTrigger>
-          <TabsTrigger value="analytics" className="flex items-center gap-2">
-            <BarChart3 className="h-4 w-4" />
-            Analytics
+          <TabsTrigger value="stats" className="flex items-center gap-1 text-xs lg:text-sm">
+            <TrendingUp className="h-3 w-3 lg:h-4 lg:w-4" />
+            Stats
           </TabsTrigger>
-          <TabsTrigger value="setup" className="flex items-center gap-2">
-            <Shield className="h-4 w-4" />
+          <TabsTrigger value="setup" className="flex items-center gap-1 text-xs lg:text-sm">
+            <Shield className="h-3 w-3 lg:h-4 lg:w-4" />
             Setup
           </TabsTrigger>
         </TabsList>
@@ -80,12 +92,20 @@ const AdminDashboard = () => {
           <UserRoleManager />
         </TabsContent>
 
-        <TabsContent value="resources">
-          <ResourceManager />
+        <TabsContent value="articles">
+          <ArticleManager />
         </TabsContent>
 
-        <TabsContent value="stats">
-          <StatsManager />
+        <TabsContent value="groups">
+          <SupportGroupManager />
+        </TabsContent>
+
+        <TabsContent value="ngos">
+          <NGOManager />
+        </TabsContent>
+
+        <TabsContent value="resources">
+          <ResourceManager />
         </TabsContent>
 
         <TabsContent value="events">
@@ -93,28 +113,19 @@ const AdminDashboard = () => {
             <CardHeader>
               <CardTitle>Event Management</CardTitle>
               <CardDescription>
-                Manage platform events and registrations
+                Create and manage platform events
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-slate-600">Event management interface coming in next phase...</p>
+              <EventPublisher />
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="analytics">
-          <Card>
-            <CardHeader>
-              <CardTitle>Platform Analytics</CardTitle>
-              <CardDescription>
-                View platform usage statistics and metrics
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-slate-600">Analytics dashboard coming in next phase...</p>
-            </CardContent>
-          </Card>
+        <TabsContent value="stats">
+          <StatsManager />
         </TabsContent>
+
 
         <TabsContent value="setup">
           <Card>

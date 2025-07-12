@@ -7,13 +7,28 @@ import { Label } from '@/components/ui/label';
 import { Calendar, Clock, MapPin, Users, Link as LinkIcon } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 
 const EventPublisher = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Get current user role from database (primary source)
+  const { data: userProfile } = useQuery({
+    queryKey: ['user-profile', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+      return data;
+    },
+    enabled: !!user,
+  });
   
   const [formData, setFormData] = useState({
     title: '',
@@ -93,7 +108,9 @@ const EventPublisher = () => {
     createEventMutation.mutate(formData);
   };
 
-  const canPublishEvents = user?.user_metadata?.role === 'admin' || user?.user_metadata?.role === 'ngo';
+  // Check role from database first, fallback to auth metadata
+  const userRole = userProfile?.role || user?.user_metadata?.role;
+  const canPublishEvents = userRole === 'admin' || userRole === 'ngo';
 
   if (!canPublishEvents) {
     return (

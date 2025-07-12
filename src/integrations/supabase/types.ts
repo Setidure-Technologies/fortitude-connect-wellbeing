@@ -1416,6 +1416,10 @@ export type Database = {
         Args: { _role: string }
         Returns: boolean
       }
+      is_group_member: {
+        Args: { group_uuid: string; user_uuid: string }
+        Returns: boolean
+      }
       sync_user_role: {
         Args: { user_id: string; new_role: string }
         Returns: undefined
