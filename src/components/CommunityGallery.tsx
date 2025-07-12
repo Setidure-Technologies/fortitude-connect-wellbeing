@@ -13,42 +13,42 @@ interface GalleryImage {
 const galleryImages: GalleryImage[] = [
   {
     id: '1',
-    src: '/lovable-uploads/7f7e6e3e-fffc-4705-baae-60d0e4aa1b34.jpeg',
+    src: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=800&q=80',
     alt: 'Cancer Awareness Rally - Join the Fight',
     category: 'awareness',
     description: 'Community members gathering to raise awareness and support cancer patients'
   },
   {
     id: '2', 
-    src: '/lovable-uploads/2ae2a92f-5b0c-409c-a23a-9bc9b0dc3e92.jpeg',
+    src: 'https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?auto=format&fit=crop&w=800&q=80',
     alt: 'Hands Holding in Support',
     category: 'connection',
     description: 'The power of human connection in cancer support'
   },
   {
     id: '3',
-    src: '/lovable-uploads/b48b7b3e-3bd2-451c-8c88-1825c1c69fcf.jpeg', 
+    src: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=800&q=80', 
     alt: 'Survivors Celebration at Sunset',
     category: 'celebration',
     description: 'Cancer survivors celebrating life and community together'
   },
   {
     id: '4',
-    src: '/lovable-uploads/2bbaacdb-8fcb-4e52-a1c8-ad95bb2c7f36.jpeg',
+    src: 'https://images.unsplash.com/photo-1593113646773-028c64a8f1b8?auto=format&fit=crop&w=800&q=80',
     alt: 'Community Unity - Paper Figures Holding Hands',
     category: 'support',
     description: 'Representing the unity and support within our community'
   },
   {
     id: '5',
-    src: '/lovable-uploads/60bc3b03-82ea-4157-a7c4-ee3abfebd95e.jpeg',
+    src: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?auto=format&fit=crop&w=800&q=80',
     alt: 'One Step at a Time Campaign',
     category: 'awareness',
     description: 'Our community campaign encouraging cancer patients to take it one step at a time'
   },
   {
     id: '6',
-    src: '/lovable-uploads/2e45fdc8-7b96-42f8-b96a-ef0c2eeff3c8.jpeg',
+    src: 'https://images.unsplash.com/photo-1547036967-23d11aacaee0?auto=format&fit=crop&w=800&q=80',
     alt: 'Celebration of Life and Support',
     category: 'celebration',
     description: 'Community members celebrating milestones and showing support'
@@ -134,6 +134,9 @@ const CommunityGallery = () => {
                 alt={image.alt}
                 className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
                 loading="lazy"
+                onError={(e) => {
+                  e.currentTarget.src = 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=800&q=80';
+                }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="absolute bottom-4 left-4 right-4 text-white">

@@ -33,13 +33,14 @@ export default {
 					foreground: 'hsl(var(--primary-foreground))'
 				},
         brand: {
-          blue: '#0073e6',
-          teal: '#008080',
-          purple: '#9C27B0',
-          green: '#C6F6D5',
-          yellow: '#FFF9C4',
-          pink: '#FADADD',
-          skyblue: '#D0E8F2'
+          blue: 'hsl(209, 100%, 45%)',
+          teal: 'hsl(180, 100%, 25%)',
+          purple: 'hsl(291, 64%, 42%)',
+          green: 'hsl(142, 68%, 70%)',
+          yellow: 'hsl(60, 100%, 88%)',
+          pink: 'hsl(350, 100%, 88%)',
+          skyblue: 'hsl(200, 69%, 84%)',
+          orange: 'hsl(25, 95%, 53%)'
         },
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
