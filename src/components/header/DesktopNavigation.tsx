@@ -26,7 +26,7 @@ const DesktopNavigation = () => {
   const userRole = contextRole || user?.user_metadata?.role;
 
   return (
-    <nav className="hidden md:flex items-center space-x-4 lg:space-x-6 xl:space-x-8">
+    <nav className="hidden md:flex items-center space-x-2 lg:space-x-4 xl:space-x-6">
       <Link 
         to="/" 
         className={`text-gray-700 hover:text-brand-blue transition-colors px-2 py-1 rounded-md ${

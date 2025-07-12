@@ -13,11 +13,17 @@ const Header = () => {
 
   return (
     <header className="bg-white shadow-sm border-b sticky top-0 z-50">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-        <div className="flex items-center justify-between h-16 lg:h-20">
-          <Logo />
-          <DesktopNavigation />
-          <AuthButtons />
+      <div className="container mx-auto px-3 sm:px-4 lg:px-6 max-w-7xl">
+        <div className="flex items-center justify-between h-16 lg:h-18 gap-4">
+          <div className="flex-shrink-0">
+            <Logo />
+          </div>
+          <div className="flex-1 flex justify-center">
+            <DesktopNavigation />
+          </div>
+          <div className="flex-shrink-0">
+            <AuthButtons />
+          </div>
 
           {/* Mobile Menu Button - Optimized touch target */}
           <button

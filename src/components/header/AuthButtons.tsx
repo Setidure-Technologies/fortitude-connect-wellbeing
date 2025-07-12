@@ -7,7 +7,7 @@ const AuthButtons = () => {
   const { isAuthenticated, logout } = useAuth();
 
   return (
-    <div className="hidden md:flex items-center space-x-2 lg:space-x-3 xl:space-x-4">
+    <div className="hidden md:flex items-center space-x-1 lg:space-x-2 xl:space-x-3">
       {isAuthenticated ? (
         <div className="flex items-center space-x-2 lg:space-x-3">
           <NotificationSystem />
