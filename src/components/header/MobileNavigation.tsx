@@ -119,7 +119,7 @@ const MobileNavigation = ({ isMenuOpen, setIsMenuOpen }: MobileNavigationProps) 
               className="px-4 py-3 text-gray-700 hover:text-brand-blue hover:bg-blue-50 rounded-lg mx-2 font-medium text-base touch-manipulation"
               onClick={() => setIsMenuOpen(false)}
             >
-              Chat with Forti
+              Forti
             </Link>
 
             {/* Admin Dashboard Link */}

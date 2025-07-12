@@ -133,8 +133,8 @@ const DesktopNavigation = () => {
                     isActivePath('/chat') ? 'text-brand-blue font-medium bg-blue-50' : ''
                   }`}
                 >
-                  <span className="hidden lg:inline">Chat with Forti</span>
-                  <span className="lg:hidden">Chat</span>
+                  <span className="hidden lg:inline">Forti</span>
+                  <span className="lg:hidden">Forti</span>
                 </Link>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="max-w-xs">
