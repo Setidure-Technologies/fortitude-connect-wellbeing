@@ -10,6 +10,7 @@ import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 interface DailyQuestion {
   id: string;
@@ -262,21 +263,24 @@ const DailyQuestion = () => {
               />
             ) : (
               /* Poll Options */
-              <div className="space-y-2">
-                {(todayQuestion.options || []).map((option: string, index: number) => (
-                  <label key={index} className="flex items-center space-x-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="pollOption"
+              <div className="space-y-3">
+                <ToggleGroup
+                  type="single"
+                  value={selectedOption}
+                  onValueChange={(value) => setSelectedOption(value || '')}
+                  className="flex flex-wrap justify-start gap-2"
+                  disabled={!user}
+                >
+                  {(todayQuestion.options || []).map((option: string, index: number) => (
+                    <ToggleGroupItem
+                      key={index}
                       value={option}
-                      checked={selectedOption === option}
-                      onChange={(e) => setSelectedOption(e.target.value)}
-                      className="text-purple-600"
-                      disabled={!user}
-                    />
-                    <span>{option}</span>
-                  </label>
-                ))}
+                      className="px-4 py-2 rounded-full border border-purple-200 data-[state=on]:bg-purple-600 data-[state=on]:text-white hover:bg-purple-50 transition-colors"
+                    >
+                      {option}
+                    </ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
               </div>
             )}
 

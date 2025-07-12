@@ -8,9 +8,12 @@ const About = () => {
       <div className="grid md:grid-cols-2 gap-16 items-center">
         <div>
           <img 
-            src="/lovable-uploads/a9c70b53-b4d4-4e1f-a8dd-d30f7ba3e13e.jpeg" 
+            src="/images/about/JHU.jpeg" 
             alt="Vanshika Rao - Founder of Fortitude Network" 
             className="rounded-lg shadow-lg aspect-square object-cover" 
+            onError={(e) => {
+              e.currentTarget.src = "/images/vanshika/vanshika_1.jpeg";
+            }}
           />
         </div>
         <div>
