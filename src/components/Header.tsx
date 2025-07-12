@@ -13,17 +13,18 @@ const Header = () => {
 
   return (
     <header className="bg-white shadow-sm border-b sticky top-0 z-50">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+        <div className="flex items-center justify-between h-16 lg:h-20">
           <Logo />
           <DesktopNavigation />
           <AuthButtons />
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button - Optimized touch target */}
           <button
-            className="md:hidden p-2"
+            className="md:hidden p-3 -mr-3 touch-manipulation"
             onClick={toggleMenu}
             aria-label="Toggle menu"
+            aria-expanded={isMenuOpen}
           >
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>

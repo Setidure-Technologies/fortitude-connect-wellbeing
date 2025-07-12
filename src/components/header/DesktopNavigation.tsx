@@ -26,11 +26,11 @@ const DesktopNavigation = () => {
   const userRole = contextRole || user?.user_metadata?.role;
 
   return (
-    <nav className="hidden md:flex items-center space-x-6">
+    <nav className="hidden md:flex items-center space-x-4 lg:space-x-6 xl:space-x-8">
       <Link 
         to="/" 
-        className={`text-gray-700 hover:text-brand-blue transition-colors ${
-          isActivePath('/') ? 'text-brand-blue font-medium' : ''
+        className={`text-gray-700 hover:text-brand-blue transition-colors px-2 py-1 rounded-md ${
+          isActivePath('/') ? 'text-brand-blue font-medium bg-blue-50' : ''
         }`}
       >
         Home
@@ -38,8 +38,8 @@ const DesktopNavigation = () => {
 
       <Link 
         to="/about" 
-        className={`text-gray-700 hover:text-brand-blue transition-colors ${
-          isActivePath('/about') ? 'text-brand-blue font-medium' : ''
+        className={`text-gray-700 hover:text-brand-blue transition-colors px-2 py-1 rounded-md ${
+          isActivePath('/about') ? 'text-brand-blue font-medium bg-blue-50' : ''
         }`}
       >
         About
@@ -47,46 +47,45 @@ const DesktopNavigation = () => {
 
       <Link 
         to="/resources" 
-        className={`text-gray-700 hover:text-brand-blue transition-colors ${
-          isActivePath('/resources') ? 'text-brand-blue font-medium' : ''
+        className={`text-gray-700 hover:text-brand-blue transition-colors px-2 py-1 rounded-md ${
+          isActivePath('/resources') ? 'text-brand-blue font-medium bg-blue-50' : ''
         }`}
       >
         Resources
       </Link>
 
-      <Link 
-        to="/connect" 
-        className={`text-gray-700 hover:text-brand-blue transition-colors ${
-          isActivePath('/connect') ? 'text-brand-blue font-medium' : ''
-        }`}
-      >
-        Connect
-      </Link>
-
-      {/* Community Dropdown */}
+      {/* Community Dropdown - Now includes Connect */}
       <DropdownMenu>
-        <DropdownMenuTrigger className="flex items-center space-x-1 text-gray-700 hover:text-brand-blue transition-colors">
+        <DropdownMenuTrigger className={`flex items-center space-x-1 text-gray-700 hover:text-brand-blue transition-colors px-2 py-1 rounded-md ${
+          ['/forum', '/support-groups', '/events', '/stories', '/connect'].some(path => isActivePath(path)) 
+            ? 'text-brand-blue font-medium bg-blue-50' : ''
+        }`}>
           <span>Community</span>
           <ChevronDown className="h-4 w-4" />
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="bg-white border shadow-lg">
+        <DropdownMenuContent className="bg-white border shadow-lg z-50 min-w-[180px]">
           <DropdownMenuItem asChild>
-            <Link to="/forum" className="w-full">
+            <Link to="/connect" className="w-full flex items-center">
+              Connect
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to="/forum" className="w-full flex items-center">
               Discussion Forum
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to="/support-groups" className="w-full">
+            <Link to="/support-groups" className="w-full flex items-center">
               Support Groups
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to="/events" className="w-full">
+            <Link to="/events" className="w-full flex items-center">
               Events
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to="/stories" className="w-full">
+            <Link to="/stories" className="w-full flex items-center">
               Stories
             </Link>
           </DropdownMenuItem>
@@ -95,24 +94,28 @@ const DesktopNavigation = () => {
 
       {/* Documentation Dropdown */}
       <DropdownMenu>
-        <DropdownMenuTrigger className="flex items-center space-x-1 text-gray-700 hover:text-brand-blue transition-colors">
+        <DropdownMenuTrigger className={`flex items-center space-x-1 text-gray-700 hover:text-brand-blue transition-colors px-2 py-1 rounded-md ${
+          ['/docs/platform', '/docs/donate', '/docs/rules'].some(path => isActivePath(path)) 
+            ? 'text-brand-blue font-medium bg-blue-50' : ''
+        }`}>
           <FileText className="h-4 w-4" />
-          <span>Documentation</span>
+          <span className="hidden lg:inline">Documentation</span>
+          <span className="lg:hidden">Docs</span>
           <ChevronDown className="h-4 w-4" />
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="bg-white border shadow-lg">
+        <DropdownMenuContent className="bg-white border shadow-lg z-50 min-w-[180px]">
           <DropdownMenuItem asChild>
-            <Link to="/docs/platform" className="w-full">
+            <Link to="/docs/platform" className="w-full flex items-center">
               Platform Guide
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to="/docs/donate" className="w-full">
+            <Link to="/docs/donate" className="w-full flex items-center">
               Donation Guide
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to="/docs/rules" className="w-full">
+            <Link to="/docs/rules" className="w-full flex items-center">
               Community Rules
             </Link>
           </DropdownMenuItem>
@@ -126,15 +129,16 @@ const DesktopNavigation = () => {
               <TooltipTrigger asChild>
                 <Link 
                   to="/chat" 
-                  className={`text-gray-700 hover:text-brand-blue transition-colors ${
-                    isActivePath('/chat') ? 'text-brand-blue font-medium' : ''
+                  className={`text-gray-700 hover:text-brand-blue transition-colors px-2 py-1 rounded-md ${
+                    isActivePath('/chat') ? 'text-brand-blue font-medium bg-blue-50' : ''
                   }`}
                 >
-                  Chat with Forti
+                  <span className="hidden lg:inline">Chat with Forti</span>
+                  <span className="lg:hidden">Chat</span>
                 </Link>
               </TooltipTrigger>
-              <TooltipContent>
-                <p className="max-w-xs text-sm">
+              <TooltipContent side="bottom" className="max-w-xs">
+                <p className="text-sm">
                   Your 24/7 AI companion trained specifically for cancer support. 
                   Get personalized guidance, emotional support, and answers to your 
                   questions in complete confidentiality.
@@ -147,12 +151,12 @@ const DesktopNavigation = () => {
           {userRole === 'admin' && (
             <Link 
               to="/admin" 
-              className={`text-gray-700 hover:text-brand-blue transition-colors flex items-center gap-1 ${
-                isActivePath('/admin') ? 'text-brand-blue font-medium' : ''
+              className={`text-gray-700 hover:text-brand-blue transition-colors flex items-center gap-1 px-2 py-1 rounded-md ${
+                isActivePath('/admin') ? 'text-brand-blue font-medium bg-blue-50' : ''
               }`}
             >
               <Shield className="h-4 w-4" />
-              Admin
+              <span className="hidden xl:inline">Admin</span>
             </Link>
           )}
 
@@ -160,12 +164,12 @@ const DesktopNavigation = () => {
           {(userRole === 'ngo' || userRole === 'admin') && (
             <Link 
               to="/ngo-dashboard" 
-              className={`text-gray-700 hover:text-brand-blue transition-colors flex items-center gap-1 ${
-                isActivePath('/ngo-dashboard') ? 'text-brand-blue font-medium' : ''
+              className={`text-gray-700 hover:text-brand-blue transition-colors flex items-center gap-1 px-2 py-1 rounded-md ${
+                isActivePath('/ngo-dashboard') ? 'text-brand-blue font-medium bg-blue-50' : ''
               }`}
             >
               <Building2 className="h-4 w-4" />
-              {userRole === 'admin' ? 'NGO' : 'Dashboard'}
+              <span className="hidden xl:inline">{userRole === 'admin' ? 'NGO' : 'Dashboard'}</span>
             </Link>
           )}
         </>
@@ -173,8 +177,8 @@ const DesktopNavigation = () => {
 
       <Link 
         to="/donate" 
-        className={`text-gray-700 hover:text-brand-blue transition-colors ${
-          isActivePath('/donate') ? 'text-brand-blue font-medium' : ''
+        className={`text-gray-700 hover:text-brand-blue transition-colors px-2 py-1 rounded-md font-medium ${
+          isActivePath('/donate') ? 'text-brand-blue bg-blue-50' : 'hover:bg-blue-50'
         }`}
       >
         Donate

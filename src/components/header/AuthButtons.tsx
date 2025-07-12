@@ -7,24 +7,34 @@ const AuthButtons = () => {
   const { isAuthenticated, logout } = useAuth();
 
   return (
-    <div className="hidden md:flex items-center space-x-4">
+    <div className="hidden md:flex items-center space-x-2 lg:space-x-3 xl:space-x-4">
       {isAuthenticated ? (
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2 lg:space-x-3">
           <NotificationSystem />
           <Link to="/profile">
-            <Button variant="ghost">Profile</Button>
+            <Button variant="ghost" size="sm" className="px-3 py-2">
+              <span className="hidden lg:inline">Profile</span>
+              <span className="lg:hidden">👤</span>
+            </Button>
           </Link>
-          <Button variant="outline" onClick={logout}>
-            Sign Out
+          <Button variant="outline" size="sm" onClick={logout} className="px-3 py-2">
+            <span className="hidden lg:inline">Sign Out</span>
+            <span className="lg:hidden">↗</span>
           </Button>
         </div>
       ) : (
         <div className="flex items-center space-x-2">
           <Link to="/auth">
-            <Button variant="outline">Login</Button>
+            <Button variant="outline" size="sm" className="px-3 py-2">
+              <span className="hidden lg:inline">Login</span>
+              <span className="lg:hidden">↗</span>
+            </Button>
           </Link>
           <Link to="/auth">
-            <Button>Sign Up</Button>
+            <Button size="sm" className="px-3 py-2">
+              <span className="hidden lg:inline">Sign Up</span>
+              <span className="lg:hidden">+</span>
+            </Button>
           </Link>
         </div>
       )}
