@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from './ui/button';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from './ui/carousel';
 
 interface GalleryImage {
   id: string;
@@ -11,47 +18,105 @@ interface GalleryImage {
 }
 
 const galleryImages: GalleryImage[] = [
+  // Event Images
   {
     id: '1',
-    src: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=800&q=80',
-    alt: 'Cancer Awareness Rally - Join the Fight',
-    category: 'awareness',
-    description: 'Community members gathering to raise awareness and support cancer patients'
+    src: '/images/events/Vana 1.jpg',
+    alt: 'Fortitude Network Community Event',
+    category: 'celebration',
+    description: 'Community members coming together at our awareness event'
   },
   {
-    id: '2', 
-    src: 'https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?auto=format&fit=crop&w=800&q=80',
-    alt: 'Hands Holding in Support',
-    category: 'connection',
-    description: 'The power of human connection in cancer support'
+    id: '2',
+    src: '/images/events/Vana 2.jpg',
+    alt: 'Community Support Gathering',
+    category: 'support',
+    description: 'Building connections and sharing support within our community'
   },
   {
     id: '3',
-    src: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=800&q=80', 
-    alt: 'Survivors Celebration at Sunset',
-    category: 'celebration',
-    description: 'Cancer survivors celebrating life and community together'
+    src: '/images/events/Vana 3.jpeg',
+    alt: 'Awareness Campaign Event',
+    category: 'awareness',
+    description: 'Spreading awareness and hope throughout the community'
   },
   {
     id: '4',
-    src: 'https://images.unsplash.com/photo-1593113646773-028c64a8f1b8?auto=format&fit=crop&w=800&q=80',
-    alt: 'Community Unity - Paper Figures Holding Hands',
-    category: 'support',
-    description: 'Representing the unity and support within our community'
+    src: '/images/events/Vana 4.jpeg',
+    alt: 'Community Unity Event',
+    category: 'connection',
+    description: 'Connecting individuals and families affected by cancer'
   },
   {
     id: '5',
-    src: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?auto=format&fit=crop&w=800&q=80',
-    alt: 'One Step at a Time Campaign',
-    category: 'awareness',
-    description: 'Our community campaign encouraging cancer patients to take it one step at a time'
+    src: '/images/events/Vana 5.jpg',
+    alt: 'Celebration of Survivors',
+    category: 'celebration',
+    description: 'Honoring survivors and celebrating their strength'
   },
   {
     id: '6',
-    src: 'https://images.unsplash.com/photo-1547036967-23d11aacaee0?auto=format&fit=crop&w=800&q=80',
-    alt: 'Celebration of Life and Support',
+    src: '/images/events/Vana 6.jpg',
+    alt: 'Support Network Meeting',
+    category: 'support',
+    description: 'Creating lasting support networks within our community'
+  },
+  {
+    id: '7',
+    src: '/images/events/Vana 7.jpg',
+    alt: 'Community Outreach Program',
+    category: 'awareness',
+    description: 'Reaching out to expand our supportive community'
+  },
+  // Vanshika Images
+  {
+    id: '8',
+    src: '/images/vanshika/vanshika_1.jpeg',
+    alt: 'Vanshika Rao - Founder Vision',
+    category: 'connection',
+    description: 'Our founder Vanshika sharing her vision for community support'
+  },
+  {
+    id: '9',
+    src: '/images/vanshika/vanshika_2.jpeg',
+    alt: 'Leadership in Action',
+    category: 'support',
+    description: 'Leading by example in community building and support'
+  },
+  {
+    id: '10',
+    src: '/images/vanshika/vanshika_3.jpeg',
+    alt: 'Community Engagement',
+    category: 'awareness',
+    description: 'Engaging with community members and spreading awareness'
+  },
+  {
+    id: '11',
+    src: '/images/vanshika/vanshika_4.jpeg',
+    alt: 'Inspiring Hope',
     category: 'celebration',
-    description: 'Community members celebrating milestones and showing support'
+    description: 'Inspiring hope and resilience in the cancer community'
+  },
+  {
+    id: '12',
+    src: '/images/vanshika/vanshika_5.jpeg',
+    alt: 'Building Connections',
+    category: 'connection',
+    description: 'Creating meaningful connections within our network'
+  },
+  {
+    id: '13',
+    src: '/images/vanshika/vanshika_6.jpeg',
+    alt: 'Advocacy in Action',
+    category: 'support',
+    description: 'Advocating for better support systems for cancer patients'
+  },
+  {
+    id: '14',
+    src: '/images/vanshika/vanshika_7.jpeg',
+    alt: 'Community Leadership',
+    category: 'awareness',
+    description: 'Leading community initiatives for cancer awareness and support'
   }
 ];
 
@@ -121,30 +186,43 @@ const CommunityGallery = () => {
           </div>
         </div>
 
-        {/* Image Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {filteredImages.map((image) => (
-            <div
-              key={image.id}
-              className="group relative overflow-hidden rounded-lg shadow-lg cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
-              onClick={() => openModal(image)}
-            >
-              <img
-                src={image.src}
-                alt={image.alt}
-                className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
-                loading="lazy"
-                onError={(e) => {
-                  e.currentTarget.src = 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=800&q=80';
-                }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="absolute bottom-4 left-4 right-4 text-white">
-                  <p className="text-sm font-medium">{image.description}</p>
-                </div>
-              </div>
-            </div>
-          ))}
+        {/* Image Carousel */}
+        <div className="max-w-6xl mx-auto">
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-2 md:-ml-4">
+              {filteredImages.map((image) => (
+                <CarouselItem key={image.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                  <div
+                    className="group relative overflow-hidden rounded-lg shadow-lg cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                    onClick={() => openModal(image)}
+                  >
+                    <img
+                      src={image.src}
+                      alt={image.alt}
+                      className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
+                      loading="lazy"
+                      onError={(e) => {
+                        e.currentTarget.src = '/images/events/Vana 1.jpg';
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="absolute bottom-4 left-4 right-4 text-white">
+                        <p className="text-sm font-medium">{image.description}</p>
+                      </div>
+                    </div>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-2" />
+            <CarouselNext className="right-2" />
+          </Carousel>
         </div>
 
         {/* Modal */}
