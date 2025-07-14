@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Upload, User } from 'lucide-react';
+import { Upload, User, Copy } from 'lucide-react';
 import type { Database } from '@/integrations/supabase/types';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
@@ -91,7 +91,8 @@ const ProfileForm = () => {
 
       const { error } = await supabase
         .from('profiles')
-        .upsert({ id: user.id, ...updateData });
+        .update(updateData)
+        .eq('id', user.id);
 
       if (error) throw error;
 
@@ -134,11 +135,11 @@ const ProfileForm = () => {
 
       const { error: updateError } = await supabase
         .from('profiles')
-        .upsert({
-          id: user.id,
+        .update({
           profile_image_url: publicUrl,
           updated_at: new Date().toISOString(),
-        });
+        })
+        .eq('id', user.id);
 
       if (updateError) throw updateError;
 
@@ -181,15 +182,30 @@ const ProfileForm = () => {
               }
             </AvatarFallback>
           </Avatar>
-          <div>
-            <Label htmlFor="avatar" className="cursor-pointer">
-              <Button variant="outline" size="sm" disabled={uploading} asChild>
-                <span>
-                  <Upload className="h-4 w-4 mr-2" />
-                  {uploading ? 'Uploading...' : 'Change Photo'}
-                </span>
-              </Button>
-            </Label>
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-3">
+              <Label htmlFor="avatar" className="cursor-pointer">
+                <Button variant="outline" size="sm" disabled={uploading} asChild>
+                  <span>
+                    <Upload className="h-4 w-4 mr-2" />
+                    {uploading ? 'Uploading...' : 'Change Photo'}
+                  </span>
+                </Button>
+              </Label>
+              {profile?.display_id && (
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(profile.display_id);
+                    toast({ title: "Display ID copied to clipboard!" });
+                  }}
+                  className="flex items-center gap-1 bg-blue-100 hover:bg-blue-200 text-blue-800 px-2 py-1 rounded-md text-sm font-medium transition-colors"
+                  title="Click to copy your Display ID"
+                >
+                  <span>{profile.display_id}</span>
+                  <Copy className="h-3 w-3" />
+                </button>
+              )}
+            </div>
             <Input
               id="avatar"
               type="file"

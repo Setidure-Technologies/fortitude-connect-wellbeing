@@ -907,6 +907,7 @@ export type Database = {
           cancer_type: Database["public"]["Enums"]["cancer_type"] | null
           created_at: string | null
           diagnosis_date: string | null
+          display_id: string
           email: string | null
           full_name: string | null
           id: string
@@ -923,6 +924,7 @@ export type Database = {
           cancer_type?: Database["public"]["Enums"]["cancer_type"] | null
           created_at?: string | null
           diagnosis_date?: string | null
+          display_id: string
           email?: string | null
           full_name?: string | null
           id: string
@@ -939,6 +941,7 @@ export type Database = {
           cancer_type?: Database["public"]["Enums"]["cancer_type"] | null
           created_at?: string | null
           diagnosis_date?: string | null
+          display_id?: string
           email?: string | null
           full_name?: string | null
           id?: string
@@ -1408,7 +1411,15 @@ export type Database = {
         Args: { target_user_id: string }
         Returns: undefined
       }
+      generate_display_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_current_user_role: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      get_unique_display_id: {
         Args: Record<PropertyKey, never>
         Returns: string
       }

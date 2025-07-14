@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
-import { Search, Users, UserPlus, MessageCircle, Clock, Check, X, Circle, User } from 'lucide-react';
+import { Search, Users, UserPlus, MessageCircle, Clock, Check, X, Circle, User, Copy } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -22,6 +22,7 @@ interface UserProfile {
   bio?: string;
   profile_image_url?: string;
   is_online?: boolean;
+  display_id?: string;
 }
 
 interface Connection {
@@ -308,7 +309,22 @@ const Connect = () => {
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <CardTitle className="text-lg truncate">{profile.full_name}</CardTitle>
+                          <div className="flex items-center gap-2 mb-1">
+                            <CardTitle className="text-lg truncate">{profile.full_name}</CardTitle>
+                            {profile.display_id && (
+                              <button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(profile.display_id);
+                                  toast({ title: "Display ID copied!" });
+                                }}
+                                className="flex items-center gap-1 bg-gray-100 hover:bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded text-xs font-medium transition-colors"
+                                title="Click to copy Display ID"
+                              >
+                                <span>{profile.display_id}</span>
+                                <Copy className="h-2.5 w-2.5" />
+                              </button>
+                            )}
+                          </div>
                           <div className="flex flex-wrap gap-1 mt-1">
                             <Badge variant="secondary" className="text-xs">{profile.role}</Badge>
                             {profile.is_online && (

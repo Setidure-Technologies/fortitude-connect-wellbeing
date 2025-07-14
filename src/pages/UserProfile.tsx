@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { UserPlus, MessageSquare, User, Heart, Calendar } from 'lucide-react';
+import { UserPlus, MessageSquare, User, Heart, Calendar, Copy } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -137,6 +137,19 @@ const UserProfile = () => {
                   <h1 className="text-2xl font-bold">
                     {profile.is_anonymous ? 'Anonymous User' : profile.full_name}
                   </h1>
+                  {profile.display_id && (
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(profile.display_id);
+                        toast({ title: "Display ID copied to clipboard!" });
+                      }}
+                      className="flex items-center gap-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded-md text-sm font-medium transition-colors"
+                      title="Click to copy Display ID"
+                    >
+                      <span>{profile.display_id}</span>
+                      <Copy className="h-3 w-3" />
+                    </button>
+                  )}
                   <Badge className={getRoleColor(profile.role || 'patient')}>
                     {profile.role || 'patient'}
                   </Badge>
