@@ -10,6 +10,7 @@ import CollaboratorsSection from '@/components/CollaboratorsSection';
 import CommunityGallery from '@/components/CommunityGallery';
 import CancerAwarenessStats from '@/components/CancerAwarenessStats';
 import DailyQuestion from '@/components/DailyQuestion';
+import heroBackground from '@/assets/hero-background.jpg';
 
 const Index = () => {
   const { isAuthenticated } = useAuth();
@@ -17,52 +18,125 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-brand-blue to-brand-teal text-white py-20">
-        <div className="container mx-auto px-4 text-center">
-          <div className="flex items-center justify-center space-x-3 mb-6">
-            <img 
-              src="/Fortitude_logo.png" 
-              alt="Fortitude Network Logo" 
-              className="h-12 w-12 object-contain"
-              onError={(e) => {
-                e.currentTarget.src = '/Fortitude_logo.png';
-              }}
-            />
-            <h1 className="text-4xl md:text-6xl font-bold">Fortitude Network</h1>
+      <section 
+        className="relative min-h-screen flex items-center justify-center text-white overflow-hidden"
+        style={{
+          backgroundImage: `url(${heroBackground})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+        {/* Animated Background Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-brand-blue/80 via-brand-teal/70 to-brand-purple/60 backdrop-blur-[2px]"></div>
+        
+        {/* Floating Elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* Floating Ribbons */}
+          <div className="absolute top-20 left-10 w-8 h-8 bg-pink-400/30 rounded-full animate-bounce" style={{ animationDelay: '0s', animationDuration: '3s' }}></div>
+          <div className="absolute top-40 right-20 w-6 h-6 bg-yellow-400/40 rounded-full animate-bounce" style={{ animationDelay: '1s', animationDuration: '4s' }}></div>
+          <div className="absolute bottom-32 left-16 w-4 h-4 bg-purple-400/30 rounded-full animate-bounce" style={{ animationDelay: '2s', animationDuration: '3.5s' }}></div>
+          <div className="absolute bottom-20 right-32 w-7 h-7 bg-blue-400/35 rounded-full animate-bounce" style={{ animationDelay: '1.5s', animationDuration: '4.2s' }}></div>
+          
+          {/* Floating Hearts */}
+          <div className="absolute top-60 left-1/4 text-pink-300/40 animate-pulse" style={{ animationDelay: '0.5s' }}>💖</div>
+          <div className="absolute bottom-40 right-1/4 text-yellow-300/40 animate-pulse" style={{ animationDelay: '2s' }}>🎗️</div>
+          <div className="absolute top-32 right-1/3 text-purple-300/40 animate-pulse" style={{ animationDelay: '1.2s' }}>💜</div>
+        </div>
+        
+        {/* Main Content */}
+        <div className="relative z-10 container mx-auto px-4 text-center">
+          <div className="max-w-5xl mx-auto">
+            {/* Glass Morphism Container */}
+            <div className="bg-white/10 backdrop-blur-md rounded-3xl p-8 md:p-12 border border-white/20 shadow-2xl">
+              <div className="flex items-center justify-center space-x-4 mb-8 animate-fade-in">
+                <div className="relative">
+                  <img 
+                    src="/Fortitude_logo.png" 
+                    alt="Fortitude Network Logo" 
+                    className="h-16 w-16 object-contain drop-shadow-lg transform hover:scale-110 transition-transform duration-300"
+                    onError={(e) => {
+                      e.currentTarget.src = '/Fortitude_logo.png';
+                    }}
+                  />
+                  <div className="absolute -inset-2 bg-white/20 rounded-full blur-md -z-10"></div>
+                </div>
+                <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent drop-shadow-lg">
+                  Fortitude Network
+                </h1>
+              </div>
+              
+              <p className="text-xl md:text-2xl mb-10 max-w-4xl mx-auto leading-relaxed text-white/95 font-medium animate-fade-in" style={{ animationDelay: '0.3s' }}>
+                A compassionate community connecting cancer patients, survivors, caregivers, and support organizations in one supportive platform
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-6 justify-center animate-fade-in" style={{ animationDelay: '0.6s' }}>
+                {!isAuthenticated ? (
+                  <>
+                    <Button 
+                      size="lg" 
+                      className="bg-white text-brand-blue hover:bg-blue-50 font-semibold text-lg px-8 py-4 rounded-xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300" 
+                      asChild
+                    >
+                      <Link to="/auth">Join Our Community</Link>
+                    </Button>
+                    <Button 
+                      size="lg" 
+                      variant="outline" 
+                      className="border-2 border-white bg-white/20 text-white hover:bg-white hover:text-brand-blue backdrop-blur-sm font-semibold text-lg px-8 py-4 rounded-xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300" 
+                      asChild
+                    >
+                      <Link to="/about">Learn More</Link>
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button 
+                      size="lg" 
+                      className="bg-white text-brand-blue hover:bg-blue-50 font-semibold text-lg px-8 py-4 rounded-xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300" 
+                      asChild
+                    >
+                      <Link to="/chat">Chat with Forti</Link>
+                    </Button>
+                    <Button 
+                      size="lg" 
+                      variant="outline" 
+                      className="border-2 border-white bg-white/20 text-white hover:bg-white hover:text-brand-blue backdrop-blur-sm font-semibold text-lg px-8 py-4 rounded-xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300" 
+                      asChild
+                    >
+                      <Link to="/community">Explore Community</Link>
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+            
+            {/* Support Statistics */}
+            <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 animate-fade-in" style={{ animationDelay: '0.9s' }}>
+              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20">
+                <div className="text-2xl md:text-3xl font-bold mb-1">24/7</div>
+                <div className="text-sm text-white/80">AI Support</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20">
+                <div className="text-2xl md:text-3xl font-bold mb-1">1000+</div>
+                <div className="text-sm text-white/80">Community Members</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20">
+                <div className="text-2xl md:text-3xl font-bold mb-1">50+</div>
+                <div className="text-sm text-white/80">Support Groups</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20">
+                <div className="text-2xl md:text-3xl font-bold mb-1">100%</div>
+                <div className="text-sm text-white/80">Confidential</div>
+              </div>
+            </div>
           </div>
-          <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto leading-relaxed">
-            A compassionate community connecting cancer patients, survivors, caregivers, and support organizations in one supportive platform
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            {!isAuthenticated ? (
-              <>
-                <Button size="lg" className="bg-white text-brand-blue hover:bg-gray-100" asChild>
-                  <Link to="/auth">Join Our Community</Link>
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="border-2 border-white bg-white/10 text-white hover:bg-white hover:text-brand-blue backdrop-blur-sm font-medium" 
-                  asChild
-                >
-                  <Link to="/about">Learn More</Link>
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button size="lg" className="bg-white text-brand-blue hover:bg-gray-100" asChild>
-                  <Link to="/chat">Chat with Forti</Link>
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="border-2 border-white bg-white/10 text-white hover:bg-white hover:text-brand-blue backdrop-blur-sm font-medium" 
-                  asChild
-                >
-                  <Link to="/community">Explore Community</Link>
-                </Button>
-              </>
-            )}
+        </div>
+        
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center">
+            <div className="w-1 h-3 bg-white/50 rounded-full mt-2 animate-pulse"></div>
           </div>
         </div>
       </section>
