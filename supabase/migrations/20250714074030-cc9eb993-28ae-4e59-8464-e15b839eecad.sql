@@ -1,0 +1,3 @@
+-- Insert question for today (July 14, 2025)
+INSERT INTO daily_questions (question, question_type, options, featured_date, is_active) VALUES 
+('Welcome to our daily question series! What brings you to the Fortitude Network community today?', 'multiple_choice', '["Seeking support and connection", "Looking for treatment information", "Want to share my story", "Supporting a loved one", "Other"]', '2025-07-14', true);
