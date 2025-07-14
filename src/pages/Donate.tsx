@@ -133,7 +133,7 @@ const Donate = () => {
                 <div className="text-sm text-slate-600">Events Hosted</div>
               </div>
               <div className="bg-white p-4 rounded-lg text-center shadow-sm">
-                <div className="text-2xl font-bold text-brand-green">${stats.total_donations?.toLocaleString()}</div>
+                <div className="text-2xl font-bold text-brand-green">₹{stats.total_donations?.toLocaleString()}</div>
                 <div className="text-sm text-slate-600">Funds Raised</div>
               </div>
             </div>
@@ -161,7 +161,7 @@ const Donate = () => {
                         }}
                         className="h-12"
                       >
-                        ${preset}
+                        ₹{preset}
                       </Button>
                     ))}
                   </div>
@@ -233,7 +233,7 @@ const Donate = () => {
                   disabled={createDonationMutation.isPending}
                 >
                   <Heart className="mr-2 h-4 w-4" /> 
-                  Donate ${customAmount || amount} via PayPal
+                  Donate ₹{customAmount || amount} via PayPal
                 </Button>
                 
                 <div className="flex items-center justify-center text-xs text-slate-500">

@@ -70,10 +70,10 @@ const DonationGuide = () => {
                   </p>
                   <div className="bg-slate-50 p-4 rounded-lg">
                     <div className="text-sm text-slate-700 space-y-1">
-                      <p><strong>$25</strong> - Supports one person's access for a month</p>
-                      <p><strong>$50</strong> - Funds a support group session</p>
-                      <p><strong>$100</strong> - Sponsors a community workshop</p>
-                      <p><strong>$250</strong> - Supports platform maintenance for a week</p>
+                      <p><strong>₹25</strong> - Supports one person's access for a month</p>
+                      <p><strong>₹50</strong> - Funds a support group session</p>
+                      <p><strong>₹100</strong> - Sponsors a community workshop</p>
+                      <p><strong>₹250</strong> - Supports platform maintenance for a week</p>
                     </div>
                   </div>
                 </div>

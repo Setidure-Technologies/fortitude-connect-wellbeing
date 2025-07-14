@@ -71,7 +71,7 @@ const ImpactStats = () => {
           </div>
           <div className="text-center">
             <div className="text-4xl font-bold text-brand-green mb-2">
-              ${stats?.total_donations?.toLocaleString() || '25,430'}
+              ₹{stats?.total_donations?.toLocaleString() || '25,430'}
             </div>
             <div className="text-sm text-slate-600">Funds Raised</div>
           </div>
