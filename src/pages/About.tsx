@@ -1,6 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import AdSenseAd from '@/components/AdSenseAd';
 
 const About = () => {
   return (
@@ -44,6 +45,20 @@ const About = () => {
             <h3 className="text-xl font-semibold mb-2 text-brand-teal">Our Mission</h3>
             <p className="text-slate-600">To bridge the gap between medical treatment and holistic support by creating an inclusive online platform that connects cancer patients, survivors, mental health professionals, and advocacy groups, ensuring they feel seen, supported, and empowered.</p>
           </div>
+        </div>
+      </div>
+
+      {/* Advertisement */}
+      <div className="bg-gray-50 py-8">
+        <div className="container mx-auto px-4">
+          <AdSenseAd adSlot="2234567890" />
+        </div>
+      </div>
+
+      {/* Advertisement */}
+      <div className="bg-white py-8">
+        <div className="container mx-auto px-4">
+          <AdSenseAd adSlot="2234567891" />
         </div>
       </div>
 
@@ -98,6 +113,13 @@ const About = () => {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Advertisement */}
+      <div className="bg-gray-50 py-8">
+        <div className="container mx-auto px-4">
+          <AdSenseAd adSlot="2234567892" />
         </div>
       </div>
     </div>

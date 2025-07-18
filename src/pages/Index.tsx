@@ -11,6 +11,7 @@ import CommunityGallery from '@/components/CommunityGallery';
 import CancerAwarenessStats from '@/components/CancerAwarenessStats';
 import DailyQuestion from '@/components/DailyQuestion';
 import heroBackground from '@/assets/hero-background.jpg';
+import AdSenseAd from '@/components/AdSenseAd';
 
 const Index = () => {
   const { isAuthenticated } = useAuth();
@@ -269,8 +270,29 @@ const Index = () => {
       {/* Impact Stats */}
       <ImpactStats />
 
+      {/* Advertisement */}
+      <div className="bg-gray-50 py-8">
+        <div className="container mx-auto px-4">
+          <AdSenseAd adSlot="1234567890" />
+        </div>
+      </div>
+
       {/* Collaborators Section */}
       <CollaboratorsSection />
+
+      {/* Advertisement */}
+      <div className="bg-white py-8">
+        <div className="container mx-auto px-4">
+          <AdSenseAd adSlot="1234567891" />
+        </div>
+      </div>
+
+      {/* Advertisement */}
+      <div className="bg-gray-50 py-8">
+        <div className="container mx-auto px-4">
+          <AdSenseAd adSlot="1234567892" />
+        </div>
+      </div>
 
       {/* CTA Section */}
       <section className="py-16 bg-brand-blue text-white">
