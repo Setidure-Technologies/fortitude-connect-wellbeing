@@ -8,7 +8,7 @@ import Index from "./pages/Index";
 import About from "./pages/About";
 import Offerings from "./pages/Offerings";
 import Community from "./pages/Community";
-import Donate from "./pages/Donate";
+import Support from "./pages/Support";
 import Chat from "./pages/Chat";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
@@ -58,7 +58,7 @@ const App = () => (
               <Route path="/events" element={<Events />} />
               <Route path="/stories" element={<Stories />} />
               
-              <Route path="/donate" element={<Donate />} />
+              <Route path="/support" element={<Support />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/docs/platform" element={<PlatformGuide />} />

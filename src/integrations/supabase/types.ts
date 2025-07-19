@@ -473,6 +473,7 @@ export type Database = {
       donations: {
         Row: {
           amount: number
+          benefits_status: string | null
           created_at: string
           currency: string
           donor_email: string | null
@@ -482,11 +483,14 @@ export type Database = {
           message: string | null
           payment_method: string
           status: string
+          subscription_type: string | null
+          tier: number | null
           transaction_id: string | null
           user_id: string | null
         }
         Insert: {
           amount: number
+          benefits_status?: string | null
           created_at?: string
           currency?: string
           donor_email?: string | null
@@ -496,11 +500,14 @@ export type Database = {
           message?: string | null
           payment_method?: string
           status?: string
+          subscription_type?: string | null
+          tier?: number | null
           transaction_id?: string | null
           user_id?: string | null
         }
         Update: {
           amount?: number
+          benefits_status?: string | null
           created_at?: string
           currency?: string
           donor_email?: string | null
@@ -510,6 +517,8 @@ export type Database = {
           message?: string | null
           payment_method?: string
           status?: string
+          subscription_type?: string | null
+          tier?: number | null
           transaction_id?: string | null
           user_id?: string | null
         }

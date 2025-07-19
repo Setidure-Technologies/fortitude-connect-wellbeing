@@ -20,7 +20,7 @@ const Footer = () => {
               <li><Link to="/about" className="text-sm text-slate-600 hover:text-brand-blue">About Us</Link></li>
               <li><Link to="/offerings" className="text-sm text-slate-600 hover:text-brand-blue">Our Offerings</Link></li>
               <li><Link to="/community" className="text-sm text-slate-600 hover:text-brand-blue">Community Hub</Link></li>
-              <li><Link to="/donate" className="text-sm text-slate-600 hover:text-brand-blue">Donate</Link></li>
+              <li><Link to="/support" className="text-sm text-slate-600 hover:text-brand-blue">Support Us</Link></li>
             </ul>
           </div>
           <div>
@@ -39,7 +39,7 @@ const Footer = () => {
           </div>
         </div>
         <div className="mt-8 border-t pt-8 text-center text-sm text-slate-500">
-          <p>Copyright © {new Date().getFullYear()} Fortitude Network. A non-profit initiative.</p>
+          <p>Copyright © {new Date().getFullYear()} Fortitude Network. Powered by Setidure Technologies Pvt. Ltd.</p>
         </div>
       </div>
     </footer>

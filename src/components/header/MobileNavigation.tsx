@@ -157,11 +157,11 @@ const MobileNavigation = ({ isMenuOpen, setIsMenuOpen }: MobileNavigationProps) 
         )}
 
         <Link 
-          to="/donate" 
+          to="/support" 
           className="px-4 py-3 text-brand-blue hover:text-brand-blue hover:bg-blue-50 rounded-lg mx-2 font-semibold text-base touch-manipulation bg-blue-50 border-2 border-blue-200"
           onClick={() => setIsMenuOpen(false)}
         >
-          Donate
+          Support Us
         </Link>
 
         {/* Auth Buttons Mobile - Enhanced touch targets */}

@@ -176,12 +176,12 @@ const DesktopNavigation = () => {
       )}
 
       <Link 
-        to="/donate" 
+        to="/support" 
         className={`text-gray-700 hover:text-brand-blue transition-colors px-2 py-1 rounded-md font-medium ${
-          isActivePath('/donate') ? 'text-brand-blue bg-blue-50' : 'hover:bg-blue-50'
+          isActivePath('/support') ? 'text-brand-blue bg-blue-50' : 'hover:bg-blue-50'
         }`}
       >
-        Donate
+        Support
       </Link>
     </nav>
   );
