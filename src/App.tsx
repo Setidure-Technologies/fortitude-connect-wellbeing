@@ -28,6 +28,10 @@ import CommunityRules from "./pages/CommunityRules";
 import SupportGroups from "./pages/SupportGroups";
 import Resources from "./pages/Resources";
 import Connect from "./pages/Connect";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import RefundPolicy from "./pages/RefundPolicy";
+import ContactUs from "./pages/ContactUs";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
@@ -64,6 +68,12 @@ const App = () => (
               <Route path="/docs/platform" element={<PlatformGuide />} />
               <Route path="/docs/donate" element={<DonationGuide />} />
               <Route path="/docs/rules" element={<CommunityRules />} />
+              
+              {/* Policy and Legal Pages */}
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
+              <Route path="/refund-policy" element={<RefundPolicy />} />
+              <Route path="/contact" element={<ContactUs />} />
 
               <Route element={<ProtectedRoute />}>
                 <Route path="/chat" element={<Chat />} />

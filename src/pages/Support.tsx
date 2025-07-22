@@ -83,9 +83,8 @@ const Support = () => {
       alert("Minimum support amount is ₹500");
       return;
     }
-    // For now, redirect to the same Razorpay payment button
-    // In future, this would integrate with dynamic payment amount
-    window.open('https://pages.razorpay.com/pl_QumiJn7uhqwMeB', '_blank');
+    // Payment integration coming soon
+    alert("Payment integration coming soon. Please contact us directly for support.");
   };
 
   return (
@@ -127,10 +126,10 @@ const Support = () => {
                       ))}
                     </ul>
                     
-                    {/* Direct Payment Button for Each Tier */}
+                    {/* Support Information */}
                     <div className="pt-4 border-t">
                       <Button 
-                        onClick={() => window.open('https://pages.razorpay.com/pl_QumiJn7uhqwMeB', '_blank')}
+                        onClick={() => alert("Payment integration coming soon. Please contact us directly for support.")}
                         className="w-full" 
                         size="lg"
                       >
@@ -139,7 +138,7 @@ const Support = () => {
                       </Button>
                       <div className="flex items-center justify-center text-xs text-slate-500 mt-2">
                         <ShieldCheck className="mr-1 h-3 w-3" /> 
-                        Secure Payment via Razorpay
+                        Contact us for payment details
                       </div>
                     </div>
                   </CardContent>
@@ -182,7 +181,7 @@ const Support = () => {
                 </Button>
                 <div className="flex items-center justify-center text-xs text-slate-500">
                   <ShieldCheck className="mr-1 h-3 w-3" /> 
-                  Secure Payment via Razorpay
+                  Contact us for payment details
                 </div>
               </div>
             </CardContent>
