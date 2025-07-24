@@ -100,7 +100,7 @@ const Support = () => {
             </p>
           </div>
 
-          {/* Support Tier Cards with Direct Payment Buttons */}
+          {/* Support Tier Information */}
           <div className="grid md:grid-cols-3 gap-6 mb-8">
             {supportTiers.map((tier) => {
               const IconComponent = tier.icon;
@@ -125,64 +125,32 @@ const Support = () => {
                         </li>
                       ))}
                     </ul>
-                    
-                    {/* Support Information */}
-                    <div className="pt-4 border-t">
-                      <Button 
-                        onClick={() => alert("Payment integration coming soon. Please contact us directly for support.")}
-                        className="w-full" 
-                        size="lg"
-                      >
-                        <Heart className="mr-2 h-4 w-4" />
-                        Support with ₹{tier.amount.toLocaleString()}
-                      </Button>
-                      <div className="flex items-center justify-center text-xs text-slate-500 mt-2">
-                        <ShieldCheck className="mr-1 h-3 w-3" /> 
-                        Contact us for payment details
-                      </div>
-                    </div>
                   </CardContent>
                 </Card>
               );
             })}
           </div>
 
-          {/* Custom Amount Section */}
+          {/* Razorpay Payment Button */}
           <Card className="mb-8 border-2 border-dashed border-brand-blue">
             <CardHeader className="text-center">
-              <Calculator className="h-12 w-12 mx-auto mb-4 text-brand-blue" />
-              <CardTitle className="text-xl">Custom Amount</CardTitle>
+              <Heart className="h-12 w-12 mx-auto mb-4 text-brand-blue" />
+              <CardTitle className="text-xl">Support Fortitude Network</CardTitle>
               <CardDescription>
-                Choose your own support amount (minimum ₹500)
+                Choose your support amount and complete payment securely
               </CardDescription>
             </CardHeader>
-            <CardContent className="max-w-md mx-auto">
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="custom-amount">Enter Amount (₹)</Label>
-                  <Input
-                    id="custom-amount"
-                    type="number"
-                    placeholder="Enter amount"
-                    value={customAmount}
-                    onChange={(e) => setCustomAmount(e.target.value)}
-                    min="500"
-                    step="100"
-                  />
-                </div>
-                <Button 
-                  onClick={handleCustomAmountSupport}
-                  className="w-full" 
-                  size="lg"
-                  disabled={!customAmount || parseFloat(customAmount) < 500}
-                >
-                  <Heart className="mr-2 h-4 w-4" />
-                  Support with ₹{customAmount || "0"}
-                </Button>
-                <div className="flex items-center justify-center text-xs text-slate-500">
-                  <ShieldCheck className="mr-1 h-3 w-3" /> 
-                  Contact us for payment details
-                </div>
+            <CardContent className="text-center">
+              <form>
+                <script 
+                  src="https://checkout.razorpay.com/v1/payment-button.js" 
+                  data-payment_button_id="pl_QwtLbJyFa0dzro" 
+                  async
+                ></script>
+              </form>
+              <div className="flex items-center justify-center text-xs text-slate-500 mt-4">
+                <ShieldCheck className="mr-1 h-3 w-3" /> 
+                Secure payment powered by Razorpay
               </div>
             </CardContent>
           </Card>
