@@ -7,9 +7,12 @@ import { Label } from "@/components/ui/label";
 import { Heart, ShieldCheck, Users, Calendar, BookOpen, CheckCircle, Gift, Crown, Calculator } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import RazorpayButton from "@/components/RazorpayButton";
+import { useToast } from "@/hooks/use-toast";
 
 const Support = () => {
   const [customAmount, setCustomAmount] = useState<string>("");
+  const { toast } = useToast();
 
   // Fetch community stats and support totals
   const { data: stats } = useQuery({
@@ -80,11 +83,39 @@ const Support = () => {
   const handleCustomAmountSupport = () => {
     const amount = parseFloat(customAmount);
     if (amount < 500) {
-      alert("Minimum support amount is ₹500");
+      toast({
+        title: "Invalid Amount",
+        description: "Minimum support amount is ₹500",
+        variant: "destructive",
+      });
       return;
     }
-    // Payment integration coming soon
-    alert("Payment integration coming soon. Please contact us directly for support.");
+    if (isNaN(amount)) {
+      toast({
+        title: "Invalid Amount",
+        description: "Please enter a valid amount",
+        variant: "destructive",
+      });
+      return;
+    }
+    // This will be handled by the RazorpayButton component
+  };
+
+  const handlePaymentSuccess = () => {
+    toast({
+      title: "Payment Successful!",
+      description: "Thank you for your support. You'll receive a confirmation email shortly.",
+    });
+    setCustomAmount("");
+  };
+
+  const handlePaymentError = (error: any) => {
+    console.error('Payment error:', error);
+    toast({
+      title: "Payment Failed",
+      description: "There was an issue processing your payment. Please try again.",
+      variant: "destructive",
+    });
   };
 
   return (
@@ -125,29 +156,51 @@ const Support = () => {
                         </li>
                       ))}
                     </ul>
+                    <RazorpayButton
+                      amount={tier.amount}
+                      buttonText={`Support as ${tier.name}`}
+                      onSuccess={handlePaymentSuccess}
+                      onError={handlePaymentError}
+                      className="mt-4"
+                    />
                   </CardContent>
                 </Card>
               );
             })}
           </div>
 
-          {/* Razorpay Payment Button */}
+          {/* Custom Amount Support */}
           <Card className="mb-8 border-2 border-dashed border-brand-blue">
             <CardHeader className="text-center">
-              <Heart className="h-12 w-12 mx-auto mb-4 text-brand-blue" />
-              <CardTitle className="text-xl">Support Fortitude Network</CardTitle>
+              <Calculator className="h-12 w-12 mx-auto mb-4 text-brand-blue" />
+              <CardTitle className="text-xl">Custom Support Amount</CardTitle>
               <CardDescription>
-                Choose your support amount and complete payment securely
+                Enter your preferred support amount (minimum ₹500)
               </CardDescription>
             </CardHeader>
-            <CardContent className="text-center">
-              <form>
-                <script 
-                  src="https://checkout.razorpay.com/v1/payment-button.js" 
-                  data-payment_button_id="pl_QwtLbJyFa0dzro" 
-                  async
-                ></script>
-              </form>
+            <CardContent className="space-y-4">
+              <div className="max-w-sm mx-auto">
+                <Label htmlFor="customAmount">Support Amount (₹)</Label>
+                <Input
+                  id="customAmount"
+                  type="number"
+                  min="500"
+                  placeholder="Enter amount (min ₹500)"
+                  value={customAmount}
+                  onChange={(e) => setCustomAmount(e.target.value)}
+                  className="mt-2"
+                />
+              </div>
+              {customAmount && parseFloat(customAmount) >= 500 && (
+                <div className="max-w-sm mx-auto">
+                  <RazorpayButton
+                    amount={parseFloat(customAmount)}
+                    buttonText="Support with Custom Amount"
+                    onSuccess={handlePaymentSuccess}
+                    onError={handlePaymentError}
+                  />
+                </div>
+              )}
               <div className="flex items-center justify-center text-xs text-slate-500 mt-4">
                 <ShieldCheck className="mr-1 h-3 w-3" /> 
                 Secure payment powered by Razorpay
