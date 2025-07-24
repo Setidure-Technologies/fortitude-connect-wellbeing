@@ -26,27 +26,32 @@ serve(async (req) => {
 
     console.log('Processing file:', file.name, file.type, file.size);
 
-    // Validate file type and size
-    const allowedTypes = [
-      'image/jpeg', 'image/jpg', 'image/png', 'image/gif',
-      'application/pdf', 'text/plain', 'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    ];
-
-    if (!allowedTypes.includes(file.type)) {
-      throw new Error(`File type ${file.type} is not supported`);
-    }
-
-    // 10MB file size limit
-    if (file.size > 10 * 1024 * 1024) {
-      throw new Error('File size must be less than 10MB');
-    }
-
-    // Initialize Supabase client
+    // Initialize Supabase client first for validation
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
+
+    // Enhanced server-side validation using the database function
+    const { data: validationResult, error: validationError } = await supabase
+      .rpc('validate_file_upload', {
+        file_name: file.name,
+        file_size: file.size,
+        file_type: file.type,
+        user_id: userId
+      });
+
+    if (validationError) {
+      console.error('Validation error:', validationError);
+      throw new Error('File validation failed');
+    }
+
+    if (!validationResult.valid) {
+      const errorDetails = validationResult.errors.join(', ');
+      throw new Error(`File validation failed: ${errorDetails}`);
+    }
+
+    console.log('File validation passed');
 
     // Generate unique filename
     const timestamp = Date.now();
@@ -85,6 +90,19 @@ serve(async (req) => {
       base64: base64File,
       uploadPath: fileName
     };
+
+    // Log successful upload for security monitoring
+    await supabase.rpc('log_security_event', {
+      event_type: 'file_upload_success',
+      target_user_id: userId,
+      event_details: {
+        file_name: file.name,
+        file_type: file.type,
+        file_size: file.size,
+        upload_path: fileName
+      },
+      event_severity: 'info'
+    });
 
     console.log('File processed successfully:', fileInfo.name);
 

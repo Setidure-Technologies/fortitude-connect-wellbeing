@@ -646,6 +646,30 @@ export type Database = {
           },
         ]
       }
+      file_upload_rate_limits: {
+        Row: {
+          created_at: string
+          id: string
+          upload_count: number
+          user_id: string
+          window_start: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          upload_count?: number
+          user_id: string
+          window_start?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          upload_count?: number
+          user_id?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       forum_posts: {
         Row: {
           content: string
@@ -1068,6 +1092,39 @@ export type Database = {
         }
         Relationships: []
       }
+      security_events: {
+        Row: {
+          created_at: string
+          details: Json | null
+          event_type: string
+          id: string
+          ip_address: unknown | null
+          severity: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          details?: Json | null
+          event_type: string
+          id?: string
+          ip_address?: unknown | null
+          severity?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          details?: Json | null
+          event_type?: string
+          id?: string
+          ip_address?: unknown | null
+          severity?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       stories: {
         Row: {
           age_group: string | null
@@ -1443,6 +1500,10 @@ export type Database = {
           is_consistent: boolean
         }[]
       }
+      check_upload_rate_limit: {
+        Args: { target_user_id: string; max_uploads_per_hour?: number }
+        Returns: boolean
+      }
       force_role_sync: {
         Args: { target_user_id: string }
         Returns: undefined
@@ -1472,6 +1533,15 @@ export type Database = {
           action_type: string
           target_user_id?: string
           action_details?: Json
+        }
+        Returns: undefined
+      }
+      log_security_event: {
+        Args: {
+          event_type: string
+          target_user_id?: string
+          event_details?: Json
+          event_severity?: string
         }
         Returns: undefined
       }

@@ -13,6 +13,9 @@ import ArticleManager from '@/components/admin/ArticleManager';
 import SupportGroupManager from '@/components/admin/SupportGroupManager';
 import NGOManager from '@/components/admin/NGOManager';
 import EventPublisher from '@/components/EventPublisher';
+import { SecurityEventsMonitor } from '@/components/admin/SecurityEventsMonitor';
+import { AuthSecuritySettings } from '@/components/admin/AuthSecuritySettings';
+import SecurityAuditLog from '@/components/admin/SecurityAuditLog';
 
 const AdminDashboard = () => {
   const { user, userRole, loading, refreshUserData } = useAuth();
@@ -53,7 +56,7 @@ const AdminDashboard = () => {
       </div>
 
       <Tabs defaultValue="users" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
+        <TabsList className="grid w-full grid-cols-5 lg:grid-cols-9">
           <TabsTrigger value="users" className="flex items-center gap-1 text-xs lg:text-sm">
             <Users className="h-3 w-3 lg:h-4 lg:w-4" />
             Users
@@ -81,6 +84,10 @@ const AdminDashboard = () => {
           <TabsTrigger value="stats" className="flex items-center gap-1 text-xs lg:text-sm">
             <TrendingUp className="h-3 w-3 lg:h-4 lg:w-4" />
             Stats
+          </TabsTrigger>
+          <TabsTrigger value="security" className="flex items-center gap-1 text-xs lg:text-sm">
+            <Shield className="h-3 w-3 lg:h-4 lg:w-4" />
+            Security
           </TabsTrigger>
           <TabsTrigger value="setup" className="flex items-center gap-1 text-xs lg:text-sm">
             <Shield className="h-3 w-3 lg:h-4 lg:w-4" />
@@ -126,6 +133,15 @@ const AdminDashboard = () => {
           <StatsManager />
         </TabsContent>
 
+        <TabsContent value="security">
+          <div className="space-y-6">
+            <AuthSecuritySettings />
+            <div className="grid gap-6 md:grid-cols-2">
+              <SecurityEventsMonitor />
+              <SecurityAuditLog />
+            </div>
+          </div>
+        </TabsContent>
 
         <TabsContent value="setup">
           <Card>

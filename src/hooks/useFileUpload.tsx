@@ -84,7 +84,12 @@ export const useFileUpload = () => {
         });
 
         if (error) {
-          throw new Error(error.message || `Failed to upload ${file.name}`);
+          let errorMsg = error.message || `Failed to upload ${file.name}`;
+          // Check if it's a validation error with details
+          if (data?.error && data?.details) {
+            errorMsg = `${data.error}: ${Array.isArray(data.details) ? data.details.join(', ') : data.details}`;
+          }
+          throw new Error(errorMsg);
         }
 
         uploadedFiles.push(data.file);
