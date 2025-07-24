@@ -159,8 +159,6 @@ const Support = () => {
                     <RazorpayButton
                       amount={tier.amount}
                       buttonText={`Support as ${tier.name}`}
-                      onSuccess={handlePaymentSuccess}
-                      onError={handlePaymentError}
                       className="mt-4"
                     />
                   </CardContent>
@@ -196,8 +194,6 @@ const Support = () => {
                   <RazorpayButton
                     amount={parseFloat(customAmount)}
                     buttonText="Support with Custom Amount"
-                    onSuccess={handlePaymentSuccess}
-                    onError={handlePaymentError}
                   />
                 </div>
               )}
