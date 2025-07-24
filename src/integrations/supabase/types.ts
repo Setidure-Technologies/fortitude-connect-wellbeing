@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          action: string
+          admin_id: string
+          created_at: string | null
+          details: Json | null
+          id: string
+          target_user_id: string | null
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          target_user_id?: string | null
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          target_user_id?: string | null
+        }
+        Relationships: []
+      }
       articles: {
         Row: {
           author_id: string | null
@@ -1439,6 +1466,18 @@ export type Database = {
       is_group_member: {
         Args: { group_uuid: string; user_uuid: string }
         Returns: boolean
+      }
+      log_admin_action: {
+        Args: {
+          action_type: string
+          target_user_id?: string
+          action_details?: Json
+        }
+        Returns: undefined
+      }
+      promote_user_to_admin: {
+        Args: { target_email: string }
+        Returns: undefined
       }
       sync_user_role: {
         Args: { user_id: string; new_role: string }
