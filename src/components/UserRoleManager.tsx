@@ -48,20 +48,21 @@ const UserRoleManager = () => {
     enabled: currentUserProfile?.role === 'admin',
   });
 
-  // Update user role mutation
+  // Update user role mutation using secure admin function
   const updateRoleMutation = useMutation({
     mutationFn: async ({ userId, newRole }: { userId: string; newRole: UserRole }) => {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ role: newRole })
-        .eq('id', userId);
+      // Use the secure admin function to update role with audit logging
+      const { error } = await supabase.rpc('sync_user_role', {
+        user_id: userId,
+        new_role: newRole
+      });
       
       if (error) throw error;
     },
     onSuccess: () => {
       toast({
         title: "Role Updated",
-        description: "User role has been updated successfully.",
+        description: "User role has been updated successfully with audit logging.",
       });
       queryClient.invalidateQueries({ queryKey: ['all-users'] });
       setSelectedUserId('');
@@ -70,7 +71,7 @@ const UserRoleManager = () => {
     onError: (error: any) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to update user role.",
+        description: error.message || "Failed to update user role. Admin privileges required.",
         variant: "destructive",
       });
     },

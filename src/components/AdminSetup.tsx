@@ -14,38 +14,26 @@ const AdminSetup = () => {
 
   const promoteToAdminMutation = useMutation({
     mutationFn: async (userEmail: string) => {
-      // First, try to find the user by email
-      const { data: userData, error: userError } = await supabase
-        .from('profiles')
-        .select('id, email, role')
-        .eq('email', userEmail)
-        .single();
+      // Use the secure admin promotion function with audit logging
+      const { error } = await supabase.rpc('promote_user_to_admin', {
+        target_email: userEmail
+      });
       
-      if (userError || !userData) {
-        throw new Error('User not found. Make sure the user has an account.');
-      }
+      if (error) throw error;
       
-      // Update the user's role to admin
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ role: 'admin' })
-        .eq('email', userEmail);
-      
-      if (updateError) throw updateError;
-      
-      return userData;
+      return { email: userEmail };
     },
     onSuccess: () => {
       toast({
         title: "Success!",
-        description: "User has been promoted to admin. Please refresh the page.",
+        description: "User has been promoted to admin with audit logging and notification sent.",
       });
       setEmail('');
     },
     onError: (error: any) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to promote user to admin.",
+        description: error.message || "Failed to promote user to admin. Make sure you have admin privileges.",
         variant: "destructive",
       });
     },
@@ -101,9 +89,9 @@ const AdminSetup = () => {
           </ol>
         </div>
         
-        <div className="mt-4 p-3 bg-yellow-50 rounded-lg">
-          <p className="text-sm text-yellow-800">
-            <strong>Note:</strong> This is a temporary admin setup. For production, you should set up proper database functions.
+        <div className="mt-4 p-3 bg-green-50 rounded-lg">
+          <p className="text-sm text-green-800">
+            <strong>Security:</strong> This uses secure database functions with audit logging and requires admin privileges.
           </p>
         </div>
       </CardContent>

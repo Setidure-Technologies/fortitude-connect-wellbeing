@@ -17,7 +17,7 @@ type Profile = Database['public']['Tables']['profiles']['Row'];
 type ProfileUpdate = Database['public']['Tables']['profiles']['Update'];
 
 const ProfileForm = () => {
-  const { user } = useAuth();
+  const { user, userRole } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -251,19 +251,33 @@ const ProfileForm = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Role Field - Only admins can edit roles */}
             <div className="space-y-2">
               <Label htmlFor="role">Role</Label>
-              <Select value={formData.role} onValueChange={(value: Database['public']['Enums']['user_role']) => setFormData({ ...formData, role: value })}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="patient">Patient</SelectItem>
-                  <SelectItem value="survivor">Survivor</SelectItem>
-                  <SelectItem value="caregiver">Caregiver</SelectItem>
-                  <SelectItem value="volunteer">Volunteer</SelectItem>
-                </SelectContent>
-              </Select>
+              {userRole === 'admin' ? (
+                <Select value={formData.role} onValueChange={(value: Database['public']['Enums']['user_role']) => setFormData({ ...formData, role: value })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="patient">Patient</SelectItem>
+                    <SelectItem value="survivor">Survivor</SelectItem>
+                    <SelectItem value="caregiver">Caregiver</SelectItem>
+                    <SelectItem value="volunteer">Volunteer</SelectItem>
+                    <SelectItem value="ngo">NGO</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                  </SelectContent>
+                </Select>
+              ) : (
+                <div className="p-3 bg-gray-50 border rounded-md">
+                  <span className="text-sm font-medium capitalize">
+                    {formData.role || 'Not set'}
+                  </span>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Contact an administrator to change your role
+                  </p>
+                </div>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="cancer_type">Cancer Type</Label>
