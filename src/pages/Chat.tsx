@@ -1,14 +1,16 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send, Plus, MessageSquare, User } from 'lucide-react';
+import { Send, Plus, MessageSquare, User, Menu, X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { VoiceRecorder } from '@/components/chat/VoiceRecorder';
 import { FileUploader } from '@/components/chat/FileUploader';
 import { FileInfo } from '@/hooks/useFileUpload';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Card } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface Message {
   text: string;
@@ -59,8 +61,10 @@ const Chat = () => {
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const [userName, setUserName] = useState<string>('');
   const [attachedFiles, setAttachedFiles] = useState<FileInfo[]>([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
+  const isMobile = useIsMobile();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -142,6 +146,11 @@ const Chat = () => {
     
     setMessages(loadedMessages);
     setCurrentConversationId(conversationId);
+    
+    // Close sidebar on mobile after selecting conversation
+    if (isMobile) {
+      setIsSidebarOpen(false);
+    }
   };
 
   // Create new conversation
@@ -169,6 +178,11 @@ const Chat = () => {
       };
       setMessages([welcomeMessage]);
       queryClient.invalidateQueries({ queryKey: ['conversations'] });
+      
+      // Close sidebar on mobile after creating new conversation
+      if (isMobile) {
+        setIsSidebarOpen(false);
+      }
     },
   });
 
@@ -344,111 +358,171 @@ const Chat = () => {
     setAttachedFiles(prev => [...prev, ...files]);
   };
 
-  return (
-    <div className="flex h-[calc(100vh-112px)] container py-4 gap-4">
-      {/* Chat History Sidebar */}
-      <div className="w-64 bg-white rounded-lg shadow-sm p-4 flex flex-col">
-        <Button onClick={startNewChat} className="mb-4 w-full" disabled={createConversationMutation.isPending}>
+  // Mobile sidebar component
+  const Sidebar = () => (
+    <div className={`
+      ${isMobile ? 'fixed inset-y-0 left-0 z-50 w-80 transform transition-transform duration-300 ease-in-out' : 'w-80'}
+      ${isMobile && !isSidebarOpen ? '-translate-x-full' : 'translate-x-0'}
+      bg-white border-r flex flex-col h-full
+    `}>
+      {isMobile && (
+        <div className="flex items-center justify-between p-4 border-b">
+          <h2 className="text-lg font-semibold">Chat History</h2>
+          <Button variant="ghost" size="sm" onClick={() => setIsSidebarOpen(false)}>
+            <X className="h-5 w-5" />
+          </Button>
+        </div>
+      )}
+      
+      <div className="p-4 border-b">
+        <Button onClick={startNewChat} className="w-full" disabled={createConversationMutation.isPending}>
           <Plus className="h-4 w-4 mr-2" />
           New Chat
         </Button>
-        
-        <div className="flex-1 overflow-y-auto">
-          <h3 className="text-sm font-medium text-slate-600 mb-2">Chat History</h3>
-          <div className="space-y-2">
-            {conversations?.map((conversation) => (
-              <button
-                key={conversation.id}
-                onClick={() => loadConversationMessages(conversation.id)}
-                className={`w-full text-left p-2 rounded text-sm hover:bg-slate-50 transition-colors ${
-                  currentConversationId === conversation.id ? 'bg-brand-blue text-white' : 'text-slate-700'
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <MessageSquare className="h-3 w-3" />
-                  <span className="truncate">{conversation.title}</span>
-                </div>
-                <div className="text-xs opacity-70 mt-1">
-                  {new Date(conversation.created_at).toLocaleDateString()}
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
-
-      {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
-        <div className="text-center mb-4">
-          <h1 className="text-2xl font-bold">Forti</h1>
-          <p className="text-sm text-slate-500">
-            Your AI support companion is here to help you through your journey.
-          </p>
-        </div>
-
-        {/* Predefined Messages */}
-        {messages.length <= 1 && (
-          <div className="mb-4">
-            <p className="text-sm text-slate-600 mb-2">Quick start questions:</p>
-            <div className="flex flex-wrap gap-2">
-              {predefinedMessages.map((message, index) => (
-                <Button
-                  key={index}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handlePredefinedMessage(message)}
-                  className="text-xs"
-                  disabled={isLoading}
-                >
-                  {message}
-                </Button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div className="flex-grow bg-slate-50 rounded-lg p-4 overflow-y-auto flex flex-col space-y-4">
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`flex items-end gap-2 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+      
+      <ScrollArea className="flex-1 p-4">
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">Recent Conversations</h3>
+        <div className="space-y-2">
+          {conversations?.map((conversation) => (
+            <button
+              key={conversation.id}
+              onClick={() => loadConversationMessages(conversation.id)}
+              className={`w-full text-left p-3 rounded-lg text-sm hover:bg-muted transition-colors ${
+                currentConversationId === conversation.id ? 'bg-primary text-primary-foreground' : 'text-foreground'
+              }`}
             >
-              {msg.sender === 'bot' && <div className="w-8 h-8 rounded-full bg-brand-teal flex-shrink-0" />}
-              {msg.sender === 'user' && <User className="w-8 h-8 rounded-full bg-brand-blue text-white p-1 flex-shrink-0" />}
-              <div
-                className={`max-w-xs md:max-w-md lg:max-w-lg rounded-2xl p-3 text-white ${
-                  msg.sender === 'user' ? 'bg-brand-blue rounded-br-none' : 'bg-brand-teal rounded-bl-none'
-                }`}
-              >
-                <div className="whitespace-pre-wrap">
-                  {msg.text}
-                </div>
+              <div className="flex items-center gap-2">
+                <MessageSquare className="h-4 w-4 flex-shrink-0" />
+                <span className="truncate font-medium">{conversation.title}</span>
               </div>
-            </div>
+              <div className="text-xs opacity-70 mt-1">
+                {new Date(conversation.created_at).toLocaleDateString()}
+              </div>
+            </button>
           ))}
-          {isLoading && (
-            <div className="flex items-end gap-2 justify-start">
-              <div className="w-8 h-8 rounded-full bg-brand-teal flex-shrink-0" />
-              <div className="bg-brand-teal rounded-2xl rounded-bl-none p-3 text-white">
-                <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-white rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                </div>
-              </div>
-            </div>
+        </div>
+      </ScrollArea>
+    </div>
+  );
+
+  return (
+    <div className="flex h-screen overflow-hidden bg-background">
+      {/* Mobile backdrop */}
+      {isMobile && isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+      
+      {/* Sidebar */}
+      <Sidebar />
+      
+      {/* Main Chat Area */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Header */}
+        <div className="bg-white border-b p-4 flex items-center justify-between">
+          {isMobile && (
+            <Button variant="ghost" size="sm" onClick={() => setIsSidebarOpen(true)}>
+              <Menu className="h-5 w-5" />
+            </Button>
           )}
-          <div ref={messagesEndRef} />
+          <div className="text-center flex-1">
+            <h1 className="text-xl font-bold text-primary">Forti</h1>
+            <p className="text-sm text-muted-foreground">
+              Your AI support companion
+            </p>
+          </div>
+          {isMobile && <div className="w-10" />} {/* Spacer for centering */}
         </div>
 
-        <div className="mt-4 space-y-2">
+        {/* Messages Area */}
+        <div className="flex-1 overflow-hidden">
+          <ScrollArea className="h-full p-4">
+            {/* Predefined Messages */}
+            {messages.length <= 1 && (
+              <Card className="p-4 mb-4">
+                <p className="text-sm font-medium text-foreground mb-3">Quick start questions:</p>
+                <div className="flex flex-wrap gap-2">
+                  {predefinedMessages.map((message, index) => (
+                    <Button
+                      key={index}
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePredefinedMessage(message)}
+                      className="text-xs"
+                      disabled={isLoading}
+                    >
+                      {message}
+                    </Button>
+                  ))}
+                </div>
+              </Card>
+            )}
+
+            {/* Messages */}
+            <div className="space-y-4">
+              {messages.map((msg, index) => (
+                <div
+                  key={index}
+                  className={`flex items-end gap-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  {msg.sender === 'bot' && (
+                    <div className="w-8 h-8 rounded-full bg-primary flex-shrink-0 flex items-center justify-center text-primary-foreground text-sm font-semibold">
+                      F
+                    </div>
+                  )}
+                  <div
+                    className={`max-w-[85%] md:max-w-[70%] rounded-2xl p-3 ${
+                      msg.sender === 'user' 
+                        ? 'bg-primary text-primary-foreground rounded-br-sm' 
+                        : 'bg-muted text-foreground rounded-bl-sm'
+                    }`}
+                  >
+                    <div className="whitespace-pre-wrap text-sm">
+                      {msg.text}
+                    </div>
+                    <div className={`text-xs mt-1 ${
+                      msg.sender === 'user' ? 'text-primary-foreground/70' : 'text-muted-foreground'
+                    }`}>
+                      {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                  </div>
+                  {msg.sender === 'user' && (
+                    <User className="w-8 h-8 rounded-full bg-secondary text-secondary-foreground p-1 flex-shrink-0" />
+                  )}
+                </div>
+              ))}
+              
+              {isLoading && (
+                <div className="flex items-end gap-3 justify-start">
+                  <div className="w-8 h-8 rounded-full bg-primary flex-shrink-0 flex items-center justify-center text-primary-foreground text-sm font-semibold">
+                    F
+                  </div>
+                  <div className="bg-muted rounded-2xl rounded-bl-sm p-3">
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-foreground/50 rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 bg-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+          </ScrollArea>
+        </div>
+
+        {/* Input Area */}
+        <div className="bg-white border-t p-4 space-y-3">
           {/* File attachments preview */}
           {attachedFiles.length > 0 && (
-            <div className="flex flex-wrap gap-2 p-2 bg-muted rounded-lg">
+            <div className="flex flex-wrap gap-2 p-3 bg-muted rounded-lg">
               {attachedFiles.map((file) => (
                 <div
                   key={file.id}
-                  className="flex items-center gap-2 px-2 py-1 bg-background border rounded text-xs"
+                  className="flex items-center gap-2 px-3 py-2 bg-background border rounded-lg text-xs"
                 >
                   {file.type.startsWith('image/') ? (
                     <img
@@ -492,29 +566,14 @@ const Chat = () => {
                   }
                 }}
               />
-            </div>
-            
-            <div className="flex gap-1">
-              <div className="relative">
-                <FileUploader
-                  onFilesUploaded={handleFilesUploaded}
-                  disabled={isLoading}
-                />
+              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex gap-1">
+                <VoiceRecorder onTranscription={handleVoiceTranscription} />
+                <FileUploader onFilesUploaded={handleFilesUploaded} />
               </div>
-              
-              <VoiceRecorder
-                onTranscription={handleVoiceTranscription}
-                disabled={isLoading}
-              />
-              
-              <Button 
-                type="submit" 
-                size="icon" 
-                disabled={isLoading || (input.trim() === '' && attachedFiles.length === 0)}
-              >
-                <Send className="h-4 w-4" />
-              </Button>
             </div>
+            <Button type="submit" disabled={isLoading || input.trim() === ''} className="px-4">
+              <Send className="h-4 w-4" />
+            </Button>
           </form>
         </div>
       </div>
