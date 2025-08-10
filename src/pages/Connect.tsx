@@ -539,6 +539,18 @@ const Connect = () => {
                         </div>
                       </div>
                     </CardHeader>
+                    <CardContent>
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="outline"
+                          onClick={() => updateConnectionMutation.mutate({ connectionId: connection.id, status: 'cancelled' })}
+                          disabled={updateConnectionMutation.isPending}
+                          className="flex-1"
+                        >
+                          Cancel Request
+                        </Button>
+                      </div>
+                    </CardContent>
                   </Card>
                 );
               })}

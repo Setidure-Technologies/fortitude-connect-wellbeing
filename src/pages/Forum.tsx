@@ -461,6 +461,11 @@ const Forum = () => {
                     <span className="text-sm">{post.comments?.length || 0} replies</span>
                   </div>
                 </div>
+
+                {/* Comments Section */}
+                <div className="mt-4">
+                  <ForumComments postId={post.id} />
+                </div>
               </CardContent>
             </Card>
           ))}

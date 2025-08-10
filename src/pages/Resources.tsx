@@ -16,6 +16,7 @@ interface Article {
   image_url?: string;
   category: string;
   created_at: string;
+  content?: string;
 }
 
 interface ResourceLink {
@@ -37,6 +38,17 @@ interface NGO {
   contact_email?: string;
   website?: string;
   services_offered?: string[];
+}
+
+interface Professional {
+  id: string;
+  name: string;
+  specialization: string;
+  location?: string;
+  contact_email?: string;
+  phone?: string;
+  website?: string;
+  is_active: boolean;
 }
 
 const Resources = () => {
@@ -73,20 +85,33 @@ const Resources = () => {
     }
   });
 
-  // Fetch NGOs
-  const { data: ngos, isLoading: ngosLoading } = useQuery({
-    queryKey: ['ngos'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ngos')
-        .select('*')
-        .eq('is_active', true)
-        .order('name');
-      
-      if (error) throw error;
-      return data as NGO[];
-    }
-  });
+// Fetch NGOs
+const { data: ngos, isLoading: ngosLoading } = useQuery({
+  queryKey: ['ngos'],
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from('ngos')
+      .select('*')
+      .eq('is_active', true)
+      .order('name');
+    if (error) throw error;
+    return data as NGO[];
+  }
+});
+
+// Fetch healthcare professionals
+const { data: professionals, isLoading: professionalsLoading } = useQuery({
+  queryKey: ['healthcare_professionals'],
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from('healthcare_professionals')
+      .select('*')
+      .eq('is_active', true)
+      .order('name');
+    if (error) throw error;
+    return data as Professional[];
+  }
+});
 
   // Filter functions
   const filteredArticles = articles?.filter(article =>
@@ -144,21 +169,25 @@ const Resources = () => {
       </div>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="articles" className="flex items-center gap-2">
-            <BookOpen className="h-4 w-4" />
-            Latest Articles
-          </TabsTrigger>
-          <TabsTrigger value="links" className="flex items-center gap-2">
-            <ExternalLink className="h-4 w-4" />
-            Support Links
-          </TabsTrigger>
-          <TabsTrigger value="ngos" className="flex items-center gap-2">
-            <Building2 className="h-4 w-4" />
-            NGOs in India
-          </TabsTrigger>
-        </TabsList>
+<Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+  <TabsList className="grid w-full grid-cols-4">
+    <TabsTrigger value="articles" className="flex items-center gap-2">
+      <BookOpen className="h-4 w-4" />
+      Latest Articles
+    </TabsTrigger>
+    <TabsTrigger value="links" className="flex items-center gap-2">
+      <ExternalLink className="h-4 w-4" />
+      Support Links
+    </TabsTrigger>
+    <TabsTrigger value="ngos" className="flex items-center gap-2">
+      <Building2 className="h-4 w-4" />
+      NGOs in India
+    </TabsTrigger>
+    <TabsTrigger value="professionals" className="flex items-center gap-2">
+      <Phone className="h-4 w-4" />
+      Professionals
+    </TabsTrigger>
+  </TabsList>
 
         {/* Articles Tab */}
         <TabsContent value="articles" className="space-y-6">
@@ -173,14 +202,11 @@ const Resources = () => {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredArticles.map((article) => (
-                <Card key={article.id} className="hover:shadow-lg transition-shadow">
-                  {article.image_url && (
-                    <div className="h-48 bg-cover bg-center rounded-t-lg" 
-                         style={{ backgroundImage: `url(${article.image_url})` }} />
-                  )}
-                  <CardHeader>
+            <div className="h-48 overflow-hidden rounded-t-lg">
+              {article.image_url && (
+                <img src={article.image_url} alt={`${article.title} image`} className="w-full h-48 object-cover" loading="lazy" decoding="async" />
+              )}
+            </div>
                     <div className="flex items-start justify-between">
                       <Badge variant="secondary" className="mb-2">
                         {article.category}
@@ -330,7 +356,35 @@ const Resources = () => {
           )}
         </TabsContent>
       </Tabs>
+      </Tabs>
+
+      {/* Article inline preview component */}
+      {/* ... keep existing code (other components) */}
     </div>
+  );
+};
+
+const ArticlePreview = ({ article }: { article: Article }) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button size="sm" variant="outline" onClick={() => setOpen(true)}>
+        Read <ArrowRight className="h-3 w-3 ml-1" />
+      </Button>
+      {open && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg max-w-2xl w-full p-6 shadow-xl">
+            <div className="flex items-start justify-between mb-4">
+              <h3 className="text-xl font-semibold">{article.title}</h3>
+              <button onClick={() => setOpen(false)} className="text-sm text-muted-foreground">Close</button>
+            </div>
+            <div className="prose max-w-none">
+              <p className="whitespace-pre-wrap">{article.content || article.excerpt}</p>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

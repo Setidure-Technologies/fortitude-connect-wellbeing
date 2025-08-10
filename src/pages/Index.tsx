@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Users, MessageSquare, Calendar, ArrowRight, Shield, Bot, Brain, HeartHandshake } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import ImpactStats from '@/components/ImpactStats';
 import CollaboratorsSection from '@/components/CollaboratorsSection';
 import CommunityGallery from '@/components/CommunityGallery';
 import CancerAwarenessStats from '@/components/CancerAwarenessStats';
@@ -56,8 +55,10 @@ const Index = () => {
                     src="/Fortitude_logo.png" 
                     alt="Fortitude Network Logo" 
                     className="h-16 w-16 object-contain drop-shadow-lg transform hover:scale-110 transition-transform duration-300"
+                    loading="lazy"
+                    decoding="async"
                     onError={(e) => {
-                      e.currentTarget.src = '/Fortitude_logo.png';
+                      (e.currentTarget as HTMLImageElement).src = '/Fortitude_logo.png';
                     }}
                   />
                   <div className="absolute -inset-2 bg-white/20 rounded-full blur-md -z-10"></div>
@@ -267,8 +268,7 @@ const Index = () => {
       {/* Community Gallery */}
       <CommunityGallery />
 
-      {/* Impact Stats */}
-      <ImpactStats />
+      {/* Impact Stats - removed as per request */}
 
       {/* Advertisement */}
       <div className="bg-gray-50 py-8">
