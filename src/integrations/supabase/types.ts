@@ -711,6 +711,42 @@ export type Database = {
           },
         ]
       }
+      healthcare_professionals: {
+        Row: {
+          contact_email: string | null
+          created_at: string
+          id: string
+          is_active: boolean | null
+          location: string | null
+          name: string
+          phone: string | null
+          specialization: string
+          website: string | null
+        }
+        Insert: {
+          contact_email?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          name: string
+          phone?: string | null
+          specialization: string
+          website?: string | null
+        }
+        Update: {
+          contact_email?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          name?: string
+          phone?: string | null
+          specialization?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       journey_entries: {
         Row: {
           content: string | null

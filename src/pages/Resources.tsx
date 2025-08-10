@@ -202,11 +202,21 @@ const { data: professionals, isLoading: professionalsLoading } = useQuery({
               </p>
             </div>
           ) : (
-            <div className="h-48 overflow-hidden rounded-t-lg">
-              {article.image_url && (
-                <img src={article.image_url} alt={`${article.title} image`} className="w-full h-48 object-cover" loading="lazy" decoding="async" />
-              )}
-            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredArticles.map((article) => (
+                <Card key={article.id} className="hover:shadow-lg transition-shadow">
+                  <CardHeader className="space-y-2">
+                    {article.image_url && (
+                      <div className="h-48 overflow-hidden rounded-t-lg">
+                        <img
+                          src={article.image_url}
+                          alt={`${article.title} image`}
+                          className="w-full h-48 object-cover"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      </div>
+                    )}
                     <div className="flex items-start justify-between">
                       <Badge variant="secondary" className="mb-2">
                         {article.category}
@@ -222,12 +232,14 @@ const { data: professionals, isLoading: professionalsLoading } = useQuery({
                       <span className="text-sm text-muted-foreground">
                         {new Date(article.created_at).toLocaleDateString()}
                       </span>
-                      {article.external_url && (
+                      {article.external_url ? (
                         <Button asChild size="sm" variant="outline">
                           <a href={article.external_url} target="_blank" rel="noopener noreferrer">
                             Read More <ArrowRight className="h-3 w-3 ml-1" />
                           </a>
                         </Button>
+                      ) : (
+                        <ArticlePreview article={article} />
                       )}
                     </div>
                   </CardContent>
@@ -355,7 +367,6 @@ const { data: professionals, isLoading: professionalsLoading } = useQuery({
             </div>
           )}
         </TabsContent>
-      </Tabs>
       </Tabs>
 
       {/* Article inline preview component */}
