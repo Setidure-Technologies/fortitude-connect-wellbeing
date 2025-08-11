@@ -9,7 +9,7 @@ const ImpactStats = () => {
     queryFn: async () => {
       // Fetch all stats in parallel for better performance
       const [membersResult, storiesResult, eventsResult, donationsResult] = await Promise.all([
-        supabase.from('profiles').select('id', { count: 'exact', head: true }),
+        supabase.from('public_profiles').select('id', { count: 'exact', head: true }),
         supabase.from('stories').select('id', { count: 'exact', head: true }),
         supabase.from('events').select('id', { count: 'exact', head: true }),
         supabase.from('donations').select('amount').eq('status', 'completed')

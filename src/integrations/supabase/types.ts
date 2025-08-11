@@ -89,6 +89,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "articles_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       awareness_stats: {
@@ -280,6 +287,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       community_stats: {
@@ -351,6 +365,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "connection_requests_requester_id_fkey"
+            columns: ["requester_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       connection_responses: {
@@ -393,6 +414,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "connection_responses_responder_id_fkey"
+            columns: ["responder_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       daily_questions: {
@@ -432,6 +460,13 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "daily_questions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -489,10 +524,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "direct_messages_receiver_id_fkey"
+            columns: ["receiver_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "direct_messages_sender_id_fkey"
             columns: ["sender_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "direct_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -588,6 +637,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "event_attendees_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       events: {
@@ -642,6 +698,13 @@ export type Database = {
             columns: ["host_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "events_host_id_fkey"
+            columns: ["host_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -707,6 +770,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forum_posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -787,6 +857,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "journey_entries_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -884,6 +961,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       post_reactions: {
@@ -921,6 +1005,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_reactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -988,10 +1079,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "private_messages_receiver_id_fkey"
+            columns: ["receiver_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "private_messages_sender_id_fkey"
             columns: ["sender_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1091,6 +1196,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "question_responses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1212,6 +1324,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "stories_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       story_reactions: {
@@ -1249,6 +1368,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "story_reactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1389,6 +1515,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "user_achievements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       user_activity: {
@@ -1422,6 +1555,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: true
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_activity_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1460,10 +1600,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "user_connections_receiver_id_fkey"
+            columns: ["receiver_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "user_connections_requester_id_fkey"
             columns: ["requester_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_connections_requester_id_fkey"
+            columns: ["requester_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1511,17 +1665,75 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "user_connections_enhanced_receiver_id_fkey"
+            columns: ["receiver_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "user_connections_enhanced_requester_id_fkey"
             columns: ["requester_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "user_connections_enhanced_requester_id_fkey"
+            columns: ["requester_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
     Views: {
-      [_ in never]: never
+      public_profiles: {
+        Row: {
+          age_group: string | null
+          bio: string | null
+          cancer_type: Database["public"]["Enums"]["cancer_type"] | null
+          created_at: string | null
+          display_id: string | null
+          full_name: string | null
+          id: string | null
+          is_anonymous: boolean | null
+          location: string | null
+          profile_image_url: string | null
+          role: Database["public"]["Enums"]["user_role"] | null
+          username: string | null
+        }
+        Insert: {
+          age_group?: string | null
+          bio?: string | null
+          cancer_type?: Database["public"]["Enums"]["cancer_type"] | null
+          created_at?: string | null
+          display_id?: string | null
+          full_name?: string | null
+          id?: string | null
+          is_anonymous?: boolean | null
+          location?: string | null
+          profile_image_url?: string | null
+          role?: Database["public"]["Enums"]["user_role"] | null
+          username?: string | null
+        }
+        Update: {
+          age_group?: string | null
+          bio?: string | null
+          cancer_type?: Database["public"]["Enums"]["cancer_type"] | null
+          created_at?: string | null
+          display_id?: string | null
+          full_name?: string | null
+          id?: string | null
+          is_anonymous?: boolean | null
+          location?: string | null
+          profile_image_url?: string | null
+          role?: Database["public"]["Enums"]["user_role"] | null
+          username?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       are_users_connected: {
@@ -1551,6 +1763,13 @@ export type Database = {
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      get_sensitive_profile_data: {
+        Args: { target_user_id: string }
+        Returns: {
+          email: string
+          diagnosis_date: string
+        }[]
       }
       get_unique_display_id: {
         Args: Record<PropertyKey, never>

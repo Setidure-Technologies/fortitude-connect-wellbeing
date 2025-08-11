@@ -23,7 +23,7 @@ const UserProfile = () => {
     queryKey: ['user-profile', userId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('profiles')
+        .from('public_profiles')
         .select('*')
         .eq('id', userId)
         .single();
@@ -201,27 +201,6 @@ const UserProfile = () => {
           )}
         </Card>
 
-        {profile.diagnosis_date && (
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="h-5 w-5" />
-                Journey Timeline
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-3">
-                <div className="w-3 h-3 bg-brand-blue rounded-full"></div>
-                <div>
-                  <p className="font-medium">Diagnosis</p>
-                  <p className="text-sm text-slate-600">
-                    {new Date(profile.diagnosis_date).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         <Card className="mt-6">
           <CardHeader>

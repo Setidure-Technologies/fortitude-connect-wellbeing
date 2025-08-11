@@ -60,7 +60,7 @@ const Connect = () => {
       const onlineUserIds = activities?.map(a => a.user_id) || [];
 
       const { data, error } = await supabase
-        .from('profiles')
+        .from('public_profiles')
         .select('*')
         .neq('id', user.id)
         .order('full_name');
@@ -99,7 +99,7 @@ const Connect = () => {
 
       // Fetch user profiles
       const { data: profiles } = await supabase
-        .from('profiles')
+        .from('public_profiles')
         .select('id, full_name, role, profile_image_url')
         .in('id', userIds);
 
