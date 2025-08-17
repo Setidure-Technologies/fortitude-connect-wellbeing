@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import PrivateChat from '@/components/PrivateChat';
+import ResponsiveContainer from '@/components/ResponsiveContainer';
 
 const UserProfile = () => {
   const { userId } = useParams();
@@ -108,35 +109,34 @@ const UserProfile = () => {
 
   if (showChat) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <ResponsiveContainer>
         <PrivateChat
           recipientId={profile.id}
           recipientName={profile.full_name || 'User'}
           recipientAvatar={profile.profile_image_url}
           onBack={() => setShowChat(false)}
         />
-      </div>
+      </ResponsiveContainer>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-4xl mx-auto">
-        <Card>
-          <CardHeader>
-            <div className="flex items-start gap-6">
-              <Avatar className="h-24 w-24">
+    <ResponsiveContainer>
+      <Card>
+        <CardHeader>
+          <div className="flex flex-col lg:flex-row lg:items-start gap-4 lg:gap-6">
+              <Avatar className="h-20 w-20 sm:h-24 sm:w-24 mx-auto lg:mx-0">
                 <AvatarImage src={profile.profile_image_url} />
                 <AvatarFallback>
                   <User className="h-12 w-12" />
                 </AvatarFallback>
               </Avatar>
-              
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <h1 className="text-2xl font-bold">
-                    {profile.is_anonymous ? 'Anonymous User' : profile.full_name}
-                  </h1>
+            
+            <div className="flex-1 text-center lg:text-left">
+              <div className="flex flex-col sm:flex-row items-center lg:items-start gap-2 sm:gap-3 mb-2">
+                <h1 className="text-xl sm:text-2xl font-bold">
+                  {profile.is_anonymous ? 'Anonymous User' : profile.full_name}
+                </h1>
                   {profile.display_id && (
                     <button
                       onClick={() => {
@@ -171,8 +171,8 @@ const UserProfile = () => {
                   )}
                 </div>
 
-                {currentUser?.id !== profile.id && (
-                  <div className="flex gap-3">
+              {currentUser?.id !== profile.id && (
+                <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
                     <Button 
                       onClick={handleConnect}
                       disabled={sendConnectionMutation.isPending}
@@ -201,22 +201,20 @@ const UserProfile = () => {
           )}
         </Card>
 
-
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Heart className="h-5 w-5" />
-              Community Contributions
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-slate-600">
-              This user's stories, posts, and community engagement will be displayed here.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Heart className="h-5 w-5" />
+            Community Contributions
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-slate-600">
+            This user's stories, posts, and community engagement will be displayed here.
+          </p>
+        </CardContent>
+      </Card>
+    </ResponsiveContainer>
   );
 };
 

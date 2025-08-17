@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
 import { useState } from "react";
+import ResponsiveContainer from '@/components/ResponsiveContainer';
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -30,17 +31,16 @@ const ContactUs = () => {
 
   return (
     <div className="bg-slate-50 min-h-screen">
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <MessageCircle className="h-16 w-16 mx-auto text-brand-blue mb-4" />
-            <h1 className="text-4xl font-bold mb-4">Contact Us</h1>
+      <ResponsiveContainer maxWidth="6xl">
+        <div className="text-center mb-8 lg:mb-12">
+          <MessageCircle className="h-12 sm:h-16 w-12 sm:w-16 mx-auto text-brand-blue mb-4" />
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">Contact Us</h1>
             <p className="text-lg text-slate-700">
               We're here to help. Reach out to us anytime.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
             {/* Contact Form */}
             <Card>
               <CardHeader>
@@ -164,8 +164,7 @@ const ContactUs = () => {
               </Card>
             </div>
           </div>
-        </div>
-      </div>
+      </ResponsiveContainer>
     </div>
   );
 };

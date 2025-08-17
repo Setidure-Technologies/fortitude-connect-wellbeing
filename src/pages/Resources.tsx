@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Search, BookOpen, Youtube, Phone, Building2, Globe, ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import ResponsiveContainer from '@/components/ResponsiveContainer';
 
 interface Article {
   id: string;
@@ -146,17 +147,17 @@ const { data: professionals, isLoading: professionalsLoading } = useQuery({
   );
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <ResponsiveContainer maxWidth="7xl">
       {/* Header */}
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold mb-4">Resources</h1>
+      <div className="text-center mb-6 lg:mb-8">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">Resources</h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           Comprehensive cancer support resources, expert articles, helpful links, and NGO directory for your journey
         </p>
       </div>
 
       {/* Search */}
-      <div className="mb-8 max-w-md mx-auto">
+      <div className="mb-6 lg:mb-8 max-w-md mx-auto">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -169,23 +170,23 @@ const { data: professionals, isLoading: professionalsLoading } = useQuery({
       </div>
 
       {/* Tabs */}
-<Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-  <TabsList className="grid w-full grid-cols-4">
-    <TabsTrigger value="articles" className="flex items-center gap-2">
-      <BookOpen className="h-4 w-4" />
-      Latest Articles
+<Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 lg:space-y-6">
+  <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-1 sm:gap-0">
+    <TabsTrigger value="articles" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+      <BookOpen className="h-3 w-3 sm:h-4 sm:w-4" />
+      <span className="hidden sm:inline">Latest </span>Articles
     </TabsTrigger>
-    <TabsTrigger value="links" className="flex items-center gap-2">
-      <ExternalLink className="h-4 w-4" />
-      Support Links
+    <TabsTrigger value="links" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+      <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4" />
+      <span className="hidden sm:inline">Support </span>Links
     </TabsTrigger>
-    <TabsTrigger value="ngos" className="flex items-center gap-2">
-      <Building2 className="h-4 w-4" />
-      NGOs in India
+    <TabsTrigger value="ngos" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+      <Building2 className="h-3 w-3 sm:h-4 sm:w-4" />
+      <span className="hidden sm:inline">NGOs</span><span className="sm:hidden">NGO</span>
     </TabsTrigger>
-    <TabsTrigger value="professionals" className="flex items-center gap-2">
-      <Phone className="h-4 w-4" />
-      Professionals
+    <TabsTrigger value="professionals" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+      <Phone className="h-3 w-3 sm:h-4 sm:w-4" />
+      <span className="hidden sm:inline">Professionals</span><span className="sm:hidden">Pros</span>
     </TabsTrigger>
   </TabsList>
 
@@ -202,7 +203,7 @@ const { data: professionals, isLoading: professionalsLoading } = useQuery({
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {filteredArticles.map((article) => (
                 <Card key={article.id} className="hover:shadow-lg transition-shadow">
                   <CardHeader className="space-y-2">
@@ -268,7 +269,7 @@ const { data: professionals, isLoading: professionalsLoading } = useQuery({
                        category === 'website' ? 'Helpful Websites' : 
                        'Support Helplines'}
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                       {categoryLinks.map((link) => (
                         <Card key={link.id} className="hover:shadow-md transition-shadow">
                           <CardHeader className="pb-3">
@@ -310,7 +311,7 @@ const { data: professionals, isLoading: professionalsLoading } = useQuery({
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {filteredNGOs.map((ngo) => (
                 <Card key={ngo.id} className="hover:shadow-lg transition-shadow">
                   <CardHeader>
@@ -371,7 +372,7 @@ const { data: professionals, isLoading: professionalsLoading } = useQuery({
 
       {/* Article inline preview component */}
       {/* ... keep existing code (other components) */}
-    </div>
+    </ResponsiveContainer>
   );
 };
 

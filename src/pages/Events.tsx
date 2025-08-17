@@ -10,6 +10,7 @@ import { Calendar, Clock, MapPin, Users, Plus, ExternalLink } from 'lucide-react
 import { format } from 'date-fns';
 import { useAuth } from '@/context/AuthContext';
 import EventPublisher from '@/components/EventPublisher';
+import ResponsiveContainer from '@/components/ResponsiveContainer';
 
 const Events = () => {
   const { user, isAuthenticated } = useAuth();
@@ -98,18 +99,18 @@ const Events = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-8">
-          <Calendar className="h-16 w-16 mx-auto text-brand-blue mb-4" />
-          <h1 className="text-4xl font-bold mb-4">Community Events</h1>
+    <ResponsiveContainer maxWidth="6xl">
+      <div>
+        <div className="text-center mb-6 lg:mb-8">
+          <Calendar className="h-12 sm:h-16 w-12 sm:w-16 mx-auto text-brand-blue mb-4" />
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">Community Events</h1>
           <p className="text-lg text-slate-600">
             Join our supportive community events, workshops, and support groups
           </p>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8">
+          <TabsList className="grid w-full grid-cols-2 mb-6 lg:mb-8">
             <TabsTrigger value="view">View Events</TabsTrigger>
             {canCreateEvents && (
               <TabsTrigger value="create" className="flex items-center gap-2">
@@ -129,17 +130,17 @@ const Events = () => {
               <div className="grid gap-6">
                 {events.map((event) => (
                   <Card key={event.id} className="hover:shadow-lg transition-shadow">
-                    <CardHeader>
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <CardTitle className="text-xl mb-2">{event.title}</CardTitle>
+                    <CardHeader className="pb-4">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 sm:gap-2">
+                        <div className="flex-1">
+                          <CardTitle className="text-lg sm:text-xl mb-2">{event.title}</CardTitle>
                           {event.event_type && (
                             <span className="inline-block bg-brand-blue/10 text-brand-blue px-3 py-1 rounded-full text-sm">
                               {event.event_type}
                             </span>
                           )}
                         </div>
-                        <div className="text-right text-sm text-slate-500">
+                        <div className="text-left sm:text-right text-sm text-slate-500 flex-shrink-0">
                           Hosted by {event.profiles?.full_name || event.profiles?.username || 'Unknown'}
                         </div>
                       </div>
@@ -149,7 +150,7 @@ const Events = () => {
                         <p className="text-slate-700">{event.description}</p>
                       )}
                       
-                      <div className="flex flex-wrap gap-4 text-sm text-slate-600">
+                      <div className="flex flex-wrap gap-3 sm:gap-4 text-sm text-slate-600">
                         <div className="flex items-center gap-2">
                           <Calendar className="h-4 w-4" />
                           {format(new Date(event.start_date), 'PPP')}
@@ -176,7 +177,7 @@ const Events = () => {
                         )}
                       </div>
 
-                      <div className="flex gap-3 pt-4">
+                      <div className="flex flex-col sm:flex-row gap-3 pt-4">
                         <Button 
                           onClick={() => registerForEvent(event.id)}
                           disabled={!isAuthenticated || registerForEventMutation.isPending}
@@ -233,7 +234,7 @@ const Events = () => {
           )}
         </Tabs>
       </div>
-    </div>
+    </ResponsiveContainer>
   );
 };
 

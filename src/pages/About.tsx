@@ -2,23 +2,24 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import AdSenseAd from '@/components/AdSenseAd';
+import ResponsiveContainer from '@/components/ResponsiveContainer';
 
 const About = () => {
   return (
-    <div className="container mx-auto px-4 py-16">
-      <div className="grid md:grid-cols-2 gap-16 items-center">
-        <div>
+    <ResponsiveContainer maxWidth="6xl">
+      <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-center">
+        <div className="order-2 md:order-1">
           <img 
             src="/images/about/JHU.jpeg" 
             alt="Vanshika Rao - Founder of Fortitude Network" 
-            className="rounded-lg shadow-lg aspect-square object-cover" 
+            className="rounded-lg shadow-lg aspect-square object-cover w-full max-w-md mx-auto md:max-w-none" 
             onError={(e) => {
               e.currentTarget.src = "/images/vanshika/vanshika_1.jpeg";
             }}
           />
         </div>
-        <div>
-          <h1 className="text-4xl font-bold tracking-tight mb-4">The Heart Behind Fortitude Network</h1>
+        <div className="order-1 md:order-2 text-center md:text-left">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight mb-4">The Heart Behind Fortitude Network</h1>
           <p className="text-lg text-slate-700 mb-4">
             Vanshika Rao, the visionary behind Fortitude Network, was deeply influenced by her mother's courageous battle with cancer and the isolation that often accompanies the recovery journey. This inspired Vanshika to create a platform that bridges the gap between medical care and holistic support for cancer patients.
           </p>
@@ -34,9 +35,9 @@ const About = () => {
         </div>
       </div>
 
-      <div className="text-center mt-24">
-        <h2 className="text-3xl font-bold mb-4">Our Vision & Mission</h2>
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+      <div className="text-center mt-16 lg:mt-24">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-6">Our Vision & Mission</h2>
+        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-4xl mx-auto">
           <div className="bg-slate-50 p-6 rounded-lg">
             <h3 className="text-xl font-semibold mb-2 text-brand-blue">Our Vision</h3>
             <p className="text-slate-600">To empower cancer patients by providing a comprehensive and personalized care experience that combines medical knowledge, emotional well being, and community support, fostering resilience and enhancing quality of life throughout the recovery process.</p>
@@ -63,15 +64,15 @@ const About = () => {
       </div>
 
       {/* Community Impact Section */}
-      <div className="mt-24">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">Our Community Impact</h2>
+      <div className="mt-16 lg:mt-24">
+        <div className="text-center mb-8 lg:mb-12">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-4">Our Community Impact</h2>
           <p className="text-lg text-slate-600 max-w-3xl mx-auto">
             See how Fortitude Network is making a real difference in the lives of cancer patients, survivors, and their families through community support and advocacy.
           </p>
         </div>
         
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           <div className="group relative overflow-hidden rounded-lg shadow-lg">
             <img 
               src="/lovable-uploads/2ae2a92f-5b0c-409c-a23a-9bc9b0dc3e92.jpeg"
@@ -122,7 +123,7 @@ const About = () => {
           <AdSenseAd adSlot="2234567892" />
         </div>
       </div>
-    </div>
+    </ResponsiveContainer>
   );
 };
 

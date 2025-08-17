@@ -5,6 +5,7 @@ import { Users, MessageSquare, Calendar } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import ResponsiveContainer from '@/components/ResponsiveContainer';
 
 const Community = () => {
   const { isAuthenticated } = useAuth();
@@ -24,10 +25,10 @@ const Community = () => {
   });
 
   return (
-    <div className="container mx-auto px-4 py-16">
+    <ResponsiveContainer maxWidth="6xl">
       <div className="text-center">
-        <Users className="h-16 w-16 mx-auto text-brand-blue mb-4" />
-        <h1 className="text-4xl font-bold tracking-tight mb-4">Welcome to the Community Hub</h1>
+        <Users className="h-12 sm:h-16 w-12 sm:w-16 mx-auto text-brand-blue mb-4" />
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight mb-4">Welcome to the Community Hub</h1>
         <p className="text-lg text-slate-600 max-w-3xl mx-auto">
           This is a safe space for patients, survivors, and caregivers to connect, share stories, and find strength together.
         </p>
@@ -35,7 +36,7 @@ const Community = () => {
 
       {/* Community Stats */}
       {stats && (
-        <div className="grid md:grid-cols-4 gap-6 mt-12 max-w-4xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mt-8 lg:mt-12 max-w-4xl mx-auto">
           <div className="bg-brand-blue text-white p-6 rounded-lg text-center">
             <div className="text-3xl font-bold">{stats.total_members}</div>
             <div className="text-sm opacity-90">Community Members</div>
@@ -55,7 +56,7 @@ const Community = () => {
         </div>
       )}
 
-      <div className="grid md:grid-cols-3 gap-8 mt-16 max-w-5xl mx-auto">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mt-12 lg:mt-16 max-w-5xl mx-auto">
         <div className="bg-slate-50 p-6 rounded-lg text-center">
           <MessageSquare className="h-10 w-10 mx-auto text-brand-teal mb-3" />
           <h3 className="font-semibold text-lg mb-2">Discussion Forums</h3>
@@ -89,14 +90,14 @@ const Community = () => {
       </div>
 
       {!isAuthenticated && (
-        <div className="text-center mt-16">
+        <div className="text-center mt-12 lg:mt-16">
           <p className="text-slate-700 mb-4">To be part of our community, sign up today!</p>
           <Button asChild size="lg">
             <Link to="/auth">Join Now</Link>
           </Button>
         </div>
       )}
-    </div>
+    </ResponsiveContainer>
   );
 };
 
