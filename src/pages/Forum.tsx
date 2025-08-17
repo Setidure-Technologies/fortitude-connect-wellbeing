@@ -313,40 +313,43 @@ const Forum = () => {
                 New Post
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-xl sm:max-w-2xl mx-3 sm:mx-0">
               <DialogHeader>
-                <DialogTitle>Share with the Community</DialogTitle>
+                <DialogTitle className="text-lg sm:text-xl">Share with the Community</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="post-title">Title</Label>
+                  <Label htmlFor="post-title" className="text-sm font-medium">Title</Label>
                   <Input 
                     id="post-title" 
                     placeholder="What's on your mind?"
                     value={postData.title}
                     onChange={(e) => setPostData(prev => ({ ...prev, title: e.target.value }))}
+                    className="mt-1"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="post-content">Your Message</Label>
+                  <Label htmlFor="post-content" className="text-sm font-medium">Your Message</Label>
                   <Textarea 
                     id="post-content" 
                     placeholder="Share your thoughts, questions, or experiences..." 
                     rows={4}
                     value={postData.content}
                     onChange={(e) => setPostData(prev => ({ ...prev, content: e.target.value }))}
+                    className="mt-1 resize-none"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="post-tags">Tags (comma-separated)</Label>
+                  <Label htmlFor="post-tags" className="text-sm font-medium">Tags (comma-separated)</Label>
                   <Input 
                     id="post-tags" 
                     placeholder="chemo, support, questions..."
                     value={postData.tags}
                     onChange={(e) => setPostData(prev => ({ ...prev, tags: e.target.value }))}
+                    className="mt-1"
                   />
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                   <Select 
                     value={postData.postType} 
                     onValueChange={(value: any) => setPostData(prev => ({ ...prev, postType: value }))}
