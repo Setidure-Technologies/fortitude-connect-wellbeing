@@ -251,7 +251,7 @@ const ProfileForm = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Role Field - Only admins can edit roles */}
+            {/* Role Field - Users can change basic roles, admins can change all */}
             <div className="space-y-2">
               <Label htmlFor="role">Role</Label>
               {userRole === 'admin' ? (
@@ -269,14 +269,17 @@ const ProfileForm = () => {
                   </SelectContent>
                 </Select>
               ) : (
-                <div className="p-3 bg-gray-50 border rounded-md">
-                  <span className="text-sm font-medium capitalize">
-                    {formData.role || 'Not set'}
-                  </span>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Contact an administrator to change your role
-                  </p>
-                </div>
+                <Select value={formData.role} onValueChange={(value: Database['public']['Enums']['user_role']) => setFormData({ ...formData, role: value })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="patient">Patient</SelectItem>
+                    <SelectItem value="survivor">Survivor</SelectItem>
+                    <SelectItem value="caregiver">Caregiver</SelectItem>
+                    <SelectItem value="volunteer">Volunteer</SelectItem>
+                  </SelectContent>
+                </Select>
               )}
             </div>
             <div className="space-y-2">

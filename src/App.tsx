@@ -13,6 +13,7 @@ import Chat from "./pages/Chat";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 import Profile from "./pages/Profile";
 import Forum from "./pages/Forum";
 import Events from "./pages/Events";
@@ -47,6 +48,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/auth" element={<Auth />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/admin-setup" element={<AdminSetup />} />
             <Route element={<Layout />}>
               <Route path="/" element={<Index />} />

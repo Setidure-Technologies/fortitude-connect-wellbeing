@@ -45,7 +45,7 @@ const Forum = () => {
             role
           ),
           post_reactions(count),
-          comments(count),
+          comments:comments!post_id(count),
           post_tags(tag)
         `)
         .order('created_at', { ascending: false });
@@ -459,7 +459,7 @@ const Forum = () => {
                   </button>
                   <div className="flex items-center gap-2 text-slate-600">
                     <MessageSquare className="h-4 w-4" />
-                    <span className="text-sm">{post.comments?.length || 0} replies</span>
+                    <span className="text-sm">{post.comments?.[0]?.count || 0} replies</span>
                   </div>
                 </div>
 
