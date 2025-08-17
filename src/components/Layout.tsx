@@ -3,12 +3,16 @@ import { Outlet } from "react-router-dom";
 import Header from "./Header";
 import Footer from "./Footer";
 import AdSenseAd from './AdSenseAd';
+import SkipLink from './SkipLink';
 
 const Layout = () => {
   return (
     <div className="flex flex-col min-h-screen">
+      {/* Skip to main content for screen readers */}
+      <SkipLink href="#main-content">Skip to main content</SkipLink>
+      
       <Header />
-      <main className="flex-grow">
+      <main id="main-content" className="flex-grow" tabIndex={-1}>
         <Outlet />
       </main>
       {/* Advertisement above footer */}
