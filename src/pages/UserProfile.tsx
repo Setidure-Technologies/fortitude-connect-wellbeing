@@ -12,6 +12,8 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import PrivateChat from '@/components/PrivateChat';
 import ResponsiveContainer from '@/components/ResponsiveContainer';
+import { ProfileSkeleton } from '@/components/ui/loading-skeleton';
+import { EmptyState } from '@/components/ui/empty-state';
 
 const UserProfile = () => {
   const { userId } = useParams();
@@ -89,21 +91,21 @@ const UserProfile = () => {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">Loading profile...</div>
-      </div>
+      <ResponsiveContainer>
+        <ProfileSkeleton />
+      </ResponsiveContainer>
     );
   }
 
   if (!profile) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <Card>
-          <CardContent className="p-6 text-center">
-            <p className="text-slate-600">Profile not found.</p>
-          </CardContent>
-        </Card>
-      </div>
+      <ResponsiveContainer>
+        <EmptyState
+          icon={User}
+          title="Profile Not Found"
+          description="The user profile you're looking for doesn't exist or has been removed."
+        />
+      </ResponsiveContainer>
     );
   }
 

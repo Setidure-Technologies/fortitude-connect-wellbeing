@@ -15,6 +15,9 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import ForumComments from "@/components/ForumComments";
+import ResponsiveContainer from '@/components/ResponsiveContainer';
+import { PageSkeleton } from '@/components/ui/loading-skeleton';
+import { EmptyState } from '@/components/ui/empty-state';
 
 const Forum = () => {
   const { user, isAuthenticated } = useAuth();
@@ -274,16 +277,16 @@ const Forum = () => {
   });
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold mb-4">Community Forum</h1>
+    <ResponsiveContainer maxWidth="6xl">
+      <div className="text-center mb-6 lg:mb-8">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">Community Forum</h1>
         <p className="text-lg text-slate-600 max-w-2xl mx-auto">
           Share your experiences, ask questions, and connect with others who understand your journey.
         </p>
       </div>
 
       {/* Search and Filter Bar */}
-      <div className="flex flex-col md:flex-row gap-4 mb-8 bg-white p-6 rounded-xl shadow-sm">
+      <div className="flex flex-col md:flex-row gap-4 mb-6 lg:mb-8 bg-white p-4 sm:p-6 rounded-xl shadow-sm">
         <div className="flex-1">
           <Input
             placeholder="Search posts, tags, or topics..."
@@ -292,9 +295,9 @@ const Forum = () => {
             className="w-full"
           />
         </div>
-        <div className="flex gap-4">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <Select value={filterRole} onValueChange={setFilterRole}>
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-full sm:w-40">
               <Filter className="h-4 w-4 mr-2" />
               <SelectValue />
             </SelectTrigger>
@@ -308,7 +311,7 @@ const Forum = () => {
           
           <Dialog open={isCreatePostOpen} onOpenChange={setIsCreatePostOpen}>
             <DialogTrigger asChild>
-              <Button className="rounded-full">
+              <Button className="rounded-full w-full sm:w-auto">
                 <Plus className="h-4 w-4 mr-2" />
                 New Post
               </Button>
@@ -397,21 +400,34 @@ const Forum = () => {
 
       {/* Forum Posts */}
       {isLoading ? (
-        <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-blue mx-auto mb-4"></div>
-          <p className="text-slate-600">Loading posts...</p>
-        </div>
+        <PageSkeleton />
+      ) : filteredPosts.length === 0 ? (
+        <EmptyState
+          icon={MessageSquare}
+          title={searchTerm || filterRole !== "all" ? "No Posts Found" : "No Posts Yet"}
+          description={searchTerm || filterRole !== "all" 
+            ? "No posts match your current search criteria. Try adjusting your filters or search terms."
+            : "Be the first to start a conversation in our community!"
+          }
+          action={isAuthenticated ? {
+            label: searchTerm || filterRole !== "all" ? "Create New Post" : "Create First Post",
+            onClick: () => setIsCreatePostOpen(true)
+          } : {
+            label: "Sign In to Post",
+            onClick: () => window.location.href = "/auth"
+          }}
+        />
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {filteredPosts.map((post) => (
             <Card key={post.id} className="hover:shadow-md transition-shadow duration-200">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="text-xl mb-2 hover:text-brand-blue cursor-pointer">
+              <CardHeader className="pb-4">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 sm:gap-2">
+                  <div className="flex-1 min-w-0">
+                    <CardTitle className="text-lg sm:text-xl mb-2 hover:text-brand-blue cursor-pointer line-clamp-2">
                       {post.title}
                     </CardTitle>
-                    <div className="flex items-center gap-4 text-sm text-slate-600 mb-3">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-slate-600 mb-3">
                       <div className="flex items-center gap-1">
                         <User className="h-4 w-4" />
                         {post.is_anonymous 
@@ -431,7 +447,7 @@ const Forum = () => {
                       size="sm"
                       onClick={() => handleDeletePost(post.id)}
                       disabled={deletePostMutation.isPending}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50 flex-shrink-0"
                     >
                       Delete
                     </Button>
@@ -451,7 +467,7 @@ const Forum = () => {
                   </div>
                 )}
                 
-                <div className="flex items-center gap-6">
+                <div className="flex flex-wrap items-center gap-4 sm:gap-6">
                   <button 
                     onClick={() => handleReaction(post.id)}
                     disabled={toggleReactionMutation.isPending}
@@ -475,16 +491,7 @@ const Forum = () => {
           ))}
         </div>
       )}
-
-      {!isLoading && filteredPosts.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-slate-600 text-lg">No posts found matching your criteria.</p>
-          <Button className="mt-4" onClick={() => setIsCreatePostOpen(true)}>
-            Be the first to post!
-          </Button>
-        </div>
-      )}
-    </div>
+    </ResponsiveContainer>
   );
 };
 

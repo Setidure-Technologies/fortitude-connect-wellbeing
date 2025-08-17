@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button';
 import { ExternalLink, Search, BookOpen, Youtube, Phone, Building2, Globe, ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import ResponsiveContainer from '@/components/ResponsiveContainer';
+import { PageSkeleton } from '@/components/ui/loading-skeleton';
+import { EmptyState } from '@/components/ui/empty-state';
 
 interface Article {
   id: string;
@@ -140,11 +142,7 @@ const { data: professionals, isLoading: professionalsLoading } = useQuery({
     }
   };
 
-  const LoadingSpinner = () => (
-    <div className="flex items-center justify-center py-8">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-    </div>
-  );
+  const LoadingSpinner = () => <PageSkeleton />;
 
   return (
     <ResponsiveContainer maxWidth="7xl">
@@ -195,13 +193,14 @@ const { data: professionals, isLoading: professionalsLoading } = useQuery({
           {articlesLoading ? (
             <LoadingSpinner />
           ) : filteredArticles.length === 0 ? (
-            <div className="text-center py-12">
-              <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No Articles Found</h3>
-              <p className="text-muted-foreground">
-                {searchTerm ? 'Try adjusting your search terms.' : 'Articles will appear here once published.'}
-              </p>
-            </div>
+            <EmptyState
+              icon={BookOpen}
+              title="No Articles Found"
+              description={searchTerm 
+                ? `No articles match "${searchTerm}". Try adjusting your search terms.`
+                : "Articles will appear here once published."
+              }
+            />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {filteredArticles.map((article) => (
@@ -303,13 +302,14 @@ const { data: professionals, isLoading: professionalsLoading } = useQuery({
           {ngosLoading ? (
             <LoadingSpinner />
           ) : filteredNGOs.length === 0 ? (
-            <div className="text-center py-12">
-              <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No NGOs Found</h3>
-              <p className="text-muted-foreground">
-                {searchTerm ? 'Try adjusting your search terms.' : 'NGO listings will appear here.'}
-              </p>
-            </div>
+            <EmptyState
+              icon={Building2}
+              title="No NGOs Found"
+              description={searchTerm 
+                ? `No NGOs match "${searchTerm}". Try adjusting your search terms.`
+                : "NGO listings will appear here."
+              }
+            />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {filteredNGOs.map((ngo) => (

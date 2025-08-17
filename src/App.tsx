@@ -36,6 +36,7 @@ import ContactUs from "./pages/ContactUs";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
+import GlobalNotificationToast from "./components/GlobalNotificationToast";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <AuthProvider>
+        <GlobalNotificationToast />
         <BrowserRouter>
           <Routes>
             <Route path="/auth" element={<Auth />} />

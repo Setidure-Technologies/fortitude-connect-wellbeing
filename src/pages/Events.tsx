@@ -6,17 +6,21 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, Clock, MapPin, Users, Plus, ExternalLink } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users, Plus, ExternalLink, Search } from 'lucide-react';
 import { format } from 'date-fns';
 import { useAuth } from '@/context/AuthContext';
 import EventPublisher from '@/components/EventPublisher';
 import ResponsiveContainer from '@/components/ResponsiveContainer';
+import { PageSkeleton } from '@/components/ui/loading-skeleton';
+import { EmptyState } from '@/components/ui/empty-state';
+import { Input } from '@/components/ui/input';
 
 const Events = () => {
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('view');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const { data: events, isLoading } = useQuery({
     queryKey: ['events'],
@@ -40,6 +44,13 @@ const Events = () => {
 
   const canCreateEvents = isAuthenticated && user?.user_metadata?.role && 
     ['admin', 'ngo'].includes(user.user_metadata.role);
+
+  // Filter events based on search term
+  const filteredEvents = events?.filter(event =>
+    event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    event.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    event.event_type?.toLowerCase().includes(searchTerm.toLowerCase())
+  ) || [];
 
   // Event registration mutation
   const registerForEventMutation = useMutation({
@@ -109,6 +120,19 @@ const Events = () => {
           </p>
         </div>
 
+        {/* Search */}
+        <div className="mb-6 lg:mb-8 max-w-md mx-auto">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search events..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+        </div>
+
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-6 lg:mb-8">
             <TabsTrigger value="view">View Events</TabsTrigger>
@@ -122,13 +146,10 @@ const Events = () => {
 
           <TabsContent value="view">
             {isLoading ? (
-              <div className="text-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-blue mx-auto mb-4"></div>
-                <p className="text-slate-600">Loading events...</p>
-              </div>
-            ) : events && events.length > 0 ? (
+              <PageSkeleton />
+            ) : filteredEvents && filteredEvents.length > 0 ? (
               <div className="grid gap-6">
-                {events.map((event) => (
+                {filteredEvents.map((event) => (
                   <Card key={event.id} className="hover:shadow-lg transition-shadow">
                     <CardHeader className="pb-4">
                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 sm:gap-2">
@@ -212,18 +233,18 @@ const Events = () => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <Calendar className="h-16 w-16 mx-auto text-slate-400 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">No Events Yet</h3>
-                <p className="text-slate-600 mb-6">
-                  There are no upcoming events at the moment. Check back soon for new community events and workshops!
-                </p>
-                {!isAuthenticated && (
-                  <Button asChild>
-                    <a href="/auth">Sign In to Stay Updated</a>
-                  </Button>
-                )}
-              </div>
+              <EmptyState
+                icon={Calendar}
+                title={searchTerm ? "No Events Found" : "No Events Yet"}
+                description={searchTerm 
+                  ? `No events match "${searchTerm}". Try adjusting your search terms.`
+                  : "There are no upcoming events at the moment. Check back soon for new community events and workshops!"
+                }
+                action={!isAuthenticated ? {
+                  label: "Sign In to Stay Updated",
+                  onClick: () => window.location.href = "/auth"
+                } : undefined}
+              />
             )}
           </TabsContent>
 
