@@ -37,6 +37,7 @@ import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
 import GlobalNotificationToast from "./components/GlobalNotificationToast";
+import ServiceWorkerRegistration from "./components/ServiceWorkerRegistration";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <AuthProvider>
+        <ServiceWorkerRegistration />
         <GlobalNotificationToast />
         <BrowserRouter>
           <Routes>

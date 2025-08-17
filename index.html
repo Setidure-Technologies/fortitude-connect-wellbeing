@@ -33,6 +33,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Fortitude Network">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Fortitude Network">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -49,6 +52,61 @@
     <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5260494048890051"
          crossorigin="anonymous"></script>
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "MedicalOrganization",
+      "name": "Fortitude Network",
+      "url": "https://fortitudenetwork.in",
+      "logo": "https://fortitudenetwork.in/Fortitude_logo.png",
+      "description": "A comprehensive cancer support platform connecting patients, survivors, and families. Access AI assistance, community forums, expert resources, and emotional support.",
+      "medicalSpecialty": "Oncology",
+      "serviceType": "Cancer Support Services",
+      "areaServed": "Global",
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Cancer Support Services",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "AI Support Companion",
+              "description": "24/7 AI companion trained to provide emotional support and practical guidance"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Community Forums",
+              "description": "Connect with fellow patients, survivors, and caregivers"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Support Groups",
+              "description": "Join educational workshops and community events"
+            }
+          }
+        ]
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "Customer Support",
+        "availableLanguage": "English"
+      },
+      "foundingDate": "2024",
+      "founder": {
+        "@type": "Organization",
+        "name": "Setidure Technologies Pvt. Ltd."
+      }
+    }
+    </script>
   </head>
 
   <body>
