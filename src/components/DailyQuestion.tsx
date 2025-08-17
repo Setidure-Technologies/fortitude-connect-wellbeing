@@ -80,30 +80,37 @@ const DailyQuestion = () => {
     enabled: !!todayQuestion && !!user,
   });
 
-  // Fetch all responses for the question
-  const { data: allResponses } = useQuery({
-    queryKey: ['daily-question-responses', todayQuestion?.id],
+  // Fetch poll aggregates for questions with options
+  const { data: pollResults } = useQuery({
+    queryKey: ['question-poll-results', todayQuestion?.id],
     queryFn: async () => {
-      if (!todayQuestion) return [];
+      if (!todayQuestion?.id || todayQuestion.question_type !== 'poll') return [];
       
-      const { data, error } = await supabase
-        .from('question_responses')
-        .select(`
-          id,
-          response_text,
-          selected_option,
-          is_anonymous,
-          created_at,
-          user_id,
-          profiles:user_id(id, full_name, role)
-        `)
-        .eq('question_id', todayQuestion.id)
-        .order('created_at', { ascending: false });
+      const { data, error } = await supabase.rpc('get_question_response_aggregates', {
+        question_uuid: todayQuestion.id
+      });
       
       if (error) throw error;
-      return data as QuestionResponse[];
+      return data || [];
     },
-    enabled: !!todayQuestion,
+    enabled: !!todayQuestion?.id && todayQuestion.question_type === 'poll',
+  });
+
+  // Fetch anonymous responses for community display
+  const { data: communityResponses, isLoading: communityResponsesLoading } = useQuery({
+    queryKey: ['anonymous-question-responses', todayQuestion?.id],
+    queryFn: async () => {
+      if (!todayQuestion?.id) return [];
+      
+      const { data, error } = await supabase.rpc('get_anonymous_question_responses', {
+        question_uuid: todayQuestion.id,
+        max_rows: 20
+      });
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!todayQuestion?.id,
   });
 
   // Submit response mutation
@@ -133,7 +140,8 @@ const DailyQuestion = () => {
         description: "Thank you for sharing your thoughts with the community.",
       });
       queryClient.invalidateQueries({ queryKey: ['user-daily-response'] });
-      queryClient.invalidateQueries({ queryKey: ['daily-question-responses'] });
+      queryClient.invalidateQueries({ queryKey: ['question-poll-results'] });
+      queryClient.invalidateQueries({ queryKey: ['anonymous-question-responses'] });
       setResponseText('');
       setSelectedOption('');
     },
@@ -168,25 +176,26 @@ const DailyQuestion = () => {
     submitResponseMutation.mutate();
   };
 
-  // Calculate poll results if it's a poll
-  const getPollResults = () => {
-    if (!todayQuestion || !allResponses || todayQuestion.question_type === 'open') return null;
+  // Get poll results from aggregated data
+  const getFormattedPollResults = () => {
+    if (!todayQuestion?.options || !pollResults || todayQuestion.question_type === 'open') return null;
     
     const options = todayQuestion.options || [];
-    const totalResponses = allResponses.length;
+    const totalResponses = pollResults.length > 0 ? Number(pollResults[0].total_count) : 0;
     
     if (totalResponses === 0) return null;
-
+    
     return options.map((option: string) => {
-      const count = allResponses.filter(r => r.selected_option === option).length;
-      const percentage = Math.round((count / totalResponses) * 100);
+      const result = pollResults?.find(r => r.option_value === option);
+      const count = result ? Number(result.response_count) : 0;
+      const percentage = totalResponses > 0 ? Math.round((count / totalResponses) * 100) : 0;
       return { option, count, percentage };
     });
   };
 
-  const pollResults = getPollResults();
+  const formattedPollResults = getFormattedPollResults();
 
-  if (isLoading) {
+  if (isLoading || communityResponsesLoading) {
     return (
       <Card className="w-full">
         <CardContent className="p-6">
@@ -239,11 +248,11 @@ const DailyQuestion = () => {
         {/* Question */}
         <div className="bg-white/50 dark:bg-black/20 rounded-lg p-4 border">
           <h3 className="font-medium text-lg mb-2">{todayQuestion.question}</h3>
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1">
-              <Users className="h-4 w-4" />
-              {allResponses?.length || 0} responses
-            </span>
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <Users className="h-4 w-4" />
+                {pollResults?.length > 0 ? Number(pollResults[0].total_count) : communityResponses?.length || 0} responses
+              </span>
             <Badge variant="secondary" className="text-xs">
               {todayQuestion.question_type === 'open' ? 'Open Question' : 'Poll'}
             </Badge>
@@ -328,10 +337,10 @@ const DailyQuestion = () => {
         )}
 
         {/* Poll Results */}
-        {pollResults && (
+        {formattedPollResults && (
           <div className="space-y-3">
             <h4 className="font-medium">Results:</h4>
-            {pollResults.map((result, index) => (
+            {formattedPollResults.map((result, index) => (
               <div key={index} className="space-y-1">
                 <div className="flex justify-between text-sm">
                   <span>{result.option}</span>
@@ -343,8 +352,8 @@ const DailyQuestion = () => {
           </div>
         )}
 
-        {/* Toggle Responses View */}
-        {allResponses && allResponses.length > 0 && (
+        {/* Community Responses */}
+        {communityResponses && communityResponses.length > 0 && (
           <div className="space-y-4">
             <Button
               variant="outline"
@@ -352,31 +361,26 @@ const DailyQuestion = () => {
               className="w-full flex items-center gap-2"
             >
               {showResponses ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              {showResponses ? 'Hide' : 'Show'} Community Responses ({allResponses.length})
+              {showResponses ? 'Hide' : 'Show'} Anonymous Community Responses ({communityResponses.length})
             </Button>
 
-            {showResponses && todayQuestion.question_type === 'open' && (
+            {showResponses && (
               <div className="space-y-3 max-h-96 overflow-y-auto">
-                {allResponses
-                  .filter(response => response.response_text?.trim())
-                  .map((response) => (
+                {communityResponses.map((response) => (
                   <div key={response.id} className="bg-white/70 dark:bg-black/30 rounded-lg p-3 border">
                     <div className="flex items-start justify-between mb-2">
-                      <span className="font-medium text-sm">
-                        {response.is_anonymous ? 
-                          'Anonymous Community Member' : 
-                          response.profiles?.full_name || 'Community Member'
-                        }
-                      </span>
+                      <span className="font-medium text-sm">Anonymous Community Member</span>
                       <span className="text-xs text-muted-foreground">
                         {new Date(response.created_at).toLocaleDateString()}
                       </span>
                     </div>
-                    <p className="text-sm">{response.response_text}</p>
-                    {!response.is_anonymous && response.profiles?.role && (
-                      <Badge variant="outline" className="text-xs mt-2">
-                        {response.profiles.role}
-                      </Badge>
+                    {response.response_text && (
+                      <p className="text-sm">{response.response_text}</p>
+                    )}
+                    {response.selected_option && (
+                      <div className="text-xs text-primary font-medium mt-1">
+                        Selected: {response.selected_option}
+                      </div>
                     )}
                   </div>
                 ))}

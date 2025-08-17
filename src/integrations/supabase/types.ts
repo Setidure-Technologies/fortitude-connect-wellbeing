@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -1743,13 +1743,13 @@ export type Database = {
       check_role_consistency: {
         Args: { target_user_id: string }
         Returns: {
-          profile_role: string
           auth_role: string
           is_consistent: boolean
+          profile_role: string
         }[]
       }
       check_upload_rate_limit: {
-        Args: { target_user_id: string; max_uploads_per_hour?: number }
+        Args: { max_uploads_per_hour?: number; target_user_id: string }
         Returns: boolean
       }
       force_role_sync: {
@@ -1760,15 +1760,33 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_anonymous_question_responses: {
+        Args: { max_rows?: number; question_uuid: string }
+        Returns: {
+          created_at: string
+          id: string
+          question_id: string
+          response_text: string
+          selected_option: string
+        }[]
+      }
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_question_response_aggregates: {
+        Args: { question_uuid: string }
+        Returns: {
+          option_value: string
+          response_count: number
+          total_count: number
+        }[]
+      }
       get_sensitive_profile_data: {
         Args: { target_user_id: string }
         Returns: {
-          email: string
           diagnosis_date: string
+          email: string
         }[]
       }
       get_unique_display_id: {
@@ -1785,18 +1803,18 @@ export type Database = {
       }
       log_admin_action: {
         Args: {
+          action_details?: Json
           action_type: string
           target_user_id?: string
-          action_details?: Json
         }
         Returns: undefined
       }
       log_security_event: {
         Args: {
-          event_type: string
-          target_user_id?: string
           event_details?: Json
           event_severity?: string
+          event_type: string
+          target_user_id?: string
         }
         Returns: undefined
       }
@@ -1805,7 +1823,7 @@ export type Database = {
         Returns: undefined
       }
       sync_user_role: {
-        Args: { user_id: string; new_role: string }
+        Args: { new_role: string; user_id: string }
         Returns: undefined
       }
       update_user_activity: {
