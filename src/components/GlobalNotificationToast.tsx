@@ -15,7 +15,7 @@ export function GlobalNotificationToast() {
     if (!user?.id) return;
 
     const channel = supabase
-      .channel('notifications')
+      .channel('notifications-toast')
       .on(
         'postgres_changes',
         {

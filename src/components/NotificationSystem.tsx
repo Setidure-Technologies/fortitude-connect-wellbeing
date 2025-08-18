@@ -60,7 +60,7 @@ const NotificationSystem = () => {
     if (!user?.id) return;
 
     const channel = supabase
-      .channel('notifications')
+      .channel('notifications-system')
       .on(
         'postgres_changes',
         {
