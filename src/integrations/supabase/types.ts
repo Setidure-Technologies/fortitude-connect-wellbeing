@@ -323,6 +323,38 @@ export type Database = {
         }
         Relationships: []
       }
+      connection_activities: {
+        Row: {
+          activity_data: Json | null
+          activity_type: string
+          connection_id: string
+          created_at: string
+          id: string
+        }
+        Insert: {
+          activity_data?: Json | null
+          activity_type: string
+          connection_id: string
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          activity_data?: Json | null
+          activity_type?: string
+          connection_id?: string
+          created_at?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "connection_activities_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "user_connections_enhanced"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       connection_requests: {
         Row: {
           age_range: string | null
@@ -477,36 +509,45 @@ export type Database = {
           created_at: string
           edited_at: string | null
           id: string
+          is_deleted: boolean | null
           is_read: boolean | null
           message: string
           message_type: string | null
           parent_message_id: string | null
           receiver_id: string
           sender_id: string
+          thread_id: string | null
+          updated_at: string | null
         }
         Insert: {
           attachment_url?: string | null
           created_at?: string
           edited_at?: string | null
           id?: string
+          is_deleted?: boolean | null
           is_read?: boolean | null
           message: string
           message_type?: string | null
           parent_message_id?: string | null
           receiver_id: string
           sender_id: string
+          thread_id?: string | null
+          updated_at?: string | null
         }
         Update: {
           attachment_url?: string | null
           created_at?: string
           edited_at?: string | null
           id?: string
+          is_deleted?: boolean | null
           is_read?: boolean | null
           message?: string
           message_type?: string | null
           parent_message_id?: string | null
           receiver_id?: string
           sender_id?: string
+          thread_id?: string | null
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -709,6 +750,45 @@ export type Database = {
           },
         ]
       }
+      file_attachments: {
+        Row: {
+          attachment_type: string
+          created_at: string
+          entity_id: string | null
+          file_name: string
+          file_size: number
+          file_type: string
+          file_url: string
+          id: string
+          storage_path: string
+          uploaded_by: string
+        }
+        Insert: {
+          attachment_type: string
+          created_at?: string
+          entity_id?: string | null
+          file_name: string
+          file_size: number
+          file_type: string
+          file_url: string
+          id?: string
+          storage_path: string
+          uploaded_by: string
+        }
+        Update: {
+          attachment_type?: string
+          created_at?: string
+          entity_id?: string | null
+          file_name?: string
+          file_size?: number
+          file_type?: string
+          file_url?: string
+          id?: string
+          storage_path?: string
+          uploaded_by?: string
+        }
+        Relationships: []
+      }
       file_upload_rate_limits: {
         Row: {
           created_at: string
@@ -737,6 +817,7 @@ export type Database = {
         Row: {
           content: string
           created_at: string | null
+          has_attachments: boolean | null
           id: string
           is_anonymous: boolean | null
           post_type: Database["public"]["Enums"]["post_type"] | null
@@ -747,6 +828,7 @@ export type Database = {
         Insert: {
           content: string
           created_at?: string | null
+          has_attachments?: boolean | null
           id?: string
           is_anonymous?: boolean | null
           post_type?: Database["public"]["Enums"]["post_type"] | null
@@ -757,6 +839,7 @@ export type Database = {
         Update: {
           content?: string
           created_at?: string | null
+          has_attachments?: boolean | null
           id?: string
           is_anonymous?: boolean | null
           post_type?: Database["public"]["Enums"]["post_type"] | null
@@ -868,6 +951,83 @@ export type Database = {
           },
         ]
       }
+      media_files: {
+        Row: {
+          caption: string | null
+          created_at: string
+          file_name: string
+          file_size: number
+          file_type: string
+          file_url: string
+          gallery_id: string | null
+          id: string
+          uploaded_by: string
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          file_name: string
+          file_size: number
+          file_type: string
+          file_url: string
+          gallery_id?: string | null
+          id?: string
+          uploaded_by: string
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          file_name?: string
+          file_size?: number
+          file_type?: string
+          file_url?: string
+          gallery_id?: string | null
+          id?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "media_files_gallery_id_fkey"
+            columns: ["gallery_id"]
+            isOneToOne: false
+            referencedRelation: "media_galleries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      media_galleries: {
+        Row: {
+          created_at: string
+          description: string | null
+          gallery_type: string
+          id: string
+          is_public: boolean
+          name: string
+          owner_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          gallery_type?: string
+          id?: string
+          is_public?: boolean
+          name: string
+          owner_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          gallery_type?: string
+          id?: string
+          is_public?: boolean
+          name?: string
+          owner_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ngos: {
         Row: {
           address: string | null
@@ -969,6 +1129,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      password_reset_tokens: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          token: string
+          used: boolean | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          token: string
+          used?: boolean | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          token?: string
+          used?: boolean | null
+          user_id?: string
+        }
+        Relationships: []
       }
       post_reactions: {
         Row: {
@@ -1379,6 +1566,42 @@ export type Database = {
           },
         ]
       }
+      support_group_galleries: {
+        Row: {
+          created_at: string
+          gallery_id: string
+          group_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          gallery_id: string
+          group_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          gallery_id?: string
+          group_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_group_galleries_gallery_id_fkey"
+            columns: ["gallery_id"]
+            isOneToOne: false
+            referencedRelation: "media_galleries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "support_group_galleries_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "support_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       support_group_members: {
         Row: {
           group_id: string
@@ -1414,26 +1637,64 @@ export type Database = {
           },
         ]
       }
+      support_group_message_reactions: {
+        Row: {
+          created_at: string
+          id: string
+          message_id: string
+          reaction_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message_id: string
+          reaction_type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message_id?: string
+          reaction_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_group_message_reactions_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "support_group_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       support_group_messages: {
         Row: {
           created_at: string
           group_id: string
+          has_attachments: boolean | null
           id: string
           message: string
+          updated_at: string | null
           user_id: string
         }
         Insert: {
           created_at?: string
           group_id: string
+          has_attachments?: boolean | null
           id?: string
           message: string
+          updated_at?: string | null
           user_id: string
         }
         Update: {
           created_at?: string
           group_id?: string
+          has_attachments?: boolean | null
           id?: string
           message?: string
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: [
@@ -1687,6 +1948,35 @@ export type Database = {
           },
         ]
       }
+      user_profile_galleries: {
+        Row: {
+          created_at: string
+          gallery_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          gallery_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          gallery_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_profile_galleries_gallery_id_fkey"
+            columns: ["gallery_id"]
+            isOneToOne: false
+            referencedRelation: "media_galleries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       public_profiles: {
@@ -1799,6 +2089,10 @@ export type Database = {
       }
       is_group_member: {
         Args: { group_uuid: string; user_uuid: string }
+        Returns: boolean
+      }
+      is_user_connected: {
+        Args: { user1_id: string; user2_id: string }
         Returns: boolean
       }
       log_admin_action: {
